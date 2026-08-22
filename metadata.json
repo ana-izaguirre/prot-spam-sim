@@ -1,6 +1,0 @@
-{
-  "name": "ProtSpam MPI HPC Suite & Simulator",
-  "description": "Simulador interactivo de reparto, desbalance de carga, comunicación MPI (metacache vs isend), matriz triangular PHYLIP y escalabilidad para análisis filogenómico de proteínas con ProtSpam.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}
