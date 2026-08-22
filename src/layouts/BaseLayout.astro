@@ -4,19 +4,45 @@ import '../index.css';
 interface Props {
   title: string;
   description: string;
+  /** Overrides the <html lang> default; the boot script may still narrow it. */
+  lang?: string;
 }
 
-const { title, description } = Astro.props;
+const { title, description, lang = 'es' } = Astro.props;
+
+// Absolute URLs are only emitted once a deployment origin is configured
+// (`site` in astro.config.mjs). Without one, a canonical or og:url tag would
+// point at localhost, which is worse than omitting it.
+const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
 ---
 
 <!doctype html>
-<html lang="es" class="dark">
+<html lang={lang} class="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
+    <meta name="author" content="Ana Izaguirre Matamoros" />
+    <meta
+      name="keywords"
+      content="Prot-SpaM, MPI, HPC, filogenia, spaced words, FinisTerrae III, CESGA, UDC"
+    />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" content="#020617" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    {canonical && <link rel="canonical" href={canonical} />}
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="ProtSpam HPC Suite" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {canonical && <meta property="og:url" content={canonical} />}
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

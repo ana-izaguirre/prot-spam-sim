@@ -1,0 +1,42 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="404 — ProtSpam HPC Suite"
+  description="Página no encontrada / Page not found — ProtSpam MPI HPC Suite & Simulator."
+>
+  <main
+    class="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center px-6 py-16"
+  >
+    <div class="max-w-lg w-full space-y-6 text-center">
+      <div
+        class="w-14 h-14 mx-auto rounded-2xl bg-emerald-500/15 border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-mono font-bold text-2xl"
+      >
+        &Pi;
+      </div>
+
+      <div class="space-y-2">
+        <p class="font-mono text-xs uppercase tracking-[0.2em] text-emerald-400">Error 404</p>
+        <h1 class="text-2xl font-bold text-white tracking-tight">
+          Página no encontrada · Page not found
+        </h1>
+        <p class="text-sm text-slate-400 leading-relaxed">
+          Esta ruta no existe en el simulador. Toda la suite vive en una única página.<br />
+          This route does not exist. The whole suite lives on a single page.
+        </p>
+      </div>
+
+      <a
+        href="/"
+        class="inline-flex items-center gap-2 bg-emerald-500 text-slate-950 hover:bg-emerald-400 px-4 py-2 rounded-lg text-sm font-bold transition-colors"
+      >
+        Volver al simulador · Back to the simulator
+      </a>
+
+      <p class="text-[11px] text-slate-500 font-mono pt-2">
+        TFM · Ana Izaguirre Matamoros · UDC / CESGA · FinisTerrae III
+      </p>
+    </div>
+  </main>
+</BaseLayout>
