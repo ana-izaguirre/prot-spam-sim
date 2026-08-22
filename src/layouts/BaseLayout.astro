@@ -28,6 +28,29 @@ const { title, description } = Astro.props;
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
       rel="stylesheet"
     />
+
+    {/*
+      Apply the stored theme and language before first paint, so a returning
+      visitor never sees the default dark/Spanish shell flash before React
+      reconciles. This must stay in sync with LanguageThemeProvider: same two
+      keys, same class names, same fallbacks.
+    */}
+    <script is:inline>
+      (function () {
+        try {
+          var theme = window.localStorage.getItem('protspam_theme');
+          var root = document.documentElement;
+          if (theme === 'light') {
+            root.classList.add('light-theme');
+            root.classList.remove('dark');
+          }
+          var lang = window.localStorage.getItem('protspam_lang');
+          if (lang === 'en' || lang === 'es') root.lang = lang;
+        } catch (e) {
+          /* storage blocked: keep the server-rendered defaults */
+        }
+      })();
+    </script>
   </head>
   <body
     class="bg-[#051424] text-[#d4e4fa] antialiased selection:bg-[#38bdf8]/30 selection:text-[#38bdf8]"
