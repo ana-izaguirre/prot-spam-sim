@@ -86,25 +86,6 @@ El simulador interactivo está desarrollado como una SPA reactiva moderna optimi
   5. *Curvas de Escalabilidad HPC*: Datos experimentales reales tomados en el supercomputador FinisTerrae III (1 a 256 procesos).
   6. *Verificador de Corrección Numérica*: Comparador IEEE-754 en coma flotante de 64 bits con inspección hexadecimal y bitwise XOR.
 
----
-
-## 🚀 Compilación y Ejecución del Código C++ (FinisTerrae III CESGA)
-
-```bash
-# 1. Clonar el repositorio
-git clone --branch feat/mpi-phase4-metacache-isend https://github.com/ana-izaguirre/ProtSpaM.git
-cd ProtSpaM
-
-# 2. Cargar módulos en el clúster
-module load cesga/2025 gcc openmpi/5.0.9
-
-# 3. Compilar con optimizaciones
-make
-
-# 4. Ejecución paralela MPI (ejemplo 128 procesos en 4 nodos)
-mpirun --map-by ppr:32:node -np 128 ./bin/Debug/protspam \
-  -l filelist_300 -p patterns_clean.txt -o DMat_output.phylip
-```
 
 ---
 
