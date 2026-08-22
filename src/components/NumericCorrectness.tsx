@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { PHYLIP_SAMPLE_DATA, PhylipPairComparison } from '../data/speciesData';
+import { PHYLIP_SAMPLE_DATA } from '../data/speciesData';
+import type { PhylipPairComparison } from '../data/speciesData';
 import { useAppLanguageTheme } from '../context/LanguageThemeContext';
 import { CheckCircle, ShieldCheck, Cpu, Search, Sparkles, Hash } from 'lucide-react';
 

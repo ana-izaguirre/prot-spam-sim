@@ -12,8 +12,8 @@ import {
   SPECIES_64_HOMOGENEOUS,
   SPECIES_300_UNBALANCED,
   calculateWorkload,
-  ProcessWorkload,
 } from '../data/speciesData';
+import type { ProcessWorkload } from '../data/speciesData';
 import { useAppLanguageTheme } from '../context/LanguageThemeContext';
 import {
   Layers,
@@ -442,15 +442,26 @@ export const WorkloadSimulator: React.FC = () => {
       chartInstanceRef.current.data.datasets[0].backgroundColor = backgroundColors;
       chartInstanceRef.current.data.datasets[0].borderColor = borderColors;
 
-      if (chartInstanceRef.current.options.scales?.x?.ticks) {
-        chartInstanceRef.current.options.scales.x.ticks.font = {
+      // Chart.js types the scale options as a union across every scale kind, so
+      // the cartesian-only members are narrowed away. The chart is created below
+      // as a bar chart, so the cartesian shape is guaranteed at runtime.
+      const xTicks = chartInstanceRef.current.options.scales?.x?.ticks as
+        | { font?: Record<string, unknown>; maxRotation?: number }
+        | undefined;
+      if (xTicks) {
+        xTicks.font = {
           family: 'JetBrains Mono',
           size: numProcesses > 32 ? 9 : numProcesses > 16 ? 10 : 11,
         };
-        chartInstanceRef.current.options.scales.x.ticks.maxRotation = numProcesses > 16 ? 90 : 0;
+        xTicks.maxRotation = numProcesses > 16 ? 90 : 0;
       }
-      if (chartInstanceRef.current.options.scales?.y?.title) {
-        chartInstanceRef.current.options.scales.y.title.text =
+
+      const yScale = chartInstanceRef.current.options.scales?.y as
+        | { title?: { text?: string } }
+        | undefined;
+      const yTitle = yScale?.title;
+      if (yTitle) {
+        yTitle.text =
           viewMetric === 'maa'
             ? 'Millones de Aminoácidos (Maa)'
             : viewMetric === 'comparisons'
