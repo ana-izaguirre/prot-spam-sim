@@ -1,0 +1,142 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-color: #020617;
+    --card-bg: #0f172a;
+    --card-bg-subtle: #090e1a;
+    --border-color: #1e293b;
+    --border-light: #334155;
+    --accent-emerald: #10b981;
+    --accent-cyan: #0ea5e9;
+    --accent-blue: #3b82f6;
+    --accent-purple: #a855f7;
+    --accent-orange: #f97316;
+    --text-main: #f1f5f9;
+    --text-muted: #94a3b8;
+    --text-dim: #64748b;
+  }
+
+  body {
+    background-color: #020617;
+    color: #f1f5f9;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  /* Light theme mode */
+  html.light-theme body {
+    background-color: #f8fafc;
+    color: #0f172a;
+  }
+
+  html.light-theme .bg-slate-950 {
+    background-color: #f1f5f9 !important;
+    color: #0f172a !important;
+  }
+
+  html.light-theme .bg-slate-950\/90,
+  html.light-theme .bg-slate-950\/85,
+  html.light-theme .bg-slate-950\/80,
+  html.light-theme .bg-slate-950\/60 {
+    background-color: rgba(241, 245, 249, 0.92) !important;
+    color: #0f172a !important;
+  }
+
+  html.light-theme .bg-slate-900 {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+  }
+
+  html.light-theme .bg-slate-900\/50,
+  html.light-theme .bg-slate-900\/40,
+  html.light-theme .bg-slate-900\/70 {
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    color: #0f172a !important;
+  }
+
+  html.light-theme .border-slate-800,
+  html.light-theme .border-slate-800\/80,
+  html.light-theme .border-slate-800\/60,
+  html.light-theme .border-slate-800\/90 {
+    border-color: #cbd5e1 !important;
+  }
+
+  html.light-theme .text-white {
+    color: #0f172a !important;
+  }
+
+  html.light-theme .text-slate-100,
+  html.light-theme .text-slate-200,
+  html.light-theme .text-slate-300 {
+    color: #1e293b !important;
+  }
+
+  html.light-theme .text-slate-400 {
+    color: #475569 !important;
+  }
+
+  html.light-theme .text-slate-500 {
+    color: #64748b !important;
+  }
+
+  html.light-theme .bg-slate-800,
+  html.light-theme .bg-slate-800\/80 {
+    background-color: #e2e8f0 !important;
+    color: #1e293b !important;
+  }
+
+  code, pre, .font-mono {
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+}
+
+/* Bento Grid Cards & Micro-interactions */
+.bento-card {
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid #1e293b;
+  border-radius: 1rem; /* rounded-2xl */
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.bento-card:hover {
+  border-color: #334155;
+}
+
+.bento-card-subtle {
+  background: rgba(2, 6, 23, 0.6);
+  border: 1px solid #1e293b;
+  border-radius: 0.75rem; /* rounded-xl */
+}
+
+/* Custom sleek scrollbars */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: #020617;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+@keyframes packet-transit {
+  0% { transform: translateX(0); opacity: 0; }
+  20% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { transform: translateX(calc(100% - 14px)); opacity: 0; }
+}
+
+.packet-move-anim {
+  animation: packet-transit 1.4s ease-in-out infinite;
+}
+
+
