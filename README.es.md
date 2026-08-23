@@ -1,4 +1,4 @@
-# Prot-SpaM HPC Suite y Simulador Interactivo
+# ProtSpam HPC Suite — Simulador Interactivo
 
 [English](./README.md) · **Español**
 
@@ -6,200 +6,109 @@
 [![Smoke tests](https://img.shields.io/badge/smoke%20tests-Playwright-2EAD33?logo=playwright&logoColor=white)](./tests/smoke.spec.ts)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/1f070c7e-b6d8-4bf8-addb-f03bcb9cd28b/deploy-status)](https://app.netlify.com/projects/prot-spam/deploys)
 
-> El badge de **CI** cubre toda la tubería —type-check, build y la suite de humo de
-> Playwright— porque el job de despliegue depende del de humo: si la suite falla, no se
-> publica nada. GitHub no expone badges por job, así que el badge de CI en verde es lo que
-> indica que la suite de humo pasó.
+Un simulador interactivo que hace visible una paralelización MPI: cómo una carga triangular
+no se equilibra sola, por qué los envíos bloqueantes colapsan en 128 procesos y qué hace
+realmente un algoritmo de palabras espaciadas, paso a paso.
 
-
-Simulador interactivo y explorador de arquitecturas paralelas de **Prot-SpaM**, una
-herramienta de reconstrucción filogenética libre de alineamiento para secuencias de
-proteoma completo, paralelizada con MPI sobre sistemas de memoria distribuida.
-
-Construido como sitio estático con [Astro](https://astro.build) e islas de React. Sin
-backend, sin base de datos y sin llamadas a API en tiempo de ejecución: todo se ejecuta en
-el navegador.
+El algoritmo, la memoria del TFM y la implementación en C++ viven en su propio repositorio:
+**[ana-izaguirre/ProtSpaM](https://github.com/ana-izaguirre/ProtSpaM)**. Este repositorio es
+solo el simulador.
 
 ---
 
-## Contexto académico
+## Cómo se construyó
 
-Basado en el **Trabajo de Fin de Máster (TFM)**:
-
-> **«Reconstrucción filogenética de secuencias de proteoma completo en paralelo sobre
-> sistemas de memoria distribuida»**
-
-| | |
-|---|---|
-| **Autora** | Ana Izaguirre Matamoros |
-| **Director** | Jorge González Domínguez |
-| **Titulación** | Máster Interuniversitario en Computación de Altas Prestaciones (MUI HPC) |
-| **Institución** | Facultade de Informática, Universidade da Coruña (UDC) / CESGA |
-| **Supercomputador** | FinisTerrae III — Intel Xeon Platinum 8352Y, 64 cores/nodo, OpenMPI 5.0.9, SLURM |
-
-**Repositorio del código C++**: [github.com/ana-izaguirre/ProtSpaM](https://github.com/ana-izaguirre/ProtSpaM)
-
-### Ramas de desarrollo
-
-| Rama | Función |
-|---|---|
-| [`feat/seq`](https://github.com/ana-izaguirre/ProtSpaM/tree/feat/seq) | Línea base secuencial limpia con checksum de palabras |
-| [`feat/mpi-phase3-a`](https://github.com/ana-izaguirre/ProtSpaM/tree/feat/mpi-phase3-a) | Fase 3 con lectura FASTA centralizada en el rank 0 |
-| [`feat/mpi-phase3-b`](https://github.com/ana-izaguirre/ProtSpaM/tree/feat/mpi-phase3-b) | Fase 3 con lectura distribuida independiente |
-| [`feat/mpi-phase4-metacache`](https://github.com/ana-izaguirre/ProtSpaM/tree/feat/mpi-phase4-metacache) | Fase 4 con `MPI_Send`/`MPI_Recv` bloqueante y caché de metadatos |
-| [`feat/mpi-phase4-metacache-isend`](https://github.com/ana-izaguirre/ProtSpaM/tree/feat/mpi-phase4-metacache-isend) | **Recomendada** — ráfagas no bloqueantes `MPI_Isend` con cola `PendingSend` y `MPI_Waitall` |
-| [`feat/mpi-phase4-metacache-isend-calcopt`](https://github.com/ana-izaguirre/ProtSpaM/tree/feat/mpi-phase4-metacache-isend-calcopt) | Precálculo por patrón en la ruta secuencial (descartada: +19,5 % de tiempo secuencial) |
-
----
-
-## El algoritmo que se simula
-
-Prot-SpaM estima distancias filogenéticas sin alineamiento múltiple, comparando secuencias
-completas de proteínas mediante **palabras espaciadas** definidas por patrones binarios
-(w = 6 posiciones de coincidencia, ℓ = 46, 40 posiciones *don't care*, m = 5 patrones,
-umbral T = 0, BLOSUM62).
+Lo interesante de este proyecto es su cadena de construcción: cuatro herramientas, cada una
+haciendo aquello en lo que realmente es buena, con una especificación escrita como formato
+de entrega entre ellas.
 
 ```
-┌─────────────────┐     ┌─────────────────────┐     ┌────────────────────────────────┐
-│ 1. Patrones     │ ──> │ 2. Lectura FASTA    │ ──> │ 3. Palabras espaciadas         │
-│ Θ(m·ℓ)          │     │ Θ(Σ nᵢ)             │     │ Θ(m·Σ nᵢ log nᵢ)               │
-│ Carga fija      │     │ Proteomas completos │     │ Extracción + std::sort         │
-└─────────────────┘     └─────────────────────┘     └────────────────────────────────┘
-                                                                    │
-┌─────────────────┐                                 ┌───────────────▼────────────────┐
-│ 5. Salida DMat  │ <────────────────────────────── │ 4. Coincidencias y distancia   │
-│ Θ(N²)           │        MPI_Reduce final         │ Θ(m·N²·ñ)                      │
-│ Matriz PHYLIP   │                                 │ BLOSUM62 + Kimura (j > i)      │
-└─────────────────┘                                 └────────────────────────────────┘
+┌──────────────────┐   ┌──────────────────┐   ┌──────────────────┐   ┌──────────────────┐
+│ 1. Google Stitch │──▶│ 2. Google AI     │──▶│ 3. GitHub Spec   │──▶│ 4. Claude Code   │
+│                  │   │    Studio        │   │    Kit           │   │                  │
+│ Diseño visual    │   │ Prototipo React  │   │ El prototipo     │   │ Migración a      │
+│ de la interfaz   │   │ funcional, Vite  │   │ puesto por       │   │ Astro, arreglo   │
+│                  │   │ + Tailwind       │   │ escrito          │   │ de defectos,     │
+│                  │   │                  │   │                  │   │ CI/CD            │
+└──────────────────┘   └──────────────────┘   └──────────────────┘   └──────────────────┘
+     el aspecto            algo que              qué hace y por qué      algo publicable
+                           funciona
 ```
 
-**Fase 3 — generación y ordenación de palabras espaciadas.** Unidad de cómputo: la especie.
-La llamada a `std::sort` representa por sí sola ~37,3 % del tiempo secuencial. Cada proceso
-genera y ordena localmente las palabras de sus especies sin sincronización intermedia.
+**1 — Google Stitch: el diseño.** El lenguaje visual vino primero: la retícula Bento, la
+paleta oscura con sus acentos semánticos, la densidad de los paneles de control. Diseñar
+antes de programar es lo que mantiene siete módulos técnicos densos pareciendo un solo
+producto.
 
-**Fase 4 — cálculo distribuido de coincidencias.** Unidad de cómputo: el par de especies
-(j > i), es decir N(N−1)/2 pares de la media matriz superior. Cabeceras, secuencias y
-metadatos se transmiten una sola vez antes del bucle de patrones (`metacache`), y los
-búferes de palabras se descartan tras cada patrón para acotar la memoria. La variante
-bloqueante se serializa por el protocolo *rendezvous* a partir de 64–128 procesos; la
-variante no bloqueante dispara `MPI_Isend` concurrentes registrados en una cola
-`PendingSend` y sincroniza una única vez con `MPI_Waitall`, **hasta un 45 % más rápida en
-128 cores**.
+**2 — Google AI Studio: el prototipo funcional.** El diseño de Stitch se convirtió en una
+aplicación React 19 + Vite: siete módulos interactivos, dos idiomas, visualizaciones con
+Chart.js, exportación a PDF en el navegador. Esto es lo que demostró que la idea
+funcionaba y, como casi todo prototipo, estaba optimizado para existir, no para mantenerse.
 
-**Balanceo de carga.** Repartir bloques contiguos de tamaño N/P concentra el trabajo en el
-rank 0: un límite estructural de eficiencia cercano al 50 %. La disparidad de tamaños lo
-agrava: *Homo sapiens* (69,58 Maa) concentra hasta 207× la carga de un proteoma microbiano
-(0,34 Maa), reduciendo la cota E_max = n̄ / n_max al 12,6 %.
+**3 — GitHub Spec Kit: poner por escrito lo que hay.** Antes de tocar nada, el prototipo se
+sometió a ingeniería inversa hasta una especificación
+[Spec Kit](https://github.com/github/spec-kit): una constitución de principios, historias
+de usuario y requisitos funcionales, un modelo de datos, contratos de componentes y del
+motor de simulación, y el plan de migración. Ese paso es lo que convirtió un código
+heredado en algo que se podía cambiar con seguridad, y sacó a la luz seis defectos reales
+que nadie había visto, incluido un parámetro de la simulación que no hacía nada y una tabla
+de puntuación que decía ser BLOSUM62 sin serlo.
 
-**Invarianza numérica.** Calcular cada par (i, j) de forma indivisible en un único proceso y
-consolidar con `MPI_Reduce(MPI_SUM)` sobre posiciones disjuntas inicializadas a 0.0 exacto
-hace que la matriz PHYLIP paralela sea idéntica bit a bit a la secuencial (Δ = 0.0).
+**4 — Claude Code: la ingeniería.** Trabajando desde la especificación: migración de Vite a
+Astro (**payload inicial 958,9 kB → 270,6 kB**), los seis defectos arreglados de uno en uno
+en su propio pull request, una suite de humo con Playwright, y una tubería CI/CD que
+comprueba tipos, construye, prueba en un navegador real y solo entonces despliega.
+
+La especificación no es documentación escrita a posteriori: es el artefacto que cada etapa
+entregó a la siguiente, y sigue siendo el contrato al que se somete el código. Está en
+[`specs/`](./specs/001-protspam-hpc-simulator/) y
+[`.specify/`](./.specify/memory/constitution.md).
 
 ---
 
-## Los siete módulos interactivos
+## Qué muestra el simulador
 
-| Módulo | Qué muestra |
+| Módulo | Qué hace visible |
 |---|---|
-| **Algoritmo base** | Narración paso a paso del algoritmo: extracción de palabras espaciadas, indexación con `std::sort`, decisiones de acierto/fallo, extensión BLOSUM62 sin huecos y matriz de distancias final |
-| **Ramas TFM** | Las seis ramas Git con su fase, estado, aceleración destacada, decisiones de diseño y fragmentos de C++ representativos |
-| **Reparto de carga** | Carga por rank para dos conjuntos, seis recuentos de procesos, dos estrategias de partición y tres métricas, con KPIs de desbalance y un registro de ejecución MPI en vivo |
-| **Tráfico MPI** | `MPI_Send` bloqueante frente a `MPI_Isend` no bloqueante sobre una línea temporal por pasos, con la cola `PendingSend` y el estado de cada rank |
-| **Matriz triangular** | Rejilla N×N coloreada por rank propietario, con inspección celda a celda de las dos especies, el propietario y el coste relativo |
-| **Escalabilidad** | Curvas medidas en FinisTerrae III de 1 a 256 procesos: aceleración de Fase 3, Fase 4 `metacache` vs `isend` y tiempo total |
-| **Invarianza** | Valores PHYLIP secuenciales frente a paralelos con su codificación IEEE-754 en crudo, demostrando la identidad bit a bit |
+| **Algoritmo base** | Extracción de palabras espaciadas, indexación y extensión acotada por X-drop, narradas paso a paso |
+| **Ramas TFM** | Las seis ramas de desarrollo en C++, su fase y su aceleración medida |
+| **Reparto de carga** | Carga por rank con partición cíclica frente a por bloques: de dónde sale realmente el desbalance |
+| **Tráfico MPI** | `MPI_Send` bloqueante serializándose frente a `MPI_Isend` no bloqueante solapando |
+| **Matriz triangular** | Qué rank posee cada par y por qué media matriz no se calcula nunca |
+| **Escalabilidad** | Curvas medidas en FinisTerrae III, de 1 a 256 procesos, incluida la inversión de `metacache` a partir de 64 |
+| **Invarianza** | Valores PHYLIP secuenciales frente a paralelos, comparados a nivel de bits IEEE-754 |
 
-Ambos idiomas (español/inglés) y ambos temas (oscuro/claro) se aplican a todos los módulos y
-persisten entre recargas.
+Todo es cliente y determinista: sin backend, sin llamadas a API en ejecución, sin
+aleatoriedad. Los números de escalabilidad están transcritos del TFM y nunca se recalculan
+en el navegador.
+
+> **Es una herramienta didáctica, no la herramienta C++.** Las simplificaciones
+> deliberadas —una tabla de sustitución 4×4 en lugar de BLOSUM62, una línea temporal MPI
+> guionizada, distancias sintéticas por patrón— están recogidas en
+> [`research.md` §A.3](./specs/001-protspam-hpc-simulator/research.md). La propia interfaz
+> también lo dice.
 
 ---
 
 ## Arquitectura
 
-### Por qué Astro
-
-La suite era originalmente una SPA de Vite: siete módulos, Chart.js y jsPDF en un único
-paquete de 959 kB que debía ejecutarse antes de que apareciera nada en pantalla. La
-migración a Astro cambia el modelo de entrega, no las funcionalidades.
-
-| | Antes (SPA con Vite) | Después (islas de Astro) |
-|---|---|---|
-| Primer pintado | tras ejecutar el paquete JS | HTML prerenderizado |
-| JS inicial | 958,9 kB (~300 kB gzip) | **270,6 kB (~82 kB gzip)** |
-| Código de módulos | un paquete con los siete | un *chunk* por módulo, bajo demanda |
-| Chart.js (167 kB) | siempre | solo con los dos módulos de gráficas |
-| jsPDF (398 kB) | siempre | solo al descargar la ficha |
-| Arranque de tema/idioma | tras la hidratación (parpadeo visible) | script en línea, antes del pintado |
-| Head / SEO | `index.html` escrito a mano | layout de Astro tipado y componible |
-
-### Cómo encaja todo
+**Astro 5, salida estática, una isla de React.** El documento, las fuentes, las etiquetas
+SEO y el script de arranque de tema/idioma se renderizan en tiempo de construcción. La
+suite se hidrata como una única isla, porque el módulo activo, el idioma y el tema son
+estado cliente compartido; la mejora de payload viene de `React.lazy` por módulo — Chart.js
+solo se descarga con los dos módulos que lo usan, y jsPDF solo al descargar la ficha.
 
 ```
-Astro (build, estático)                   React (navegador, una isla)
-┌──────────────────────────────┐          ┌────────────────────────────────┐
-│ BaseLayout.astro             │          │ AppShell → App                 │
-│  · <head>, fuentes, SEO      │          │  · LanguageThemeProvider       │
-│  · script tema/idioma        │─ client: │  · cabecera, nav, modal        │
-│ index.astro                  │  load ──>│  · conmutación con Suspense    │
-│  · la única ruta             │          │      ├── algoritmo base (eager)│
-│ 404.astro                    │          │      └── 6 módulos (lazy)      │
-└──────────────────────────────┘          └────────────────────────────────┘
-```
-
-**Una isla, no siete.** El módulo activo, el idioma y el tema son estado cliente compartido
-y mutable, así que repartir los módulos en islas hermanas exigiría un almacén externo: una
-reescritura en lugar de una migración, y sin ganancia real, porque solo hay un módulo
-montado a la vez. La mejora de payload viene de `React.lazy`.
-
-**Estado seguro para el prerenderizado.** Astro ejecuta la isla en Node durante el *build*,
-así que el proveedor arranca con los valores por defecto documentados (`es`, `dark`) y se
-reconcilia con `localStorage` en un efecto de montaje. Un script en línea en `<head>` aplica
-la clase de tema y el atributo `lang` guardados antes del primer pintado, de modo que la
-reconciliación es invisible. Ambas implementaciones comparten las mismas claves y valores
-por defecto exportados para que no puedan divergir.
-
-**Acceso defensivo al almacenamiento.** La navegación privada y el bloqueo de datos de sitio
-hacen que `localStorage` lance excepciones; toda lectura y escritura está protegida y
-degrada al valor por defecto documentado.
-
-### Estructura del proyecto
-
-```
-astro.config.mjs              # salida estática, integración React, plugin Vite de Tailwind 4
 src/
-├── pages/
-│   ├── index.astro           # la única ruta
-│   └── 404.astro             # página estática de no encontrado
-├── layouts/
-│   └── BaseLayout.astro      # <head>, fuentes, SEO, script de tema/idioma
-├── islands/
-│   └── AppShell.tsx          # punto de entrada de hidratación
-├── App.tsx                   # shell: cabecera, nav, banner, modal y conmutador de módulos
-├── components/               # los siete módulos (React, sin cambios en la migración)
-├── context/
-│   └── LanguageThemeContext.tsx   # diccionario i18n + tema, seguro para prerenderizado
-├── data/
-│   └── speciesData.ts        # conjuntos, particionador y series de escalabilidad medidas
-├── utils/
-│   └── generatePdf.ts        # ficha PDF con jsPDF en el navegador (importada dinámicamente)
-└── index.css                 # entrada de Tailwind, overrides de tema claro, estilos de tarjeta
-public/                       # favicon.svg, robots.txt
-specs/                        # especificación con GitHub Spec Kit (ver abajo)
+├── pages/index.astro · 404.astro     las rutas
+├── layouts/BaseLayout.astro          head, fuentes, SEO, arranque de tema/idioma
+├── islands/AppShell.tsx              punto de entrada de hidratación
+├── App.tsx                           shell, navegación, conmutación lazy de módulos
+├── components/                       los siete módulos
+├── context/                          diccionario i18n + tema (seguro en prerenderizado)
+├── data/speciesData.ts               conjuntos, particionador, series medidas
+└── utils/generatePdf.ts              PDF en el navegador (importado dinámicamente)
 ```
-
-### Datos estáticos
-
-Todo se compila dentro del paquete: no hay descarga de datos en tiempo de ejecución.
-
-| Conjunto | Contenido |
-|---|---|
-| `SPECIES_64_HOMOGENEOUS` | 64 especies sintéticas, ≈12,4–16,0 Maa. Los tamaños abarcan 1,3×, así que todo desbalance mostrado es puramente geométrico |
-| `SPECIES_300_UNBALANCED` | 300 especies: 15 taxones reales (*Homo sapiens* 69,58 Maa … *M. genitalium* 0,58 Maa) más 285 de relleno log-normal. Los proteomas mayores ocupan los índices más bajos, así que el desbalance geométrico y el biológico recaen sobre los mismos ranks |
-| `SCALABILITY_DATA` | Resultados medidos en FinisTerrae III de 1 a 256 procesos, balanceado y desbalanceado, Fase 3 / Fase 4 / total, `metacache` e `isend` |
-| `PHYLIP_SAMPLE_DATA` | 16 celdas verificadas con valor secuencial, valor paralelo, delta (siempre exactamente 0) y rank propietario |
-
-Las tablas de escalabilidad son el único lugar donde los números son medidas experimentales
-del TFM. Están transcritas: nunca se interpolan ni se recalculan en el navegador.
 
 ---
 
@@ -209,78 +118,21 @@ Requiere **Node.js 20 o superior**.
 
 ```bash
 npm install
-npm run dev       # servidor de desarrollo en http://localhost:3000
-npm run build     # sitio estático en dist/
-npm run preview   # sirve el sitio construido
-npm run lint      # astro check — diagnósticos de TypeScript y Astro
+npm run dev           # http://localhost:3000
+npm run build         # sitio estático en dist/
+npm test              # suite de humo con Playwright sobre el build
+npm run lint          # astro check
+npm run status:site   # ¿está producción en pie?
 ```
 
-### Despliegue
+**Despliegue.** Cada push a `main` y cada pull request ejecuta type-check → build → suite de
+humo en navegador, y solo entonces despliega en Netlify (producción en `main`, preview con
+alias en los PR). Un despliegue que no responda 200 con HTML prerenderizado hace fallar el
+run. Necesita `NETLIFY_AUTH_TOKEN` y `NETLIFY_SITE_ID` como secretos y `SITE_URL` como
+variable.
 
-La salida del *build* es completamente estática, así que sirve cualquier alojamiento sin
-configuración:
-
-```bash
-npm run build && npx serve dist    # o Netlify, Vercel, GitHub Pages, S3, nginx
-```
-
-La única petición externa de la página es la hoja de estilos de Google Fonts; sin ella la
-suite recurre a las fuentes del sistema y sigue plenamente funcional.
-
-#### Despliegue continuo
-
-`.github/workflows/ci.yml` se ejecuta en cada *pull request* y en cada *push* a `main`:
-
-1. **Comprobación** — `npm ci`, `astro check`, `astro build` y una verificación que falla si
-   faltan `index.html`, `404.html`, `robots.txt` o `favicon.svg`, o si el HTML
-   prerenderizado sale vacío (lo que significaría que la isla ha vuelto silenciosamente a
-   ser *client-only*).
-2. **Despliegue** — el directorio construido se sube a Netlify: **producción** en `main` y
-   una **preview** con alias (`pr-<número>`) en los *pull requests*. La URL del despliegue
-   se escribe en el resumen del *job*. Los PR desde *forks* se construyen pero no despliegan,
-   porque los secretos no están disponibles para ellos.
-
-Secretos y variables necesarios en el repositorio:
-
-| Nombre | Tipo | Para qué |
-|---|---|---|
-| `NETLIFY_AUTH_TOKEN` | secreto | Token de acceso personal de Netlify (*User settings → Applications → New access token*) |
-| `NETLIFY_SITE_ID` | secreto | API ID del sitio (*Site configuration → General → Site information*) |
-| `SITE_URL` | variable | Origen de producción, p. ej. `https://tu-sitio.netlify.app`. Define `site` en Astro, que emite las etiquetas `canonical` y `og:url`. Opcional: se omiten si no está definida |
-
-`netlify.toml` lleva las cabeceras de caché y seguridad: los recursos con *hash* en
-`/_astro/*` son inmutables durante un año, el HTML siempre se revalida, más `nosniff`,
-`Referrer-Policy` y `X-Frame-Options`.
-
----
-
-## Especificación
-
-El proyecto está documentado con [GitHub Spec Kit](https://github.com/github/spec-kit).
-
-| Documento | Contenido |
-|---|---|
-| [`.specify/memory/constitution.md`](./.specify/memory/constitution.md) | Los cinco principios rectores |
-| [`specs/001-protspam-hpc-simulator/spec.md`](./specs/001-protspam-hpc-simulator/spec.md) | Historias de usuario, 38 requisitos funcionales y criterios de éxito |
-| [`…/plan.md`](./specs/001-protspam-hpc-simulator/plan.md) | El plan de migración de Vite a Astro |
-| [`…/tasks.md`](./specs/001-protspam-hpc-simulator/tasks.md) | Las siete tareas de migración y los defectos diferidos |
-| [`…/research.md`](./specs/001-protspam-hpc-simulator/research.md) | Análisis del prototipo y decisiones de migración |
-| [`…/data-model.md`](./specs/001-protspam-hpc-simulator/data-model.md) | Todas las entidades y conjuntos de datos estáticos |
-| [`…/contracts/`](./specs/001-protspam-hpc-simulator/contracts/) | Contratos de componentes, motor de simulación e i18n |
-| [`…/quickstart.md`](./specs/001-protspam-hpc-simulator/quickstart.md) | Comandos, escenarios de verificación manual y despliegue |
-
-### Simplificaciones conocidas
-
-El simulador es una **herramienta didáctica**, no una reimplementación de la herramienta
-C++. Las simplificaciones deliberadas —una tabla de sustitución 4×4 en lugar de BLOSUM62,
-una extensión sin corte X-drop, una distancia sintética por patrón, una línea temporal MPI
-guionizada— están recogidas en
-[`research.md`](./specs/001-protspam-hpc-simulator/research.md) §A.3, y los defectos
-abiertos en [`tasks.md`](./specs/001-protspam-hpc-simulator/tasks.md) (D001–D006).
-
----
-
-## Recursos
-
-- **Código C++**: [github.com/ana-izaguirre/ProtSpaM](https://github.com/ana-izaguirre/ProtSpaM)
-- **Ficha del TFM**: se genera como PDF en el navegador desde la cabecera o el modal de documentación
+**Contribuir.** Un cambio por pull request, verde por sí solo, con la rama prefijada por su
+tipo de cambio — las reglas están en la
+[constitución](./.specify/memory/constitution.md), y
+[`quickstart.md`](./specs/001-protspam-hpc-simulator/quickstart.md) tiene los escenarios de
+verificación.
