@@ -378,20 +378,26 @@ function AppContent() {
       {/* Main Content Area */}
       <main className="flex-1 max-w-[1600px] w-full mx-auto p-3 sm:p-5 md:p-6 space-y-4">
         {/* TFM Reference Header Banner */}
-        <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-3 text-xs">
+        <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-3 sm:p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-2 sm:gap-3 text-xs">
           <div className="flex items-start sm:items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 mt-0.5 sm:mt-0">
               <BookOpen className="w-4 h-4" />
             </div>
             <div>
               <div className="text-slate-200 font-medium flex flex-wrap items-center gap-2">
-                <span>{t('app.bannerTitle')}</span>
+                <span className="line-clamp-2 sm:line-clamp-none">{t('app.bannerTitle')}</span>
                 <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-blue-500/20 text-blue-300 border border-blue-500/30 whitespace-nowrap">
                   UDC / CESGA
                 </span>
               </div>
+              {/* On a phone this line costs a third of the first screen on every
+                  module, so the attribution collapses to the author and the rest
+                  moves into the documentation modal. */}
               <div className="text-slate-400 text-[11px] mt-0.5">
-                {t('app.author')}: <strong className="text-slate-200 font-medium">Ana Izaguirre Matamoros</strong> &middot; {t('app.director')}: <strong className="text-slate-200 font-medium">Jorge González Domínguez</strong> &middot; {t('app.system')} FinisTerrae III
+                <span className="sm:hidden">Ana Izaguirre Matamoros</span>
+                <span className="hidden sm:inline">
+                  {t('app.author')}: <strong className="text-slate-200 font-medium">Ana Izaguirre Matamoros</strong> &middot; {t('app.director')}: <strong className="text-slate-200 font-medium">Jorge González Domínguez</strong> &middot; {t('app.system')} FinisTerrae III
+                </span>
               </div>
             </div>
           </div>
@@ -403,7 +409,8 @@ function AppContent() {
               className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 bg-slate-950 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-slate-50 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors"
             >
               <Download className="w-3.5 h-3.5 text-emerald-400" />
-              <span>{downloadSuccess ? t('app.downloaded') : t('app.downloadFicha')}</span>
+              <span className="sm:hidden">{downloadSuccess ? t('app.downloaded') : 'PDF'}</span>
+              <span className="hidden sm:inline">{downloadSuccess ? t('app.downloaded') : t('app.downloadFicha')}</span>
             </button>
             <a
               href="https://github.com/ana-izaguirre/ProtSpaM"
