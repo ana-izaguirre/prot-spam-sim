@@ -2,6 +2,9 @@
 
 **English** · [Español](./README.es.md)
 
+[![CI](https://github.com/ana-izaguirre/prot-spam-sim/actions/workflows/ci.yml/badge.svg)](https://github.com/ana-izaguirre/prot-spam-sim/actions/workflows/ci.yml)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/1f070c7e-b6d8-4bf8-addb-f03bcb9cd28b/deploy-status)](https://app.netlify.com/projects/prot-spam/deploys)
+
 An interactive simulator and architecture explorer for **Prot-SpaM**, an alignment-free
 phylogenetic reconstruction tool for whole-proteome sequences, parallelised for
 distributed-memory systems with MPI.
@@ -210,9 +213,32 @@ The build output is fully static, so any static host works with no configuration
 npm run build && npx serve dist    # or Netlify, Vercel, GitHub Pages, S3, nginx
 ```
 
-Set `site` in `astro.config.mjs` to the deployment origin to emit canonical and `og:url`
-tags. The only external request the page makes is the Google Fonts stylesheet; without it
-the suite falls back to system fonts and stays fully functional.
+The only external request the page makes is the Google Fonts stylesheet; without it the
+suite falls back to system fonts and stays fully functional.
+
+#### Continuous deployment
+
+`.github/workflows/ci.yml` runs on every pull request and every push to `main`:
+
+1. **Check** — `npm ci`, `astro check`, `astro build`, then a guard that fails the run if
+   `index.html`, `404.html`, `robots.txt` or `favicon.svg` is missing, or if the prerendered
+   HTML comes back empty (which would mean the island silently regressed to client-only).
+2. **Deploy** — the built directory is uploaded to Netlify: **production** on `main`,
+   an aliased **preview** (`pr-<number>`) on pull requests. The deploy URL is written to
+   the job summary. Pull requests from forks build but skip the deploy, since secrets are
+   not exposed to them.
+
+Required repository secrets and variables:
+
+| Name | Kind | Purpose |
+|---|---|---|
+| `NETLIFY_AUTH_TOKEN` | secret | Netlify personal access token (*User settings → Applications → New access token*) |
+| `NETLIFY_SITE_ID` | secret | The site's API ID (*Site configuration → General → Site information*) |
+| `SITE_URL` | variable | Production origin, e.g. `https://your-site.netlify.app`. Sets Astro's `site`, which emits the canonical and `og:url` tags. Optional — they are omitted when unset |
+
+`netlify.toml` carries the cache and security headers: fingerprinted `/_astro/*` assets are
+immutable for a year, HTML always revalidates, plus `nosniff`, `Referrer-Policy` and
+`X-Frame-Options`.
 
 ---
 

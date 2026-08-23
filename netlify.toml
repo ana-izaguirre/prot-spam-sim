@@ -1,0 +1,38 @@
+# Netlify configuration for the ProtSpam HPC Suite.
+#
+# Deploys are pushed from GitHub Actions (.github/workflows/ci.yml) as an
+# already-built directory, so the [build] block below only matters if the site is
+# ever linked to the repository directly and built by Netlify itself.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Astro fingerprints everything it emits into /_astro, so those files can be
+# cached forever: a change produces a new filename.
+[[headers]]
+  for = "/_astro/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/favicon.svg"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
+# The HTML itself must always be revalidated, otherwise a deploy would not be
+# visible to visitors holding a cached copy.
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "SAMEORIGIN"

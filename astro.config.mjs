@@ -9,10 +9,11 @@ export default defineConfig({
   // No backend, no runtime API: everything is prerendered to plain HTML.
   output: 'static',
 
-  // Set this to the deployment origin (e.g. 'https://example.org') to emit
-  // canonical and og:url tags. It is intentionally left undefined: pointing
-  // those tags at localhost is worse than omitting them.
-  // site: 'https://your-deployment-url',
+  // The deployment origin, used to emit canonical and og:url tags. It comes
+  // from the SITE_URL environment variable (set as a repository variable in
+  // GitHub Actions) and stays undefined locally, because pointing those tags at
+  // localhost is worse than omitting them.
+  site: process.env.SITE_URL || undefined,
 
   // React 19 powers the seven interactive modules, mounted as a single island.
   integrations: [react()],
