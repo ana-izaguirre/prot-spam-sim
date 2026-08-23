@@ -137,3 +137,10 @@ change type — the rules are in the
 [constitution](./.specify/memory/constitution.md), and
 [`quickstart.md`](./specs/001-protspam-hpc-simulator/quickstart.md) has the verification
 scenarios.
+
+---
+
+## License
+
+[MIT](./LICENSE) © Ana Izaguirre Matamoros. The Prot-SpaM algorithm and its C++
+implementation are covered by their own repository's terms.
