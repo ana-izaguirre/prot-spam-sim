@@ -75,6 +75,8 @@ const translations: Record<Language, Record<string, string>> = {
     'core.distanceFormula': 'Fórmula de Distancia de Kimura',
     'core.finalMatrix': 'Matriz de Distancias PHYLIP Resultante',
     'core.kimuraEq': 'd = -ln(1 - p - 0.2·p²)',
+    'core.demoMatrixTitle': 'Matriz de sustitución didáctica (4×4)',
+    'core.demoMatrixHint': 'Prot-SpaM usa BLOSUM62, una matriz 20×20 de aminoácidos. Este simulador emplea una tabla reducida de 4 símbolos para que la extensión quepa en pantalla y se pueda seguir a mano.',
 
     // Branches & TFM Explorer
     'tfm.title': 'Evolución del TFM: Fases de Paralelización y Ramas Git',
@@ -242,6 +244,8 @@ const translations: Record<Language, Record<string, string>> = {
     'core.distanceFormula': 'Kimura Distance Formula',
     'core.finalMatrix': 'Resulting PHYLIP Distance Matrix',
     'core.kimuraEq': 'd = -ln(1 - p - 0.2·p²)',
+    'core.demoMatrixTitle': 'Didactic substitution matrix (4×4)',
+    'core.demoMatrixHint': 'Prot-SpaM uses BLOSUM62, a 20×20 amino-acid matrix. This simulator uses a reduced 4-symbol table so the extension fits on screen and can be followed by hand.',
 
     // Branches & TFM Explorer
     'tfm.title': 'TFM Evolution: Parallelization Phases & Git Branches',
