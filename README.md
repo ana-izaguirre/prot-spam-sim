@@ -2,6 +2,7 @@
 
 **English** · [Español](./README.es.md)
 
+[![CI](https://github.com/ana-izaguirre/prot-spam-sim/actions/workflows/ci.yml/badge.svg)](https://github.com/ana-izaguirre/prot-spam-sim/actions/workflows/ci.yml)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/1f070c7e-b6d8-4bf8-addb-f03bcb9cd28b/deploy-status)](https://app.netlify.com/projects/prot-spam/deploys)
 
 An interactive simulator and architecture explorer for **Prot-SpaM**, an alignment-free
