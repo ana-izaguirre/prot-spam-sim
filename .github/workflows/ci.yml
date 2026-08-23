@@ -153,7 +153,7 @@ jobs:
 
       - name: Deploy
         id: pages
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
 
       - name: Verify the deployment is actually serving
         run: |
