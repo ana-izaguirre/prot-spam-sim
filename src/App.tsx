@@ -1,12 +1,12 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, Suspense, lazy } from 'react';
 import { LanguageThemeProvider, useAppLanguageTheme } from './context/LanguageThemeContext';
-import { WorkloadSimulator } from './components/WorkloadSimulator';
-import { MPICommunicationVisualizer } from './components/MPICommunicationVisualizer';
-import { TriangularMatrixExplorer } from './components/TriangularMatrixExplorer';
-import { ScalabilityCharts } from './components/ScalabilityCharts';
-import { NumericCorrectness } from './components/NumericCorrectness';
+
+// The landing module is imported eagerly: it is what the visitor sees first and
+// what Astro prerenders into the HTML. Every other module is a separate chunk,
+// fetched the first time it is opened, so a reader who never leaves the base
+// algorithm never downloads Chart.js or the branch dossier.
 import { ProtSpamStepSimulator } from './components/ProtSpamStepSimulator';
-import { TFMBranchExplorer } from './components/TFMBranchExplorer';
+
 import {
   Layers,
   Zap,
@@ -31,9 +31,48 @@ import {
   ChevronDown,
 } from 'lucide-react';
 
-import { generateTFMPdf } from './utils/generatePdf';
+const TFMBranchExplorer = lazy(() =>
+  import('./components/TFMBranchExplorer').then((m) => ({ default: m.TFMBranchExplorer })),
+);
+const WorkloadSimulator = lazy(() =>
+  import('./components/WorkloadSimulator').then((m) => ({ default: m.WorkloadSimulator })),
+);
+const MPICommunicationVisualizer = lazy(() =>
+  import('./components/MPICommunicationVisualizer').then((m) => ({
+    default: m.MPICommunicationVisualizer,
+  })),
+);
+const TriangularMatrixExplorer = lazy(() =>
+  import('./components/TriangularMatrixExplorer').then((m) => ({
+    default: m.TriangularMatrixExplorer,
+  })),
+);
+const ScalabilityCharts = lazy(() =>
+  import('./components/ScalabilityCharts').then((m) => ({ default: m.ScalabilityCharts })),
+);
+const NumericCorrectness = lazy(() =>
+  import('./components/NumericCorrectness').then((m) => ({ default: m.NumericCorrectness })),
+);
 
 type SectionId = 'core_sim' | 'tfm_branches' | 'workload' | 'mpi_comm' | 'matrix' | 'scalability' | 'correctness';
+
+/**
+ * Placeholder shown while a module chunk is in flight. It mirrors the shared
+ * module frame (header card plus body card) so the layout does not jump when the
+ * real module arrives.
+ */
+function ModuleSkeleton() {
+  return (
+    <div className="space-y-4 animate-pulse" role="status" aria-live="polite">
+      <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5 space-y-3">
+        <div className="h-4 w-64 max-w-full rounded bg-slate-800" />
+        <div className="h-3 w-96 max-w-full rounded bg-slate-800/70" />
+      </div>
+      <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5 h-72" />
+      <span className="sr-only">Loading module…</span>
+    </div>
+  );
+}
 
 function AppContent() {
   // Default to 'core_sim' so the user directly experiences the base Prot-SpaM simulator!
@@ -75,8 +114,11 @@ function AppContent() {
     { name: 'feat/mpi-phase4-metacache-isend-calcopt', desc: lang === 'es' ? 'Optimización de precálculo en ruta secuencial np=1' : 'Pattern precomputation on sequential path np=1', url: 'https://github.com/ana-izaguirre/ProtSpaM/tree/feat/mpi-phase4-metacache-isend-calcopt' },
   ];
 
-  const handleDownloadTFMInfo = () => {
+  // jsPDF and its html2canvas dependency are ~390 kB that only matter when the
+  // visitor actually asks for the factsheet, so the module is fetched on demand.
+  const handleDownloadTFMInfo = async () => {
     try {
+      const { generateTFMPdf } = await import('./utils/generatePdf');
       generateTFMPdf(lang);
       setDownloadSuccess(true);
       setTimeout(() => setDownloadSuccess(false), 3500);
@@ -375,14 +417,17 @@ function AppContent() {
           </div>
         </div>
 
-        {/* Dynamic Section Renderer */}
-        {activeSection === 'core_sim' && <ProtSpamStepSimulator />}
-        {activeSection === 'tfm_branches' && <TFMBranchExplorer />}
-        {activeSection === 'workload' && <WorkloadSimulator />}
-        {activeSection === 'mpi_comm' && <MPICommunicationVisualizer />}
-        {activeSection === 'matrix' && <TriangularMatrixExplorer />}
-        {activeSection === 'scalability' && <ScalabilityCharts />}
-        {activeSection === 'correctness' && <NumericCorrectness />}
+        {/* Dynamic Section Renderer — every module but the landing one is a
+            separately fetched chunk, so the frame below stands in while it loads. */}
+        <Suspense fallback={<ModuleSkeleton />}>
+          {activeSection === 'core_sim' && <ProtSpamStepSimulator />}
+          {activeSection === 'tfm_branches' && <TFMBranchExplorer />}
+          {activeSection === 'workload' && <WorkloadSimulator />}
+          {activeSection === 'mpi_comm' && <MPICommunicationVisualizer />}
+          {activeSection === 'matrix' && <TriangularMatrixExplorer />}
+          {activeSection === 'scalability' && <ScalabilityCharts />}
+          {activeSection === 'correctness' && <NumericCorrectness />}
+        </Suspense>
       </main>
 
       {/* Documentation / Theoretical Architecture & TFM Modal */}
