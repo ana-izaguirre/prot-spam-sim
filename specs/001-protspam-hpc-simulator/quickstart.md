@@ -5,6 +5,20 @@
 - Node.js 20 or newer (developed on 22.x)
 - npm 10 or newer
 
+## Before you start (Constitution VII)
+
+Confirm production is up before making the first change of a session, and again before
+calling work done:
+
+```bash
+npm run status:site                          # defaults to the production URL
+SITE_URL=https://example.org npm run status:site
+```
+
+It fails loudly on anything that is not a 200 serving prerendered markup — a 200 that
+returns an empty shell is still a broken site. If production is down, fixing it takes
+precedence over the task at hand.
+
 ## Commands
 
 ```bash
@@ -13,7 +27,17 @@ npm run dev       # Astro dev server on http://localhost:3000 (host 0.0.0.0)
 npm run build     # static site into dist/
 npm run preview   # serve the built site locally
 npm run lint      # astro check — TypeScript and Astro diagnostics
+npm test          # Playwright smoke suite against the built site
+npm run status:site   # is production up?
 ```
+
+## One change per pull request (Constitution VI)
+
+Each PR carries exactly one change and must be green on its own — `npm run lint`,
+`npm run build` and `npm test` all pass at that commit. Sequential work is **stacked**:
+each PR targets the previous one and they merge in order. Branch names carry the change
+type as a prefix (`feat/`, `fix/`, `perf/`, `docs/`, `chore/`, `ci/`, `test/`,
+`refactor/`), matching the commit type.
 
 ## Manual verification
 

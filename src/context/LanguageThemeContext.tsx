@@ -149,6 +149,8 @@ const translations: Record<Language, Record<string, string>> = {
     'matrix.speciesA': 'Especie i:',
     'matrix.speciesB': 'Especie j:',
     'matrix.estimatedDist': 'Distancia Estimada:',
+    'matrix.illustrativeDist': 'Distancia (valor ilustrativo):',
+    'matrix.illustrativeDistHint': 'Valor de ejemplo derivado de la posición de la celda, no calculado a partir de las secuencias. Los valores reales están en el módulo de Invarianza.',
 
     // Scalability
     'scall.title': 'Evaluación de Rendimiento & Curvas de Escalabilidad',
@@ -314,6 +316,8 @@ const translations: Record<Language, Record<string, string>> = {
     'matrix.speciesA': 'Species i:',
     'matrix.speciesB': 'Species j:',
     'matrix.estimatedDist': 'Estimated Distance:',
+    'matrix.illustrativeDist': 'Distance (illustrative value):',
+    'matrix.illustrativeDistHint': 'Example value derived from the cell position, not computed from the sequences. The real values are in the Correctness module.',
 
     // Scalability
     'scall.title': 'Performance Evaluation & Scalability Curves',

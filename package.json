@@ -9,7 +9,8 @@
     "preview": "astro preview",
     "clean": "rm -rf dist .astro",
     "lint": "astro check",
-    "test": "playwright test"
+    "test": "playwright test",
+    "status:site": "bash scripts/check-deployment.sh"
   },
   "dependencies": {
     "chart.js": "^4.5.1",

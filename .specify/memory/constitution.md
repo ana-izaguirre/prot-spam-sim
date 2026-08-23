@@ -1,6 +1,6 @@
 # ProtSpam HPC Suite Constitution
 
-**Version**: 1.0.0 | **Ratified**: 2026-08-22 | **Last Amended**: 2026-08-22
+**Version**: 1.1.0 | **Ratified**: 2026-08-22 | **Last Amended**: 2026-08-23
 
 This constitution states the non-negotiable principles that govern the ProtSpam HPC
 Suite & Simulator. It was derived by reverse-engineering the existing Vite prototype
@@ -68,6 +68,38 @@ Rules:
   functions of the control inputs — never from wall-clock time or accumulated drift.
 - Every animation MUST be steppable manually (previous/next) in addition to autoplay.
 - Long-running visualizations MUST expose a reset that returns to a known step 0.
+
+### VI. One Pull Request Per Change
+
+A pull request carries exactly one change: one defect fixed, one capability added,
+one refactor performed. A branch that fixes two unrelated defects is two branches.
+
+Rules:
+- The PR title states the single change. If it needs "and", it is two PRs.
+- Where changes are inherently sequential, they are **stacked**: each PR targets the
+  previous one and they merge in order, rather than being collapsed into one diff.
+- Every PR MUST leave the repository green on its own: `npm run lint`, `npm run build`
+  and `npm test` all pass at that commit. A PR that only works once a later one lands
+  is not independently reviewable and must be restructured.
+- The branch name carries the change type as its prefix — `feat/`, `fix/`, `perf/`,
+  `docs/`, `chore/`, `ci/`, `test/`, `refactor/` — matching the type of its commit.
+- The PR body states what changed, why, and how it was verified. "How it was verified"
+  is not optional: an unverified claim in a PR body is worse than no claim.
+
+### VII. Check the Deployment Before Starting Work
+
+Before beginning any task, confirm the production site is up and note its state. Work
+started against an already-broken deployment produces changes whose effect cannot be
+attributed.
+
+Rules:
+- Run `npm run status:site` (or open the Netlify badge) before the first change of a
+  session, and record the result in the first message about that work.
+- If production is down, restoring it takes precedence over whatever the task was.
+- After a deploy, the pipeline itself re-checks availability — a deploy that is not
+  verified to serve is not a deploy (`.github/workflows/ci.yml`).
+- The same applies before claiming a task complete: the site that was up at the start
+  must still be up at the end.
 
 ## Quality Constraints
 
