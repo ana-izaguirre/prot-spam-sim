@@ -143,3 +143,10 @@ tipo de cambio — las reglas están en la
 [constitución](./.specify/memory/constitution.md), y
 [`quickstart.md`](./specs/001-protspam-hpc-simulator/quickstart.md) tiene los escenarios de
 verificación.
+
+---
+
+## Licencia
+
+[MIT](./LICENSE) © Ana Izaguirre Matamoros. El algoritmo Prot-SpaM y su implementación en
+C++ se rigen por los términos de su propio repositorio.

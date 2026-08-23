@@ -154,3 +154,12 @@ here so the migration diff stays reviewable.
   Pages serves no custom cache or security headers (`netlify.toml` is gone).
   **Verify**: build with and without `BASE_PATH` emits correctly prefixed asset, favicon
   and 404 URLs; the smoke suite passes in both configurations.
+
+- [X] **T023** — Add a license
+  **Branch**: `docs/t023-license` → base `ci/t022-github-pages-deploy`
+  **Files**: `LICENSE` (new), `README.md`, `README.es.md`.
+  Without a license the repository is "all rights reserved" by default: nobody may legally
+  copy, reuse or redistribute it, which is the wrong default for public academic work. MIT
+  is chosen as the permissive default — **confirm this is what the author and the
+  university want**; replacing the file is the only change needed.
+  **Verify**: `LICENSE` present at the repository root so GitHub detects and displays it.
