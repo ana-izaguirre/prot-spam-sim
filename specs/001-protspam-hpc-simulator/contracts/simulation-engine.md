@@ -24,7 +24,7 @@ patterns := patternInput.split(',')
 S1 := upper-case(s1Input), strip [^A-Z], or 'ACTG' when empty
 S2 := upper-case(s2Input), strip [^A-Z], or 'ATTG' when empty
 T  := thresholdInput || 8
-X  := dropoffInput   || 3        // read, never applied — spec.md FR-018
+X  := dropoffInput   || 3        // X-drop bound on the extension
 ```
 
 This sanitisation is also the XSS boundary: narration strings are injected as HTML, and
@@ -80,25 +80,29 @@ pedagogical grouping, not the interleaving a real implementation would perform.
 ### 1.3 Extension (gap-free, bidirectional)
 
 ```
-extLeft  := max e such that i − e ≥ 0 and j − e ≥ 0
-extRight := max e such that i + L + e < |S1| and j + L + e < |S2|
+seedScore := Σ blosum(S1[i + k], S2[j + k]) for k in 0 … L−1
+
+// each direction independently, X-drop bounded:
+//   grow while in bounds; keep the length at which the running score peaked;
+//   stop once running < best − X
+extLeft,  leftScore  := extendWithDropoff(step ↦ (i − 1 − step, j − 1 − step))
+extRight, rightScore := extendWithDropoff(step ↦ (i + L + step, j + L + step))
 
 align1 := S1[i − extLeft … i + L + extRight)
 align2 := S2[j − extLeft … j + L + extRight)
 
-running := 0 ; maxScore := 0
-for k in 0 … |align1| − 1:
-    running += blosum(align1[k], align2[k])
-    maxScore = max(maxScore, running)
-
-status := maxScore ≥ T ? 'approved' : 'rejected'
+hspScore := leftScore + seedScore + rightScore
+status   := hspScore ≥ T ? 'approved' : 'rejected'
 ```
 
-**Divergence from real Prot-SpaM**: the extension always runs to the sequence boundary. The
-X-drop rule — stop when `running` falls more than `X` below `maxScore` — is not applied,
-which is why `X` has no observable effect (`tasks.md` D001). `maxScore` is clamped at 0
-from below (it starts at 0 and only rises), so a wholly negative alignment scores 0, never
-a negative maximum.
+Because each direction is trimmed to the length at which its score peaked, the sum of the
+trimmed alignment's columns equals `hspScore` exactly — the last value of the narration's
+accumulated column is the score the decision uses, so the table cannot disagree with the
+verdict.
+
+Each direction's score is clamped at 0 from below (it starts at 0 and only rises), so a
+direction that only ever loses points contributes 0 and no characters, rather than a
+negative score.
 
 ### 1.4 Distance
 
