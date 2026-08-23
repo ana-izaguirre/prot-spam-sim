@@ -214,10 +214,33 @@ configuración:
 npm run build && npx serve dist    # o Netlify, Vercel, GitHub Pages, S3, nginx
 ```
 
-Define `site` en `astro.config.mjs` con el origen de despliegue para emitir las etiquetas
-`canonical` y `og:url`. La única petición externa de la página es la hoja de estilos de
-Google Fonts; sin ella la suite recurre a las fuentes del sistema y sigue plenamente
-funcional.
+La única petición externa de la página es la hoja de estilos de Google Fonts; sin ella la
+suite recurre a las fuentes del sistema y sigue plenamente funcional.
+
+#### Despliegue continuo
+
+`.github/workflows/ci.yml` se ejecuta en cada *pull request* y en cada *push* a `main`:
+
+1. **Comprobación** — `npm ci`, `astro check`, `astro build` y una verificación que falla si
+   faltan `index.html`, `404.html`, `robots.txt` o `favicon.svg`, o si el HTML
+   prerenderizado sale vacío (lo que significaría que la isla ha vuelto silenciosamente a
+   ser *client-only*).
+2. **Despliegue** — el directorio construido se sube a Netlify: **producción** en `main` y
+   una **preview** con alias (`pr-<número>`) en los *pull requests*. La URL del despliegue
+   se escribe en el resumen del *job*. Los PR desde *forks* se construyen pero no despliegan,
+   porque los secretos no están disponibles para ellos.
+
+Secretos y variables necesarios en el repositorio:
+
+| Nombre | Tipo | Para qué |
+|---|---|---|
+| `NETLIFY_AUTH_TOKEN` | secreto | Token de acceso personal de Netlify (*User settings → Applications → New access token*) |
+| `NETLIFY_SITE_ID` | secreto | API ID del sitio (*Site configuration → General → Site information*) |
+| `SITE_URL` | variable | Origen de producción, p. ej. `https://tu-sitio.netlify.app`. Define `site` en Astro, que emite las etiquetas `canonical` y `og:url`. Opcional: se omiten si no está definida |
+
+`netlify.toml` lleva las cabeceras de caché y seguridad: los recursos con *hash* en
+`/_astro/*` son inmutables durante un año, el HTML siempre se revalida, más `nosniff`,
+`Referrer-Policy` y `X-Frame-Options`.
 
 ---
 

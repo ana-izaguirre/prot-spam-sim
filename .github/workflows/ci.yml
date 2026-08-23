@@ -1,0 +1,110 @@
+name: CI & Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# A newer push to the same branch makes the running one irrelevant.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Type-check and build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type-check (astro check)
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+        env:
+          # Set the SITE_URL repository variable to the production origin so the
+          # build emits canonical and og:url tags. Without it they are omitted.
+          SITE_URL: ${{ vars.SITE_URL }}
+
+      - name: Check the build produced what it should
+        run: |
+          set -euo pipefail
+          for f in dist/index.html dist/404.html dist/robots.txt dist/favicon.svg; do
+            test -s "$f" || { echo "::error::missing or empty $f"; exit 1; }
+          done
+          # The island must be prerendered: an empty root means the page ships no
+          # HTML and the Astro migration has silently regressed to client-only.
+          grep -q 'ProtSpam HPC Suite' dist/index.html \
+            || { echo "::error::dist/index.html has no prerendered markup"; exit 1; }
+          echo "Initial HTML: $(stat -c%s dist/index.html) bytes"
+
+      - name: Upload the built site
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
+          retention-days: 7
+
+  deploy:
+    name: Deploy to Netlify
+    needs: check
+    runs-on: ubuntu-latest
+    # Secrets are not exposed to pull requests from forks, so a fork PR would
+    # fail here rather than deploy. Let it build and skip the deploy instead.
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository
+    environment:
+      name: ${{ github.ref == 'refs/heads/main' && 'production' || 'preview' }}
+      url: ${{ steps.netlify.outputs.url }}
+    steps:
+      - name: Download the built site
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      - name: Deploy
+        id: netlify
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          set -euo pipefail
+
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            # Production deploy of an already-built directory.
+            npx --yes netlify-cli@27 deploy \
+              --dir=dist --prod --no-build \
+              --message "main@${{ github.sha }} (run ${{ github.run_number }})" \
+              --json > deploy.json
+            url=$(node -p "require('./deploy.json').deploy_url || require('./deploy.json').url")
+          else
+            # Preview deploy, aliased so the URL is stable across pushes to the PR.
+            npx --yes netlify-cli@27 deploy \
+              --dir=dist --no-build \
+              --alias "pr-${{ github.event.number }}" \
+              --message "PR ${{ github.event.number }} @${{ github.sha }}" \
+              --json > deploy.json
+            url=$(node -p "require('./deploy.json').deploy_url")
+          fi
+
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          {
+            echo "### Deployed"
+            echo
+            echo "$url"
+          } >> "$GITHUB_STEP_SUMMARY"

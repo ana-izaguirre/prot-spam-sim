@@ -105,3 +105,19 @@ here so the migration diff stays reviewable.
 - [ ] **D006** — `BLOSUM62` in the step simulator is a 4×4 nucleotide-alphabet stand-in for
   a 20×20 amino-acid matrix. Acceptable didactically, but it should be named honestly in
   the UI.
+
+---
+
+## Phase 5 — Delivery
+
+- [X] **T008** — Continuous integration and Netlify deployment
+  **Branch**: `ci/t008-github-actions-netlify` → base `docs/t007-bilingual-readme`
+  **Files**: `.github/workflows/ci.yml` (new), `netlify.toml` (new), `astro.config.mjs`,
+  `README.md`, `README.es.md`.
+  A `check` job (`npm ci`, `astro check`, `astro build`, plus a guard on the emitted
+  files and on the prerendered HTML being non-empty) and a `deploy` job that pushes the
+  built directory to Netlify — production on `main`, an aliased preview on pull requests.
+  Astro's `site` now comes from the `SITE_URL` environment variable so canonical and
+  `og:url` tags are emitted in CI without hard-coding an origin in the repository.
+  **Verify**: workflow YAML parses; the guard step passes locally; a build with
+  `SITE_URL` set emits canonical and `og:url`, and omits both without it.
