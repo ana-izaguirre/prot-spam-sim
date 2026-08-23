@@ -2,6 +2,8 @@
 
 [English](./README.md) · **Español**
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/1f070c7e-b6d8-4bf8-addb-f03bcb9cd28b/deploy-status)](https://app.netlify.com/projects/prot-spam/deploys)
+
 Simulador interactivo y explorador de arquitecturas paralelas de **Prot-SpaM**, una
 herramienta de reconstrucción filogenética libre de alineamiento para secuencias de
 proteoma completo, paralelizada con MPI sobre sistemas de memoria distribuida.
