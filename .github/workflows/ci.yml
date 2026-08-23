@@ -6,10 +6,12 @@ on:
   pull_request:
   workflow_dispatch:
 
-# A newer push to the same branch makes the running one irrelevant.
+# On a pull request, a newer push makes the running check irrelevant, so cancel it.
+# On main it must not be cancelled: that run owns the production deploy, and
+# aborting it mid-flight leaves the deployed site at an arbitrary earlier commit.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 permissions:
   contents: read
