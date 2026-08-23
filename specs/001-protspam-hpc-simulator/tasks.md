@@ -163,3 +163,18 @@ here so the migration diff stays reviewable.
   is chosen as the permissive default — **confirm this is what the author and the
   university want**; replacing the file is the only change needed.
   **Verify**: `LICENSE` present at the repository root so GitHub detects and displays it.
+
+- [X] **T028** — Give the smoke suite the base path the build used
+  **Branch**: `fix/t028-smoke-base-path` → base `main`
+  **Files**: `.github/workflows/ci.yml`.
+  The first `main` run after T022 failed: three of four smoke tests, with the fourth
+  passing. `BASE_PATH` was set on the build step only, so on `main` the site was built for
+  `/prot-spam-sim/` while the smoke job's `astro preview` and Playwright both used the
+  root. The HTML was served — hence the one passing test — but every asset URL pointed at
+  a path that server did not host, so the stylesheet and the island's JavaScript 404'd and
+  nothing ever hydrated.
+  `BASE_PATH` is now defined once at workflow level, so the build, the preview server and
+  the suite cannot disagree.
+  **Verify**: with `BASE_PATH` set for both build and suite, 4 passed; at the root, 4
+  passed. Reproduced the failure first by building with the base and running the suite
+  without it — same three failures as CI.
