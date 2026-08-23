@@ -147,7 +147,7 @@ jobs:
           echo "Pages is enabled (HTTP $code)."
 
       - name: Package it for Pages
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: dist
 
