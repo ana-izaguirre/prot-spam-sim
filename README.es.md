@@ -4,7 +4,7 @@
 
 [![CI](https://github.com/ana-izaguirre/prot-spam-sim/actions/workflows/ci.yml/badge.svg)](https://github.com/ana-izaguirre/prot-spam-sim/actions/workflows/ci.yml)
 [![Smoke tests](https://img.shields.io/badge/smoke%20tests-Playwright-2EAD33?logo=playwright&logoColor=white)](./tests/smoke.spec.ts)
-[![Netlify Status](https://api.netlify.com/api/v1/badges/1f070c7e-b6d8-4bf8-addb-f03bcb9cd28b/deploy-status)](https://app.netlify.com/projects/prot-spam/deploys)
+[![Live site](https://img.shields.io/badge/live-GitHub%20Pages-121011?logo=github)](https://ana-izaguirre.github.io/prot-spam-sim/)
 
 Un simulador interactivo que hace visible una paralelización MPI: cómo una carga triangular
 no se equilibra sola, por qué los envíos bloqueantes colapsan en 128 procesos y qué hace
@@ -126,10 +126,17 @@ npm run status:site   # ¿está producción en pie?
 ```
 
 **Despliegue.** Cada push a `main` y cada pull request ejecuta type-check → build → suite de
-humo en navegador, y solo entonces despliega en Netlify (producción en `main`, preview con
-alias en los PR). Un despliegue que no responda 200 con HTML prerenderizado hace fallar el
-run. Necesita `NETLIFY_AUTH_TOKEN` y `NETLIFY_SITE_ID` como secretos y `SITE_URL` como
-variable.
+humo en navegador; los push a `main` publican además en **GitHub Pages**. Un despliegue que
+no responda 200 con HTML prerenderizado hace fallar el run. No hacen falta secretos —Pages
+se autentica con el token OIDC del propio workflow—, pero *Settings → Pages → Source* debe
+estar en **GitHub Actions**. Define la variable `SITE_URL` como
+`https://ana-izaguirre.github.io/prot-spam-sim/` para emitir las etiquetas `canonical` y
+`og:url`.
+
+Pages sirve un sitio de proyecto desde `/<repo>/`, así que la build de producción fija
+`BASE_PATH`; las builds de pull request se quedan en la raíz. Pages aloja un sitio por
+repositorio, de modo que no hay previews por pull request ni cabeceras propias de caché o
+seguridad.
 
 **Contribuir.** Un cambio por pull request, verde por sí solo, con la rama prefijada por su
 tipo de cambio — las reglas están en la

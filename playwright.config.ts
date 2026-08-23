@@ -13,7 +13,11 @@ export default defineConfig({
   reporter: process.env.CI ? [['github'], ['list']] : [['list']],
 
   use: {
-    baseURL: process.env.SMOKE_URL || 'http://localhost:4321',
+    // `astro preview` honours the configured base path, so the suite has to
+    // start from it. BASE_PATH is unset locally and on pull requests, where the
+    // site is served from the root.
+    baseURL:
+      process.env.SMOKE_URL || `http://localhost:4321${process.env.BASE_PATH || '/'}`,
     trace: 'on-first-retry',
   },
 
@@ -36,7 +40,9 @@ export default defineConfig({
     ? undefined
     : {
         command: 'npm run preview -- --port 4321',
-        url: 'http://localhost:4321',
+        // Under a base path the root 404s, so readiness must be probed at the
+        // base itself or Playwright waits for a URL the server never serves.
+        url: `http://localhost:4321${process.env.BASE_PATH || '/'}`,
         reuseExistingServer: !process.env.CI,
         timeout: 60_000,
       },

@@ -9,7 +9,7 @@
 
 set -uo pipefail
 
-url="${SITE_URL:-https://prot-spam.netlify.app}"
+url="${SITE_URL:-https://ana-izaguirre.github.io/prot-spam-sim/}"
 
 read -r code total < <(
   curl -sS -o /tmp/protspam-status.html -w '%{http_code} %{time_total}' --max-time 30 "$url" \

@@ -4,7 +4,7 @@
 
 [![CI](https://github.com/ana-izaguirre/prot-spam-sim/actions/workflows/ci.yml/badge.svg)](https://github.com/ana-izaguirre/prot-spam-sim/actions/workflows/ci.yml)
 [![Smoke tests](https://img.shields.io/badge/smoke%20tests-Playwright-2EAD33?logo=playwright&logoColor=white)](./tests/smoke.spec.ts)
-[![Netlify Status](https://api.netlify.com/api/v1/badges/1f070c7e-b6d8-4bf8-addb-f03bcb9cd28b/deploy-status)](https://app.netlify.com/projects/prot-spam/deploys)
+[![Live site](https://img.shields.io/badge/live-GitHub%20Pages-121011?logo=github)](https://ana-izaguirre.github.io/prot-spam-sim/)
 
 An interactive simulator that makes an MPI parallelisation visible: how a triangular
 workload fails to balance itself, why blocking sends collapse at 128 processes, and what a
@@ -122,10 +122,15 @@ npm run status:site   # is production up?
 ```
 
 **Deployment.** Every push to `main` and every pull request runs type-check → build →
-browser smoke suite, and only then deploys to Netlify (production on `main`, an aliased
-preview on pull requests). A deploy that does not answer 200 with prerendered markup fails
-the run. Needs `NETLIFY_AUTH_TOKEN` and `NETLIFY_SITE_ID` as secrets, and `SITE_URL` as a
-variable.
+browser smoke suite; pushes to `main` then publish to **GitHub Pages**. A deploy that does
+not answer 200 with prerendered markup fails the run. No secrets are needed — Pages
+authenticates through the workflow's OIDC token — but *Settings → Pages → Source* must be
+set to **GitHub Actions**. Set the `SITE_URL` repository variable to
+`https://ana-izaguirre.github.io/prot-spam-sim/` to emit canonical and `og:url` tags.
+
+Pages serves a project site from `/<repo>/`, so the production build sets `BASE_PATH`
+accordingly; pull-request builds stay at the root. Pages hosts one site per repository, so
+there are no per-pull-request previews and no custom cache or security headers.
 
 **Contributing.** One change per pull request, green on its own, branch prefixed with its
 change type — the rules are in the
