@@ -178,3 +178,13 @@ here so the migration diff stays reviewable.
       prerender-safe reconciliation). Errors are at zero, so CI can gate on them.
       **Verify**: `npm run format:check`, `npm run lint:js`, `npm run lint`, `npm run build`
       and `npm test` all pass.
+
+- [x] **T025** — Pin the editor and Node conventions
+      **Branch**: `chore/t025-editor-and-node-version` → base `chore/t024-prettier-eslint`
+      **Files**: `.editorconfig`, `.nvmrc` (both new).
+      `.editorconfig` settles indentation, line endings and final newlines at the editor rather
+      than at the formatter, so a contributor's first save does not fight Prettier. `.nvmrc`
+      pins Node 20, matching `engines.node` and the version CI runs, so `nvm use` reproduces
+      the pipeline locally.
+      **Verify**: values agree with `.prettierrc.json`, `package.json` engines and the
+      workflow's `node-version`.
