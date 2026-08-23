@@ -58,9 +58,44 @@ jobs:
           path: dist
           retention-days: 7
 
+  smoke:
+    name: Smoke test
+    needs: check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download the built site
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      - name: Install the browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Run the smoke suite against the built site
+        run: npm test
+
+      - name: Upload the report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report
+          retention-days: 7
+
   deploy:
     name: Deploy to Netlify
-    needs: check
+    needs: [check, smoke]
     runs-on: ubuntu-latest
     # Secrets are not exposed to pull requests from forks, so a fork PR would
     # fail here rather than deploy. Let it build and skip the deploy instead.
@@ -108,3 +143,21 @@ jobs:
             echo
             echo "$url"
           } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Verify the deployment is actually serving
+        run: |
+          set -euo pipefail
+          url="${{ steps.netlify.outputs.url }}"
+
+          # Netlify can answer before the deploy has fully propagated, so retry.
+          for attempt in 1 2 3 4 5; do
+            code=$(curl -sS -o body.html -w '%{http_code}' --max-time 30 "$url" || echo 000)
+            [ "$code" = "200" ] && break
+            echo "attempt $attempt: HTTP $code, retrying in 10s"
+            sleep 10
+          done
+
+          [ "$code" = "200" ] || { echo "::error::$url returned HTTP $code"; exit 1; }
+          grep -q 'ProtSpam HPC Suite' body.html \
+            || { echo "::error::$url responded but served no prerendered markup"; exit 1; }
+          echo "$url is up and serving prerendered HTML"
