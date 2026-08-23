@@ -255,8 +255,10 @@ performance highlights and branch directory, generated entirely in the browser.
 - **FR-016**: Playback MUST support play/pause, single-step forward and backward, reset,
   and three speeds; autoplay MUST stop at the last step.
 - **FR-017**: Parameter edits MUST take effect only when the user requests recomputation.
-- **FR-018**: The dropoff parameter X MUST bound the extension. **[GAP]** It is currently
-  read into a variable that is never used, and has no input control.
+- **FR-018**: The dropoff parameter X MUST bound the extension: each direction grows away
+  from the seed until the running score falls more than X below the best score reached,
+  then is trimmed back to that maximum. The accept/reject decision MUST use the resulting
+  trimmed score.
 
 **Workload simulator**
 

@@ -89,9 +89,11 @@ Legend — `[X]` done · `[ ]` pending · `[P]` parallelisable with its neighbou
 These are **not** part of the migration. They are real defects in the prototype, recorded
 here so the migration diff stays reviewable.
 
-- [ ] **D001** — The base simulator's dropoff parameter `X` is stored in state and read
+- [X] **D001** — The base simulator's dropoff parameter `X` is stored in state and read
   into `paramD`, but never bounds the extension, and no input control renders it. Either
   implement X-drop termination or remove the parameter (`spec.md` FR-018).
+  *Fixed in `feat/t015-xdrop-extension`: X-drop termination implemented, the input
+  control rendered, and the accept/reject decision now uses the trimmed HSP score.*
 - [ ] **D002** — The light theme is implemented as an override stylesheet keyed on specific
   Tailwind class names; any utility not listed keeps its dark value. Move to CSS custom
   properties or a `dark:` variant strategy.

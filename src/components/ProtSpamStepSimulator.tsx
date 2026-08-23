@@ -66,6 +66,59 @@ function getBlosumScore(a: string, b: string): number {
   return a === b ? 4 : -1;
 }
 
+/** Score of the seed window itself (the positions the pattern spans). */
+function scoreWindow(
+  S1: string[],
+  S2: string[],
+  s1Pos: number,
+  s2Pos: number,
+  length: number
+): number {
+  let total = 0;
+  for (let k = 0; k < length; k++) {
+    total += getBlosumScore(S1[s1Pos + k], S2[s2Pos + k]);
+  }
+  return total;
+}
+
+/**
+ * Grows one direction away from the seed until the running score falls more
+ * than `dropoff` below the best score seen, then trims back to that best
+ * position. Returns the characters that direction contributes and the score
+ * they carry.
+ *
+ * This is the X-drop rule the real tool uses to stop an extension from running
+ * off into noise. `positionsAt(step)` maps a distance from the seed to the pair
+ * of indices to compare; `inBounds` guards the ends of the sequences.
+ */
+function extendWithDropoff(
+  positionsAt: (step: number) => [number, number],
+  inBounds: (a: number, b: number) => boolean,
+  S1: string[],
+  S2: string[],
+  dropoff: number
+): { length: number; score: number } {
+  let running = 0;
+  let best = 0;
+  let bestLength = 0;
+
+  for (let step = 0; ; step++) {
+    const [a, b] = positionsAt(step);
+    if (!inBounds(a, b)) break;
+
+    running += getBlosumScore(S1[a], S2[b]);
+
+    if (running > best) {
+      best = running;
+      bestLength = step + 1;
+    } else if (running < best - dropoff) {
+      break;
+    }
+  }
+
+  return { length: bestLength, score: best };
+}
+
 export const ProtSpamStepSimulator: React.FC = () => {
   const { lang, t } = useAppLanguageTheme();
 
@@ -248,19 +301,39 @@ export const ProtSpamStepSimulator: React.FC = () => {
                 showMatrix: false,
               });
 
-              // Extensión bidireccional con la matriz didáctica
-              let extLeft = 0;
-              while (s1Pos - extLeft - 1 >= 0 && j - extLeft - 1 >= 0) {
-                extLeft++;
-              }
+              // Extensión bidireccional sin gaps, acotada por X-drop.
+              //
+              // Se parte del seed (la ventana del patrón) y se crece en cada
+              // dirección de forma independiente, llevando la puntuación corrida
+              // y la mejor alcanzada. En cuanto la corrida cae más de X por
+              // debajo de la mejor, esa dirección se corta y se recorta hasta la
+              // posición de la mejor puntuación: prolongar más solo añade ruido.
+              const seedScore = scoreWindow(S1, S2, s1Pos, j, patternLen);
 
-              let extRight = 0;
-              while (
-                s1Pos + patternLen + extRight < S1.length &&
-                j + patternLen + extRight < S2.length
-              ) {
-                extRight++;
-              }
+              const leftExtension = extendWithDropoff(
+                // step 0 is the character immediately left of the seed; the seed
+                // itself is already accounted for in seedScore.
+                (step) => [s1Pos - 1 - step, j - 1 - step],
+                (a, b) => a >= 0 && b >= 0,
+                S1,
+                S2,
+                paramD
+              );
+
+              const rightExtension = extendWithDropoff(
+                (step) => [s1Pos + patternLen + step, j + patternLen + step],
+                (a, b) => a < S1.length && b < S2.length,
+                S1,
+                S2,
+                paramD
+              );
+
+              const extLeft = leftExtension.length;
+              const extRight = rightExtension.length;
+
+              // Score of the trimmed HSP: the seed plus whatever each direction
+              // kept. It equals the last accumulated value in the table below.
+              const hspScore = leftExtension.score + seedScore + rightExtension.score;
 
               const fullS1Align: string[] = [];
               const fullS2Align: string[] = [];
@@ -277,7 +350,6 @@ export const ProtSpamStepSimulator: React.FC = () => {
               }
 
               let runningScore = 0;
-              let maxScore = 0;
               const scoresArr: number[] = [];
               const accumArr: number[] = [];
 
@@ -286,9 +358,9 @@ export const ProtSpamStepSimulator: React.FC = () => {
                 runningScore += sc;
                 scoresArr.push(sc);
                 accumArr.push(runningScore);
-                if (runningScore > maxScore) maxScore = runningScore;
               }
 
+              const maxScore = hspScore;
               const status = maxScore >= paramT ? 'approved' : 'rejected';
               matchesEvaluated.push({
                 key: s2Key,
@@ -628,6 +700,22 @@ export const ProtSpamStepSimulator: React.FC = () => {
             onChange={(e) => setThresholdInput(parseInt(e.target.value))}
             className="w-full bg-slate-950 border border-slate-800 px-3 py-2 rounded-lg text-slate-200 font-mono text-xs outline-none focus:border-emerald-500"
           />
+        </div>
+        <div className="space-y-1">
+          <label
+            className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider"
+            title={t('core.dropoffHint')}
+          >
+            {t('core.dropoff')}
+          </label>
+          <input
+            type="number"
+            min={0}
+            value={dropoffInput}
+            onChange={(e) => setDropoffInput(Math.max(0, parseInt(e.target.value) || 0))}
+            className="w-full bg-slate-950 border border-slate-800 px-3 py-2 rounded-lg text-slate-200 font-mono text-xs outline-none focus:border-emerald-500"
+          />
+          <p className="text-[10px] text-slate-500 leading-snug">{t('core.dropoffHint')}</p>
         </div>
         <div>
           <button
