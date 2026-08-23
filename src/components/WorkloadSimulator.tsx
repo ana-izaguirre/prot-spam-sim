@@ -682,7 +682,7 @@ export const WorkloadSimulator: React.FC = () => {
                 type="button"
                 onClick={handlePrevP}
                 disabled={numProcesses === processOptions[0]}
-                className="p-2 rounded-lg text-slate-400 hover:text-white disabled:opacity-30 transition-colors"
+                className="p-2 rounded-lg text-slate-400 hover:text-slate-50 disabled:opacity-30 transition-colors"
                 title={lang === 'es' ? 'Paso Anterior' : 'Previous Step'}
               >
                 <ChevronLeft className="w-4 h-4" />
@@ -691,7 +691,7 @@ export const WorkloadSimulator: React.FC = () => {
                 type="button"
                 onClick={handleNextP}
                 disabled={numProcesses === processOptions[processOptions.length - 1]}
-                className="p-2 rounded-lg text-slate-400 hover:text-white disabled:opacity-30 transition-colors"
+                className="p-2 rounded-lg text-slate-400 hover:text-slate-50 disabled:opacity-30 transition-colors"
                 title={lang === 'es' ? 'Paso Siguiente' : 'Next Step'}
               >
                 <ChevronRight className="w-4 h-4" />
@@ -951,21 +951,21 @@ export const WorkloadSimulator: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setNumProcesses(16)}
-                className="px-1.5 py-0.5 rounded bg-slate-950 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white transition-colors"
+                className="px-1.5 py-0.5 rounded bg-slate-950 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-slate-50 transition-colors"
               >
                 1-Sock(16)
               </button>
               <button
                 type="button"
                 onClick={() => setNumProcesses(32)}
-                className="px-1.5 py-0.5 rounded bg-slate-950 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white transition-colors"
+                className="px-1.5 py-0.5 rounded bg-slate-950 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-slate-50 transition-colors"
               >
                 2-Sock(32)
               </button>
               <button
                 type="button"
                 onClick={() => setNumProcesses(64)}
-                className="px-1.5 py-0.5 rounded bg-slate-950 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white transition-colors"
+                className="px-1.5 py-0.5 rounded bg-slate-950 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-slate-50 transition-colors"
               >
                 Node(64)
               </button>
@@ -1233,7 +1233,7 @@ export const WorkloadSimulator: React.FC = () => {
                 className={`p-1.5 bg-slate-950 border rounded-lg transition-colors flex items-center gap-1 text-[11px] font-mono ${
                   copyState === 'failed'
                     ? 'border-rose-500/50 text-rose-400'
-                    : 'border-slate-800 text-slate-300 hover:text-white'
+                    : 'border-slate-800 text-slate-300 hover:text-slate-50'
                 }`}
                 title={copyState === 'failed' ? t('workload.logCopyFailed') : t('workload.copyLog')}
               >

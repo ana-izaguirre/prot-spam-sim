@@ -364,7 +364,7 @@ export const TFMBranchExplorer: React.FC = () => {
                 href={selectedBranch.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1.5 bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white px-3 py-1.5 rounded-lg text-xs font-mono font-medium transition-colors self-start sm:self-auto shrink-0"
+                className="flex items-center gap-1.5 bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-slate-50 px-3 py-1.5 rounded-lg text-xs font-mono font-medium transition-colors self-start sm:self-auto shrink-0"
               >
                 <GitBranch className="w-3.5 h-3.5 text-emerald-400" />
                 <span>{selectedBranch.name.replace('feat/', '')}</span>
