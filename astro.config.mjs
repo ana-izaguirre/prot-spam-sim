@@ -9,6 +9,11 @@ export default defineConfig({
   // No backend, no runtime API: everything is prerendered to plain HTML.
   output: 'static',
 
+  // Set this to the deployment origin (e.g. 'https://example.org') to emit
+  // canonical and og:url tags. It is intentionally left undefined: pointing
+  // those tags at localhost is worse than omitting them.
+  // site: 'https://your-deployment-url',
+
   // React 19 powers the seven interactive modules, mounted as a single island.
   integrations: [react()],
 
