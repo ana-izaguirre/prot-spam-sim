@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { SPECIES_300_UNBALANCED } from '../data/speciesData';
 import type { Species } from '../data/speciesData';
 import { useAppLanguageTheme } from '../context/LanguageThemeContext';
-import { Grid, Eye, Cpu, Zap, Sparkles } from 'lucide-react';
+import { Grid, Eye, Sparkles } from 'lucide-react';
 
 export const TriangularMatrixExplorer: React.FC = () => {
   const { lang, t } = useAppLanguageTheme();
@@ -136,7 +136,9 @@ export const TriangularMatrixExplorer: React.FC = () => {
               }`}
             >
               <span>{lang === 'es' ? 'Algoritmo 1' : 'Algorithm 1'}</span>
-              <span className="text-[10px] font-normal opacity-80">{lang === 'es' ? '(Cíclico)' : '(Cyclic)'}</span>
+              <span className="text-[10px] font-normal opacity-80">
+                {lang === 'es' ? '(Cíclico)' : '(Cyclic)'}
+              </span>
             </button>
             <button
               type="button"
@@ -148,7 +150,9 @@ export const TriangularMatrixExplorer: React.FC = () => {
               }`}
             >
               <span>{lang === 'es' ? 'Por Bloques' : 'By Blocks'}</span>
-              <span className="text-[10px] font-normal opacity-80">{lang === 'es' ? '(Ingenuo)' : '(Naive)'}</span>
+              <span className="text-[10px] font-normal opacity-80">
+                {lang === 'es' ? '(Ingenuo)' : '(Naive)'}
+              </span>
             </button>
           </div>
         </div>
@@ -181,8 +185,10 @@ export const TriangularMatrixExplorer: React.FC = () => {
                 }`}
                 style={{
                   color: rankColors[rank % rankColors.length],
-                  borderColor: hoveredRank === rank ? rankColors[rank % rankColors.length] : undefined,
-                  backgroundColor: hoveredRank === rank ? `${rankColors[rank % rankColors.length]}22` : undefined,
+                  borderColor:
+                    hoveredRank === rank ? rankColors[rank % rankColors.length] : undefined,
+                  backgroundColor:
+                    hoveredRank === rank ? `${rankColors[rank % rankColors.length]}22` : undefined,
                 }}
               >
                 R{rank}
@@ -200,7 +206,9 @@ export const TriangularMatrixExplorer: React.FC = () => {
             <div className="flex items-center gap-2">
               <Grid className="w-4 h-4 text-purple-400" />
               <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-50">
-                {lang === 'es' ? 'Media Matriz Triangular Superior (j > i)' : 'Upper Triangular Half-Matrix (j > i)'}
+                {lang === 'es'
+                  ? 'Media Matriz Triangular Superior (j > i)'
+                  : 'Upper Triangular Half-Matrix (j > i)'}
               </h3>
             </div>
             <div className="flex items-center gap-3 text-xs text-slate-400 font-mono">
@@ -289,7 +297,11 @@ export const TriangularMatrixExplorer: React.FC = () => {
                               className={`p-1.5 border border-slate-800/50 bg-slate-950/60 text-slate-700 text-[9px] cursor-pointer hover:bg-slate-900 ${
                                 isSelected ? 'ring-2 ring-purple-400 text-slate-400' : ''
                               }`}
-                              title={lang === 'es' ? 'Espejo simétrico (no recalculado en MPI)' : 'Symmetric mirror (omitted in MPI compute)'}
+                              title={
+                                lang === 'es'
+                                  ? 'Espejo simétrico (no recalculado en MPI)'
+                                  : 'Symmetric mirror (omitted in MPI compute)'
+                              }
                             >
                               &middot;
                             </td>
@@ -312,7 +324,9 @@ export const TriangularMatrixExplorer: React.FC = () => {
                             }}
                           >
                             <span className="text-[10px]">
-                              {spI.isHuman || spJ.isHuman ? '🔥' : `${spI.shortCode[1]}${spJ.shortCode[1]}`}
+                              {spI.isHuman || spJ.isHuman
+                                ? '🔥'
+                                : `${spI.shortCode[1]}${spJ.shortCode[1]}`}
                             </span>
                           </td>
                         );
@@ -371,11 +385,19 @@ export const TriangularMatrixExplorer: React.FC = () => {
                     selectedPair.isUpper
                       ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
                       : selectedPair.isDiagonal
-                      ? 'bg-blue-500/20 text-blue-400 border border-blue-500/40'
-                      : 'bg-slate-800 text-slate-500'
+                        ? 'bg-blue-500/20 text-blue-400 border border-blue-500/40'
+                        : 'bg-slate-800 text-slate-500'
                   }`}
                 >
-                  {selectedPair.isUpper ? (lang === 'es' ? 'Cálculo MPI' : 'MPI Compute') : selectedPair.isDiagonal ? 'Diagonal (0.0)' : (lang === 'es' ? 'Atenuado' : 'Dimmed')}
+                  {selectedPair.isUpper
+                    ? lang === 'es'
+                      ? 'Cálculo MPI'
+                      : 'MPI Compute'
+                    : selectedPair.isDiagonal
+                      ? 'Diagonal (0.0)'
+                      : lang === 'es'
+                        ? 'Atenuado'
+                        : 'Dimmed'}
                 </span>
               )}
             </div>
@@ -389,10 +411,13 @@ export const TriangularMatrixExplorer: React.FC = () => {
                   </div>
                   <div className="font-bold text-slate-50 text-sm mt-0.5 flex items-center justify-between">
                     <span>{selectedPair.spA.name}</span>
-                    <span className="text-xs font-mono text-purple-400">{selectedPair.spA.maa} Maa</span>
+                    <span className="text-xs font-mono text-purple-400">
+                      {selectedPair.spA.maa} Maa
+                    </span>
                   </div>
                   <div className="text-[10px] text-slate-400 mt-1">
-                    {selectedPair.spA.taxon} &middot; {selectedPair.spA.proteins.toLocaleString()} {lang === 'es' ? 'proteínas' : 'proteins'}
+                    {selectedPair.spA.taxon} &middot; {selectedPair.spA.proteins.toLocaleString()}{' '}
+                    {lang === 'es' ? 'proteínas' : 'proteins'}
                   </div>
                 </div>
 
@@ -403,10 +428,13 @@ export const TriangularMatrixExplorer: React.FC = () => {
                   </div>
                   <div className="font-bold text-slate-50 text-sm mt-0.5 flex items-center justify-between">
                     <span>{selectedPair.spB.name}</span>
-                    <span className="text-xs font-mono text-emerald-400">{selectedPair.spB.maa} Maa</span>
+                    <span className="text-xs font-mono text-emerald-400">
+                      {selectedPair.spB.maa} Maa
+                    </span>
                   </div>
                   <div className="text-[10px] text-slate-400 mt-1">
-                    {selectedPair.spB.taxon} &middot; {selectedPair.spB.proteins.toLocaleString()} {lang === 'es' ? 'proteínas' : 'proteins'}
+                    {selectedPair.spB.taxon} &middot; {selectedPair.spB.proteins.toLocaleString()}{' '}
+                    {lang === 'es' ? 'proteínas' : 'proteins'}
                   </div>
                 </div>
 
@@ -415,19 +443,20 @@ export const TriangularMatrixExplorer: React.FC = () => {
                   <div className="flex justify-between">
                     <span className="text-slate-500">{t('matrix.assignedRank')}</span>
                     <span className="font-bold text-purple-400">
-                      Rank {selectedPair.rank} ({partitionMethod === 'cyclic' ? 'i % P' : (lang === 'es' ? 'Bloque' : 'Block')})
+                      Rank {selectedPair.rank} (
+                      {partitionMethod === 'cyclic' ? 'i % P' : lang === 'es' ? 'Bloque' : 'Block'})
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-500">{lang === 'es' ? 'Coste relativo estimado:' : 'Estimated relative cost:'}</span>
+                    <span className="text-slate-500">
+                      {lang === 'es' ? 'Coste relativo estimado:' : 'Estimated relative cost:'}
+                    </span>
                     <span className="text-slate-200">
                       ~{(selectedPair.spA.maa * selectedPair.spB.maa).toFixed(1)} M-ops
                     </span>
                   </div>
                   <div className="flex justify-between items-start gap-2">
-                    <span className="text-slate-500">
-                      {t('matrix.illustrativeDist')}
-                    </span>
+                    <span className="text-slate-500">{t('matrix.illustrativeDist')}</span>
                     <span
                       className="text-emerald-400/80 font-bold"
                       title={t('matrix.illustrativeDistHint')}
@@ -447,7 +476,9 @@ export const TriangularMatrixExplorer: React.FC = () => {
               </div>
             ) : (
               <div className="text-xs text-slate-500 text-center py-6">
-                {lang === 'es' ? 'Haz clic en una celda de la matriz para inspeccionar el par biológico.' : 'Click on any matrix cell to inspect the biological species pair.'}
+                {lang === 'es'
+                  ? 'Haz clic en una celda de la matriz para inspeccionar el par biológico.'
+                  : 'Click on any matrix cell to inspect the biological species pair.'}
               </div>
             )}
           </div>
@@ -456,7 +487,9 @@ export const TriangularMatrixExplorer: React.FC = () => {
           <div className="bg-slate-900/30 border border-slate-800 p-4 rounded-xl text-xs space-y-2 text-slate-300">
             <div className="font-semibold text-purple-400 flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5 text-purple-400" />
-              {lang === 'es' ? '¿Por qué atenuar la mitad inferior (j ≤ i)?' : 'Why omit the lower triangle (j ≤ i)?'}
+              {lang === 'es'
+                ? '¿Por qué atenuar la mitad inferior (j ≤ i)?'
+                : 'Why omit the lower triangle (j ≤ i)?'}
             </div>
             <p className="text-[11px] text-slate-400 leading-relaxed">
               {lang === 'es'

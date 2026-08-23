@@ -4,16 +4,9 @@ import {
   GitBranch,
   ExternalLink,
   Code2,
-  Cpu,
-  Layers,
-  Zap,
   TrendingUp,
   CheckCircle2,
-  AlertTriangle,
   ArrowRight,
-  Database,
-  Network,
-  Clock,
   Sparkles,
 } from 'lucide-react';
 
@@ -42,10 +35,14 @@ const BRANCHES: BranchInfo[] = [
     phase: 'Fase 4 (Paralela No Bloqueante)',
     titleEs: 'Variante isend: Comunicación Asíncrona con MPI_Isend y Cola PendingSend',
     titleEn: 'isend Variant: Asynchronous Communication with MPI_Isend & PendingSend Queue',
-    descEs: 'Variante principal y recomendada. Dispara solicitudes no bloqueantes en ráfaga con MPI_Isend hacia todos los destinos requeridos, acumula los MPI_Request en la estructura PendingSend y realiza una única sincronización con MPI_Waitall.',
-    descEn: 'Primary and recommended variant. Fires non-blocking burst requests with MPI_Isend to all required destinations, accumulates MPI_Requests in the PendingSend structure, and synchronizes once with MPI_Waitall.',
-    whyEs: 'Elimina por completo la serialización del emisor impuesta por el protocolo rendezvous de MPI_Send, logrando hasta un 45% de reducción de tiempo frente a metacache en 128 procesos en FinisTerrae III.',
-    whyEn: 'Completely eliminates sender serialization imposed by the rendezvous protocol in MPI_Send, achieving up to 45% time reduction over metacache at 128 processes on FinisTerrae III.',
+    descEs:
+      'Variante principal y recomendada. Dispara solicitudes no bloqueantes en ráfaga con MPI_Isend hacia todos los destinos requeridos, acumula los MPI_Request en la estructura PendingSend y realiza una única sincronización con MPI_Waitall.',
+    descEn:
+      'Primary and recommended variant. Fires non-blocking burst requests with MPI_Isend to all required destinations, accumulates MPI_Requests in the PendingSend structure, and synchronizes once with MPI_Waitall.',
+    whyEs:
+      'Elimina por completo la serialización del emisor impuesta por el protocolo rendezvous de MPI_Send, logrando hasta un 45% de reducción de tiempo frente a metacache en 128 procesos en FinisTerrae III.',
+    whyEn:
+      'Completely eliminates sender serialization imposed by the rendezvous protocol in MPI_Send, achieving up to 45% time reduction over metacache at 128 processes on FinisTerrae III.',
     url: 'https://github.com/ana-izaguirre/ProtSpaM/tree/feat/mpi-phase4-metacache-isend',
     status: 'recommended',
     speedup: '4204 s (128P en 4 Nodos) - 26.8x vs Secuencial',
@@ -85,10 +82,14 @@ if (is_owner_of_species(r)) {
     phase: 'Fase 4 (Paralela Bloqueante)',
     titleEs: 'Variante metacache: Comunicación Punto a Punto con MPI_Send',
     titleEn: 'metacache Variant: Point-to-Point Communication with Blocking MPI_Send',
-    descEs: 'Primera aproximación para distribuir la Fase 4. Introduce la caché de metadatos y el cálculo de media matriz triangular (j > i), pero envía los datos secuencialmente destino a destino con MPI_Send.',
-    descEn: 'First approach to distribute Phase 4. Introduces metadata caching and triangular half-matrix computation (j > i), but sends data sequentially destination-by-destination using MPI_Send.',
-    whyEs: 'Demuestra la viabilidad de distribuir el cálculo de distancias. Sin embargo, a partir de 64-128 procesos sufre degradación por la espera obligada a que cada receptor publique su MPI_Recv.',
-    whyEn: 'Demonstrates the feasibility of distributing distance calculations. However, beyond 64-128 processes it suffers degradation due to forced stalls waiting for each receiver to post MPI_Recv.',
+    descEs:
+      'Primera aproximación para distribuir la Fase 4. Introduce la caché de metadatos y el cálculo de media matriz triangular (j > i), pero envía los datos secuencialmente destino a destino con MPI_Send.',
+    descEn:
+      'First approach to distribute Phase 4. Introduces metadata caching and triangular half-matrix computation (j > i), but sends data sequentially destination-by-destination using MPI_Send.',
+    whyEs:
+      'Demuestra la viabilidad de distribuir el cálculo de distancias. Sin embargo, a partir de 64-128 procesos sufre degradación por la espera obligada a que cada receptor publique su MPI_Recv.',
+    whyEn:
+      'Demonstrates the feasibility of distributing distance calculations. However, beyond 64-128 processes it suffers degradation due to forced stalls waiting for each receiver to post MPI_Recv.',
     url: 'https://github.com/ana-izaguirre/ProtSpaM/tree/feat/mpi-phase4-metacache',
     status: 'intermediate',
     speedup: '7702 s (128P) - Sufre contención de red',
@@ -122,10 +123,14 @@ if (is_owner_of_species(r)) {
     phase: 'Fase 3 (Lectura Centralizada)',
     titleEs: 'Fase 3: Reparto de Especies con Lectura Centralizada en Rank 0',
     titleEn: 'Phase 3: Species Distribution with Centralized Reading at Rank 0',
-    descEs: 'Paraleliza la extracción y ordenación de palabras espaciadas (std::sort). El Proceso 0 lee todos los ficheros FASTA de disco y distribuye los bloques de secuencias mediante MPI_Send.',
-    descEn: 'Parallelizes spaced words extraction and std::sort sorting. Process 0 reads all FASTA files from disk and distributes sequence blocks via MPI_Send.',
-    whyEs: 'Evita colisiones en el sistema de ficheros de red compartida (NFS/Lustre). Es la estrategia ganadora en conjuntos de 30 y 300 especies.',
-    whyEn: 'Prevents I/O contention on shared cluster filesystems (NFS/Lustre). It is the winning strategy for 30 and 300 species datasets.',
+    descEs:
+      'Paraleliza la extracción y ordenación de palabras espaciadas (std::sort). El Proceso 0 lee todos los ficheros FASTA de disco y distribuye los bloques de secuencias mediante MPI_Send.',
+    descEn:
+      'Parallelizes spaced words extraction and std::sort sorting. Process 0 reads all FASTA files from disk and distributes sequence blocks via MPI_Send.',
+    whyEs:
+      'Evita colisiones en el sistema de ficheros de red compartida (NFS/Lustre). Es la estrategia ganadora en conjuntos de 30 y 300 especies.',
+    whyEn:
+      'Prevents I/O contention on shared cluster filesystems (NFS/Lustre). It is the winning strategy for 30 and 300 species datasets.',
     url: 'https://github.com/ana-izaguirre/ProtSpaM/tree/feat/mpi-phase3-a',
     status: 'intermediate',
     speedup: 'Escalabilidad cuasilineal en Fase 3 (~5.2x en 32P)',
@@ -160,10 +165,14 @@ compute_and_sort_spaced_words_locally();`,
     phase: 'Fase 3 (Lectura Distribuida)',
     titleEs: 'Fase 3: Lectura Distribuida Independiente de Disco',
     titleEn: 'Phase 3: Distributed Independent Disk Reading',
-    descEs: 'Estrategia alternativa donde cada proceso lee directamente del sistema de ficheros compartido únicamente los proteomas asignados a su bloque local.',
-    descEn: 'Alternative strategy where each process directly reads only its locally assigned proteomes from the shared filesystem.',
-    whyEs: 'Elimina la fase de comunicación inicial por MPI, pero genera accesos concurrentes a disco que pueden penalizar el rendimiento en clústeres con alto número de nodos.',
-    whyEn: 'Eliminates the initial MPI communication phase, but causes concurrent disk accesses that can degrade throughput in multi-node clusters.',
+    descEs:
+      'Estrategia alternativa donde cada proceso lee directamente del sistema de ficheros compartido únicamente los proteomas asignados a su bloque local.',
+    descEn:
+      'Alternative strategy where each process directly reads only its locally assigned proteomes from the shared filesystem.',
+    whyEs:
+      'Elimina la fase de comunicación inicial por MPI, pero genera accesos concurrentes a disco que pueden penalizar el rendimiento en clústeres con alto número de nodos.',
+    whyEn:
+      'Eliminates the initial MPI communication phase, but causes concurrent disk accesses that can degrade throughput in multi-node clusters.',
     url: 'https://github.com/ana-izaguirre/ProtSpaM/tree/feat/mpi-phase3-b',
     status: 'intermediate',
     speedup: 'Ventaja leve en 20 especies, superada por Opción A en 300 especies',
@@ -190,10 +199,14 @@ compute_and_sort_spaced_words_locally();`,
     phase: 'Base Secuencial de Referencia',
     titleEs: 'Línea Base Secuencial Limpia e Instrumentación de Checksum',
     titleEn: 'Clean Sequential Baseline & Checksum Instrumentation',
-    descEs: 'Reimplementación secuencial estricta a partir de la versión OpenMP original para eliminar interferencias de hilos y servir como estándar de oro numérico.',
-    descEn: 'Strict sequential reimplementation from the original OpenMP code to remove thread interference and establish a gold numeric standard.',
-    whyEs: 'Permitió el profiling con perf (identificando que std::sort y calc_matches consumen el 91% del tiempo) y la verificación con write_words_checksum.',
-    whyEn: 'Enabled profiling with perf (identifying that std::sort and calc_matches consume 91% of time) and verification via write_words_checksum.',
+    descEs:
+      'Reimplementación secuencial estricta a partir de la versión OpenMP original para eliminar interferencias de hilos y servir como estándar de oro numérico.',
+    descEn:
+      'Strict sequential reimplementation from the original OpenMP code to remove thread interference and establish a gold numeric standard.',
+    whyEs:
+      'Permitió el profiling con perf (identificando que std::sort y calc_matches consumen el 91% del tiempo) y la verificación con write_words_checksum.',
+    whyEn:
+      'Enabled profiling with perf (identifying that std::sort and calc_matches consume 91% of time) and verification via write_words_checksum.',
     url: 'https://github.com/ana-izaguirre/ProtSpaM/tree/feat/seq',
     status: 'baseline',
     speedup: 'Línea Base: 112.5 ks (>31 horas en 300 especies)',
@@ -226,20 +239,24 @@ write_phylip_matrix("DMat", distances);`,
     phase: 'Ruta Secuencial (np=1)',
     titleEs: 'Variante isend_opt: Precálculo por Patrón en Ruta Secuencial',
     titleEn: 'isend_opt Variant: Pattern Precomputation on Sequential Path (np=1)',
-    descEs: 'Trasladó la optimización de precalcular las posiciones don\'t-care y longitudes de bloque a la función secuencial calc_matches cuando np=1.',
-    descEn: 'Transferred the optimization of precomputing don\'t-care positions and block lengths to sequential calc_matches when np=1.',
-    whyEs: 'Resultado experimental contraintuitivo: la ruta secuencial fue un 19.5% más lenta (3755 s vs 3141 s) porque el coste de construir las estructuras no se amortiza al no reutilizarse.',
-    whyEn: 'Counterintuitive experimental finding: the sequential path was 19.5% slower (3755s vs 3141s) because precomputation setup overhead is not amortized without reuse.',
+    descEs:
+      "Trasladó la optimización de precalcular las posiciones don't-care y longitudes de bloque a la función secuencial calc_matches cuando np=1.",
+    descEn:
+      "Transferred the optimization of precomputing don't-care positions and block lengths to sequential calc_matches when np=1.",
+    whyEs:
+      'Resultado experimental contraintuitivo: la ruta secuencial fue un 19.5% más lenta (3755 s vs 3141 s) porque el coste de construir las estructuras no se amortiza al no reutilizarse.',
+    whyEn:
+      'Counterintuitive experimental finding: the sequential path was 19.5% slower (3755s vs 3141s) because precomputation setup overhead is not amortized without reuse.',
     url: 'https://github.com/ana-izaguirre/ProtSpaM/tree/feat/mpi-phase4-metacache-isend-calcopt',
     status: 'experimental',
     speedup: 'Descartado para línea base (+19.5% tiempo secuencial)',
     featuresEs: [
-      'Precálculo de índices don\'t-care y longitudes por patrón.',
+      "Precálculo de índices don't-care y longitudes por patrón.",
       'En ejecuciones paralelas (np > 1) su comportamiento es idéntico a isend.',
       'Enseñanza metodológica: no inflar artificialmente el speedup con una base lenta.',
     ],
     featuresEn: [
-      'Precomputation of don\'t-care indexes and block sizes per pattern.',
+      "Precomputation of don't-care indexes and block sizes per pattern.",
       'In parallel executions (np > 1) behavior is completely identical to isend.',
       'Methodological insight: never artificially inflate speedup using a slower baseline.',
     ],
@@ -270,12 +287,8 @@ export const TFMBranchExplorer: React.FC = () => {
               <GitBranch className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-slate-50 tracking-wide">
-                {t('tfm.title')}
-              </h2>
-              <p className="text-xs text-slate-400 mt-0.5">
-                {t('tfm.subtitle')}
-              </p>
+              <h2 className="text-base font-bold text-slate-50 tracking-wide">{t('tfm.title')}</h2>
+              <p className="text-xs text-slate-400 mt-0.5">{t('tfm.subtitle')}</p>
             </div>
           </div>
         </div>
@@ -339,7 +352,9 @@ export const TFMBranchExplorer: React.FC = () => {
                 <span className="font-mono text-emerald-400/90 font-medium truncate max-w-[200px]">
                   {b.speedup.split('-')[0]}
                 </span>
-                <ArrowRight className={`w-3.5 h-3.5 transition-transform ${isSelected ? 'text-emerald-400 translate-x-0.5' : 'text-slate-600'}`} />
+                <ArrowRight
+                  className={`w-3.5 h-3.5 transition-transform ${isSelected ? 'text-emerald-400 translate-x-0.5' : 'text-slate-600'}`}
+                />
               </div>
             </button>
           );
@@ -400,15 +415,17 @@ export const TFMBranchExplorer: React.FC = () => {
                 {t('tfm.keyDecisions')}
               </span>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                {(lang === 'es' ? selectedBranch.featuresEs : selectedBranch.featuresEn).map((f, i) => (
-                  <div
-                    key={i}
-                    className="flex items-start gap-2 bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80 text-slate-300"
-                  >
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
-                    <span className="leading-tight">{f}</span>
-                  </div>
-                ))}
+                {(lang === 'es' ? selectedBranch.featuresEs : selectedBranch.featuresEn).map(
+                  (f, i) => (
+                    <div
+                      key={i}
+                      className="flex items-start gap-2 bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80 text-slate-300"
+                    >
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                      <span className="leading-tight">{f}</span>
+                    </div>
+                  ),
+                )}
               </div>
             </div>
           </div>
@@ -424,7 +441,9 @@ export const TFMBranchExplorer: React.FC = () => {
             </div>
             <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
               <div className="text-xs text-slate-400">
-                {lang === 'es' ? 'Rendimiento en 300 Especies (FinisTerrae III):' : '300 Species Benchmark (FinisTerrae III):'}
+                {lang === 'es'
+                  ? 'Rendimiento en 300 Especies (FinisTerrae III):'
+                  : '300 Species Benchmark (FinisTerrae III):'}
               </div>
               <div className="text-base sm:text-lg font-bold font-mono text-emerald-400">
                 {selectedBranch.speedup}

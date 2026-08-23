@@ -83,8 +83,14 @@ test('the base simulator advances a step', async ({ page }) => {
   await page.setViewportSize({ width: 1800, height: 1000 });
   await page.goto('./');
 
-  const counter = page.locator('main').getByText(/Paso\s+\d+\s+de\s+\d+/).first();
+  const counter = page
+    .locator('main')
+    .getByText(/Paso\s+\d+\s+de\s+\d+/)
+    .first();
   await expect(counter).toContainText('Paso 0');
-  await page.getByRole('button', { name: /Paso Siguiente/ }).first().click();
+  await page
+    .getByRole('button', { name: /Paso Siguiente/ })
+    .first()
+    .click();
   await expect(counter).toContainText('Paso 1');
 });

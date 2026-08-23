@@ -15,13 +15,13 @@ This plan migrates the project to **Astro 5 with React islands**, preserving 100
 behaviour specified in `spec.md`. The user-visible feature set does not change. What
 changes is the delivery model:
 
-| | Before (Vite SPA) | After (Astro islands) |
-|---|---|---|
-| First paint | after the JS bundle executes | server-prerendered HTML |
-| Shell markup | `index.html` + `createRoot` | `BaseLayout.astro` + `index.astro` |
-| Module code | one bundle, all seven modules | one chunk per module, loaded on demand |
-| Theme/lang boot | after React hydration (flash) | inline head script, before paint |
-| Head / SEO | hand-written `index.html` | typed, composable Astro layout |
+|                 | Before (Vite SPA)             | After (Astro islands)                  |
+| --------------- | ----------------------------- | -------------------------------------- |
+| First paint     | after the JS bundle executes  | server-prerendered HTML                |
+| Shell markup    | `index.html` + `createRoot`   | `BaseLayout.astro` + `index.astro`     |
+| Module code     | one bundle, all seven modules | one chunk per module, loaded on demand |
+| Theme/lang boot | after React hydration (flash) | inline head script, before paint       |
+| Head / SEO      | hand-written `index.html`     | typed, composable Astro layout         |
 
 The React component tree (`src/components/*.tsx`, `src/context`, `src/data`, `src/utils`)
 is carried over essentially unchanged — that is the point of choosing islands over a
@@ -48,13 +48,13 @@ a buildable, lintable state.
 
 ## Constitution Check
 
-| Principle | Status | Note |
-|---|---|---|
-| I. Didactic fidelity over computational fidelity | ✅ Unaffected | No simulation logic is touched by the migration |
-| II. Full bilingual parity | ✅ Preserved | The dictionary and `t()` move verbatim; the layout adds a pre-hydration `lang` attribute fix |
-| III. Client-only, zero-backend | ✅ Strengthened | `output: 'static'` makes the zero-backend rule structural rather than conventional |
-| IV. Academic traceability | ✅ Unaffected | All thesis data stays in `src/data` and the branch dossier |
-| V. Deterministic, inspectable state | ⚠️ Requires care | Prerendering runs component code in Node; `localStorage` reads must be guarded so the server pass and the first client render agree (task T003) |
+| Principle                                        | Status           | Note                                                                                                                                            |
+| ------------------------------------------------ | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| I. Didactic fidelity over computational fidelity | ✅ Unaffected    | No simulation logic is touched by the migration                                                                                                 |
+| II. Full bilingual parity                        | ✅ Preserved     | The dictionary and `t()` move verbatim; the layout adds a pre-hydration `lang` attribute fix                                                    |
+| III. Client-only, zero-backend                   | ✅ Strengthened  | `output: 'static'` makes the zero-backend rule structural rather than conventional                                                              |
+| IV. Academic traceability                        | ✅ Unaffected    | All thesis data stays in `src/data` and the branch dossier                                                                                      |
+| V. Deterministic, inspectable state              | ⚠️ Requires care | Prerendering runs component code in Node; `localStorage` reads must be guarded so the server pass and the first client render agree (task T003) |
 
 **Deviations**: none. No complexity exception is requested.
 
@@ -150,6 +150,6 @@ writing a line of Astro:
 
 No constitutional violation requires justification. One conscious trade-off is recorded:
 
-| Decision | Why | Alternative rejected |
-|---|---|---|
+| Decision                                             | Why                                                                                                                                                          | Alternative rejected                                                                                                                                                         |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Single root island rather than one island per module | Active section, language and theme are shared mutable state; splitting them across islands would require a cross-island store (nanostores) and a larger diff | Per-module islands with a shared store — more idiomatic Astro, but a rewrite rather than a migration, and it buys little because only one module is mounted at a time anyway |

@@ -28,20 +28,63 @@ export const SPECIES_64_HOMOGENEOUS: Species[] = Array.from({ length: 64 }, (_, 
 
 // 300 Especies Desbalanceadas (con Homo sapiens 69.58 Maa como punto crítico)
 const KEY_TAXA = [
-  { name: 'Homo sapiens (Humano)', shortCode: 'HSA', maa: 69.58, proteins: 20431, taxon: 'Mammalia', isHuman: true },
-  { name: 'Mus musculus (Ratón)', shortCode: 'MMU', maa: 58.20, proteins: 17200, taxon: 'Mammalia' },
-  { name: 'Rattus norvegicus', shortCode: 'RNO', maa: 52.40, proteins: 16100, taxon: 'Mammalia' },
-  { name: 'Gallus gallus (Pollo)', shortCode: 'GGA', maa: 44.30, proteins: 15300, taxon: 'Aves' },
-  { name: 'Arabidopsis thaliana', shortCode: 'ATH', maa: 42.10, proteins: 27400, taxon: 'Plantae' },
-  { name: 'Danio rerio (Pez cebra)', shortCode: 'DRE', maa: 39.80, proteins: 14200, taxon: 'Actinopterygii' },
-  { name: 'Drosophila melanogaster', shortCode: 'DME', maa: 33.40, proteins: 13900, taxon: 'Insecta' },
-  { name: 'Caenorhabditis elegans', shortCode: 'CEL', maa: 25.10, proteins: 20100, taxon: 'Nematoda' },
-  { name: 'Saccharomyces cerevisiae', shortCode: 'SCE', maa: 12.80, proteins: 6275, taxon: 'Fungi' },
-  { name: 'Schizosaccharomyces pombe', shortCode: 'SPO', maa: 10.40, proteins: 5120, taxon: 'Fungi' },
-  { name: 'Escherichia coli K-12', shortCode: 'ECO', maa: 4.10, proteins: 4288, taxon: 'Bacteria' },
-  { name: 'Bacillus subtilis', shortCode: 'BSU', maa: 3.80, proteins: 4100, taxon: 'Bacteria' },
-  { name: 'Mycobacterium tuberculosis', shortCode: 'MTU', maa: 3.20, proteins: 3990, taxon: 'Bacteria' },
-  { name: 'Methanocaldococcus jannaschii', shortCode: 'MJA', maa: 1.75, proteins: 1780, taxon: 'Archaea' },
+  {
+    name: 'Homo sapiens (Humano)',
+    shortCode: 'HSA',
+    maa: 69.58,
+    proteins: 20431,
+    taxon: 'Mammalia',
+    isHuman: true,
+  },
+  { name: 'Mus musculus (Ratón)', shortCode: 'MMU', maa: 58.2, proteins: 17200, taxon: 'Mammalia' },
+  { name: 'Rattus norvegicus', shortCode: 'RNO', maa: 52.4, proteins: 16100, taxon: 'Mammalia' },
+  { name: 'Gallus gallus (Pollo)', shortCode: 'GGA', maa: 44.3, proteins: 15300, taxon: 'Aves' },
+  { name: 'Arabidopsis thaliana', shortCode: 'ATH', maa: 42.1, proteins: 27400, taxon: 'Plantae' },
+  {
+    name: 'Danio rerio (Pez cebra)',
+    shortCode: 'DRE',
+    maa: 39.8,
+    proteins: 14200,
+    taxon: 'Actinopterygii',
+  },
+  {
+    name: 'Drosophila melanogaster',
+    shortCode: 'DME',
+    maa: 33.4,
+    proteins: 13900,
+    taxon: 'Insecta',
+  },
+  {
+    name: 'Caenorhabditis elegans',
+    shortCode: 'CEL',
+    maa: 25.1,
+    proteins: 20100,
+    taxon: 'Nematoda',
+  },
+  { name: 'Saccharomyces cerevisiae', shortCode: 'SCE', maa: 12.8, proteins: 6275, taxon: 'Fungi' },
+  {
+    name: 'Schizosaccharomyces pombe',
+    shortCode: 'SPO',
+    maa: 10.4,
+    proteins: 5120,
+    taxon: 'Fungi',
+  },
+  { name: 'Escherichia coli K-12', shortCode: 'ECO', maa: 4.1, proteins: 4288, taxon: 'Bacteria' },
+  { name: 'Bacillus subtilis', shortCode: 'BSU', maa: 3.8, proteins: 4100, taxon: 'Bacteria' },
+  {
+    name: 'Mycobacterium tuberculosis',
+    shortCode: 'MTU',
+    maa: 3.2,
+    proteins: 3990,
+    taxon: 'Bacteria',
+  },
+  {
+    name: 'Methanocaldococcus jannaschii',
+    shortCode: 'MJA',
+    maa: 1.75,
+    proteins: 1780,
+    taxon: 'Archaea',
+  },
   { name: 'Mycoplasma genitalium', shortCode: 'MGE', maa: 0.58, proteins: 482, taxon: 'Bacteria' },
 ];
 
@@ -75,7 +118,7 @@ export interface ProcessWorkload {
 export function calculateWorkload(
   speciesList: Species[],
   numProcesses: number,
-  algorithmType: 'algoritmo1_cyclic' | 'naive_block' = 'algoritmo1_cyclic'
+  algorithmType: 'algoritmo1_cyclic' | 'naive_block' = 'algoritmo1_cyclic',
 ): ProcessWorkload[] {
   const n = speciesList.length;
   const processes: ProcessWorkload[] = Array.from({ length: numProcesses }, (_, rank) => ({
@@ -99,7 +142,7 @@ export function calculateWorkload(
         processes[rank].hasHomoSapiens = true;
       }
       // Comparisons for row i in upper triangle: j from i+1 to n-1 (n - 1 - i comparisons)
-      processes[rank].comparisonsCount += (n - 1 - i);
+      processes[rank].comparisonsCount += n - 1 - i;
     }
   } else {
     // Algoritmo 1: Cyclic Interleaved Distribution to balance the triangular matrix
@@ -112,7 +155,7 @@ export function calculateWorkload(
       if (speciesList[i].isHuman || speciesList[i].name.includes('Homo sapiens')) {
         processes[rank].hasHomoSapiens = true;
       }
-      processes[rank].comparisonsCount += (n - 1 - i);
+      processes[rank].comparisonsCount += n - 1 - i;
     }
   }
 
@@ -123,7 +166,7 @@ export function calculateWorkload(
 // Para 300 especies: Balanceado vs Desbalanceado, metacache vs isend
 export const SCALABILITY_DATA = {
   processes: [1, 2, 4, 8, 16, 32, 64, 128, 256],
-  
+
   // 300 Especies Desbalanceado
   unbalanced: {
     phase3: {
@@ -144,7 +187,7 @@ export const SCALABILITY_DATA = {
     },
     total_isend: {
       time_sec: [854.0, 438.8, 222.1, 114.6, 59.2, 30.9, 16.87, 10.31, 7.74],
-    }
+    },
   },
 
   // 300 Especies Balanceado (sin el cuello de botella extremo de Homo sapiens)
@@ -159,7 +202,7 @@ export const SCALABILITY_DATA = {
       time_sec: [420.0, 219.9, 115.1, 60.8, 33.6, 20.9, 14.8, 17.5, 28.4],
     },
     phase4_isend: {
-      speedup: [1.0, 1.97, 3.90, 7.68, 15.1, 29.4, 56.8, 104.2, 172.0],
+      speedup: [1.0, 1.97, 3.9, 7.68, 15.1, 29.4, 56.8, 104.2, 172.0],
       time_sec: [420.0, 213.2, 107.7, 54.7, 27.8, 14.3, 7.39, 4.03, 2.44],
     },
     total_metacache: {
@@ -167,8 +210,8 @@ export const SCALABILITY_DATA = {
     },
     total_isend: {
       time_sec: [700.0, 354.6, 179.1, 90.8, 46.2, 23.7, 12.25, 6.61, 3.96],
-    }
-  }
+    },
+  },
 };
 
 // Fragmento de la Matriz PHYLIP real calculada (Secuencial vs MPI)
@@ -183,20 +226,148 @@ export interface PhylipPairComparison {
 }
 
 export const PHYLIP_SAMPLE_DATA: PhylipPairComparison[] = [
-  { spA: 'Homo sapiens', spB: 'Mus musculus', seqValue: 0.142857142857, mpiValue: 0.142857142857, delta: 0.0, rankComputed: 0, matchesK: 6 },
-  { spA: 'Homo sapiens', spB: 'Rattus norv.', seqValue: 0.166666666667, mpiValue: 0.166666666667, delta: 0.0, rankComputed: 0, matchesK: 5 },
-  { spA: 'Homo sapiens', spB: 'Gallus gallus', seqValue: 0.250000000000, mpiValue: 0.250000000000, delta: 0.0, rankComputed: 0, matchesK: 3 },
-  { spA: 'Homo sapiens', spB: 'Arabidopsis', seqValue: 0.500000000000, mpiValue: 0.500000000000, delta: 0.0, rankComputed: 0, matchesK: 1 },
-  { spA: 'Homo sapiens', spB: 'Danio rerio', seqValue: 0.333333333333, mpiValue: 0.333333333333, delta: 0.0, rankComputed: 0, matchesK: 2 },
-  { spA: 'Homo sapiens', spB: 'Drosophila', seqValue: 0.500000000000, mpiValue: 0.500000000000, delta: 0.0, rankComputed: 0, matchesK: 1 },
-  { spA: 'Homo sapiens', spB: 'C. elegans', seqValue: 0.500000000000, mpiValue: 0.500000000000, delta: 0.0, rankComputed: 0, matchesK: 1 },
-  { spA: 'Homo sapiens', spB: 'S. cerevisiae', seqValue: 1.000000000000, mpiValue: 1.000000000000, delta: 0.0, rankComputed: 0, matchesK: 0 },
-  { spA: 'Mus musculus', spB: 'Rattus norv.', seqValue: 0.090909090909, mpiValue: 0.090909090909, delta: 0.0, rankComputed: 1, matchesK: 10 },
-  { spA: 'Mus musculus', spB: 'Gallus gallus', seqValue: 0.200000000000, mpiValue: 0.200000000000, delta: 0.0, rankComputed: 1, matchesK: 4 },
-  { spA: 'Mus musculus', spB: 'Arabidopsis', seqValue: 0.500000000000, mpiValue: 0.500000000000, delta: 0.0, rankComputed: 1, matchesK: 1 },
-  { spA: 'Gallus gallus', spB: 'Danio rerio', seqValue: 0.250000000000, mpiValue: 0.250000000000, delta: 0.0, rankComputed: 3, matchesK: 3 },
-  { spA: 'Drosophila', spB: 'C. elegans', seqValue: 0.333333333333, mpiValue: 0.333333333333, delta: 0.0, rankComputed: 6, matchesK: 2 },
-  { spA: 'E. coli K-12', spB: 'B. subtilis', seqValue: 0.200000000000, mpiValue: 0.200000000000, delta: 0.0, rankComputed: 10, matchesK: 4 },
-  { spA: 'B. subtilis', spB: 'M. tubercul.', seqValue: 0.333333333333, mpiValue: 0.333333333333, delta: 0.0, rankComputed: 11, matchesK: 2 },
-  { spA: 'M. jannaschii', spB: 'M. genital.', seqValue: 1.000000000000, mpiValue: 1.000000000000, delta: 0.0, rankComputed: 13, matchesK: 0 },
+  {
+    spA: 'Homo sapiens',
+    spB: 'Mus musculus',
+    seqValue: 0.142857142857,
+    mpiValue: 0.142857142857,
+    delta: 0.0,
+    rankComputed: 0,
+    matchesK: 6,
+  },
+  {
+    spA: 'Homo sapiens',
+    spB: 'Rattus norv.',
+    seqValue: 0.166666666667,
+    mpiValue: 0.166666666667,
+    delta: 0.0,
+    rankComputed: 0,
+    matchesK: 5,
+  },
+  {
+    spA: 'Homo sapiens',
+    spB: 'Gallus gallus',
+    seqValue: 0.25,
+    mpiValue: 0.25,
+    delta: 0.0,
+    rankComputed: 0,
+    matchesK: 3,
+  },
+  {
+    spA: 'Homo sapiens',
+    spB: 'Arabidopsis',
+    seqValue: 0.5,
+    mpiValue: 0.5,
+    delta: 0.0,
+    rankComputed: 0,
+    matchesK: 1,
+  },
+  {
+    spA: 'Homo sapiens',
+    spB: 'Danio rerio',
+    seqValue: 0.333333333333,
+    mpiValue: 0.333333333333,
+    delta: 0.0,
+    rankComputed: 0,
+    matchesK: 2,
+  },
+  {
+    spA: 'Homo sapiens',
+    spB: 'Drosophila',
+    seqValue: 0.5,
+    mpiValue: 0.5,
+    delta: 0.0,
+    rankComputed: 0,
+    matchesK: 1,
+  },
+  {
+    spA: 'Homo sapiens',
+    spB: 'C. elegans',
+    seqValue: 0.5,
+    mpiValue: 0.5,
+    delta: 0.0,
+    rankComputed: 0,
+    matchesK: 1,
+  },
+  {
+    spA: 'Homo sapiens',
+    spB: 'S. cerevisiae',
+    seqValue: 1.0,
+    mpiValue: 1.0,
+    delta: 0.0,
+    rankComputed: 0,
+    matchesK: 0,
+  },
+  {
+    spA: 'Mus musculus',
+    spB: 'Rattus norv.',
+    seqValue: 0.090909090909,
+    mpiValue: 0.090909090909,
+    delta: 0.0,
+    rankComputed: 1,
+    matchesK: 10,
+  },
+  {
+    spA: 'Mus musculus',
+    spB: 'Gallus gallus',
+    seqValue: 0.2,
+    mpiValue: 0.2,
+    delta: 0.0,
+    rankComputed: 1,
+    matchesK: 4,
+  },
+  {
+    spA: 'Mus musculus',
+    spB: 'Arabidopsis',
+    seqValue: 0.5,
+    mpiValue: 0.5,
+    delta: 0.0,
+    rankComputed: 1,
+    matchesK: 1,
+  },
+  {
+    spA: 'Gallus gallus',
+    spB: 'Danio rerio',
+    seqValue: 0.25,
+    mpiValue: 0.25,
+    delta: 0.0,
+    rankComputed: 3,
+    matchesK: 3,
+  },
+  {
+    spA: 'Drosophila',
+    spB: 'C. elegans',
+    seqValue: 0.333333333333,
+    mpiValue: 0.333333333333,
+    delta: 0.0,
+    rankComputed: 6,
+    matchesK: 2,
+  },
+  {
+    spA: 'E. coli K-12',
+    spB: 'B. subtilis',
+    seqValue: 0.2,
+    mpiValue: 0.2,
+    delta: 0.0,
+    rankComputed: 10,
+    matchesK: 4,
+  },
+  {
+    spA: 'B. subtilis',
+    spB: 'M. tubercul.',
+    seqValue: 0.333333333333,
+    mpiValue: 0.333333333333,
+    delta: 0.0,
+    rankComputed: 11,
+    matchesK: 2,
+  },
+  {
+    spA: 'M. jannaschii',
+    spB: 'M. genital.',
+    seqValue: 1.0,
+    mpiValue: 1.0,
+    delta: 0.0,
+    rankComputed: 13,
+    matchesK: 0,
+  },
 ];

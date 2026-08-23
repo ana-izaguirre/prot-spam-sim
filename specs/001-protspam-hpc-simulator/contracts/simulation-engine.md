@@ -72,7 +72,7 @@ for each pattern p in patterns:
 emit terminal step with globalResults and avgDist = mean(dist)
 ```
 
-**Step ordering note**: all hit/miss steps for a pattern are emitted *before* any of that
+**Step ordering note**: all hit/miss steps for a pattern are emitted _before_ any of that
 pattern's extension steps, even though the extensions are computed inline during matching.
 The narration therefore reads as "find every hit, then score every hit" — a deliberate
 pedagogical grouping, not the interleaving a real implementation would perform.
@@ -130,6 +130,7 @@ terminal step but is not evaluated; `avgDist` is the synthetic value shown
 
 **Location**: `src/data/speciesData.ts`
 **Signature**
+
 ```ts
 calculateWorkload(
   speciesList: Species[],
@@ -137,6 +138,7 @@ calculateWorkload(
   algorithmType: 'algoritmo1_cyclic' | 'naive_block' = 'algoritmo1_cyclic'
 ): ProcessWorkload[]
 ```
+
 Pure; returns exactly `numProcesses` entries, indexed by rank.
 
 ### 2.1 Row cost
@@ -162,10 +164,10 @@ near-uniform pair count. Block gives rank 0 the entire expensive prefix.
 
 **Worked example**, `n = 300`, `P = 4`:
 
-| | Rank 0 | Rank 1 | Rank 2 | Rank 3 |
-|---|---:|---:|---:|---:|
+|              | Rank 0 | Rank 1 | Rank 2 | Rank 3 |
+| ------------ | -----: | -----: | -----: | -----: |
 | Cyclic pairs | 11 325 | 11 250 | 11 175 | 11 100 |
-| Block pairs | 19 650 | 14 025 | 8 400 | 2 775 |
+| Block pairs  | 19 650 | 14 025 |  8 400 |  2 775 |
 
 Cyclic spreads within 2 %; block gives rank 0 43.8 % of the work where an even split would
 be 25 %, and leaves rank 3 with 6.2 %. Both strategies sum to `300 × 299 / 2 = 44 850`.

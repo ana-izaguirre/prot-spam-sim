@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @layer base {
   :root {
@@ -27,7 +27,11 @@
   body {
     background-color: #020617;
     color: #f1f5f9;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family:
+      'Inter',
+      system-ui,
+      -apple-system,
+      sans-serif;
   }
 
   /*
@@ -104,7 +108,9 @@
     color: #0f172a;
   }
 
-  code, pre, .font-mono {
+  code,
+  pre,
+  .font-mono {
     font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   }
 }
@@ -115,7 +121,9 @@
   backdrop-filter: blur(12px);
   border: 1px solid var(--surface-border);
   border-radius: 1rem; /* rounded-2xl */
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .bento-card:hover {
@@ -148,14 +156,22 @@
 }
 
 @keyframes packet-transit {
-  0% { transform: translateX(0); opacity: 0; }
-  20% { opacity: 1; }
-  80% { opacity: 1; }
-  100% { transform: translateX(calc(100% - 14px)); opacity: 0; }
+  0% {
+    transform: translateX(0);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(calc(100% - 14px));
+    opacity: 0;
+  }
 }
 
 .packet-move-anim {
   animation: packet-transit 1.4s ease-in-out infinite;
 }
-
-

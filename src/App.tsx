@@ -16,7 +16,6 @@ import {
   Binary,
   BookOpen,
   X,
-  Sparkles,
   Github,
   Download,
   ExternalLink,
@@ -24,9 +23,6 @@ import {
   GraduationCap,
   Sun,
   Moon,
-  Globe,
-  FileText,
-  CheckCircle2,
   Menu,
   ChevronDown,
 } from 'lucide-react';
@@ -54,7 +50,8 @@ const NumericCorrectness = lazy(() =>
   import('./components/NumericCorrectness').then((m) => ({ default: m.NumericCorrectness })),
 );
 
-type SectionId = 'core_sim' | 'tfm_branches' | 'workload' | 'mpi_comm' | 'matrix' | 'scalability' | 'correctness';
+type SectionId =
+  'core_sim' | 'tfm_branches' | 'workload' | 'mpi_comm' | 'matrix' | 'scalability' | 'correctness';
 
 /**
  * Placeholder shown while a module chunk is in flight. It mirrors the shared
@@ -95,7 +92,11 @@ function AppContent() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const navigationItems: Array<{ id: SectionId; label: string; icon: React.FC<{ className?: string }> }> = [
+  const navigationItems: Array<{
+    id: SectionId;
+    label: string;
+    icon: React.FC<{ className?: string }>;
+  }> = [
     { id: 'core_sim', label: t('app.coreSim'), icon: Binary },
     { id: 'tfm_branches', label: t('app.tfmBranches'), icon: GitBranch },
     { id: 'workload', label: t('app.workload'), icon: Layers },
@@ -106,12 +107,54 @@ function AppContent() {
   ];
 
   const branches = [
-    { name: 'feat/mpi-phase4-metacache-isend', desc: lang === 'es' ? 'Versión MPI no bloqueante recomendada (isend + PendingSend)' : 'Recommended non-blocking MPI version (isend + PendingSend)', url: 'https://github.com/ana-izaguirre/ProtSpaM/tree/feat/mpi-phase4-metacache-isend' },
-    { name: 'feat/mpi-phase4-metacache', desc: lang === 'es' ? 'Fase 4 bloqueante con caché de metadatos (MPI_Send)' : 'Blocking Phase 4 with metadata cache (MPI_Send)', url: 'https://github.com/ana-izaguirre/ProtSpaM/tree/feat/mpi-phase4-metacache' },
-    { name: 'feat/mpi-phase3-a', desc: lang === 'es' ? 'Fase 3 paralela con lectura centralizada en Rank 0' : 'Parallel Phase 3 with centralized reading at Rank 0', url: 'https://github.com/ana-izaguirre/ProtSpaM/tree/feat/mpi-phase3-a' },
-    { name: 'feat/mpi-phase3-b', desc: lang === 'es' ? 'Fase 3 paralela con lectura distribuida de disco' : 'Parallel Phase 3 with distributed disk reading', url: 'https://github.com/ana-izaguirre/ProtSpaM/tree/feat/mpi-phase3-b' },
-    { name: 'feat/seq', desc: lang === 'es' ? 'Línea base secuencial limpia con checksum de palabras' : 'Clean sequential baseline with word checksum', url: 'https://github.com/ana-izaguirre/ProtSpaM/tree/feat/seq' },
-    { name: 'feat/mpi-phase4-metacache-isend-calcopt', desc: lang === 'es' ? 'Optimización de precálculo en ruta secuencial np=1' : 'Pattern precomputation on sequential path np=1', url: 'https://github.com/ana-izaguirre/ProtSpaM/tree/feat/mpi-phase4-metacache-isend-calcopt' },
+    {
+      name: 'feat/mpi-phase4-metacache-isend',
+      desc:
+        lang === 'es'
+          ? 'Versión MPI no bloqueante recomendada (isend + PendingSend)'
+          : 'Recommended non-blocking MPI version (isend + PendingSend)',
+      url: 'https://github.com/ana-izaguirre/ProtSpaM/tree/feat/mpi-phase4-metacache-isend',
+    },
+    {
+      name: 'feat/mpi-phase4-metacache',
+      desc:
+        lang === 'es'
+          ? 'Fase 4 bloqueante con caché de metadatos (MPI_Send)'
+          : 'Blocking Phase 4 with metadata cache (MPI_Send)',
+      url: 'https://github.com/ana-izaguirre/ProtSpaM/tree/feat/mpi-phase4-metacache',
+    },
+    {
+      name: 'feat/mpi-phase3-a',
+      desc:
+        lang === 'es'
+          ? 'Fase 3 paralela con lectura centralizada en Rank 0'
+          : 'Parallel Phase 3 with centralized reading at Rank 0',
+      url: 'https://github.com/ana-izaguirre/ProtSpaM/tree/feat/mpi-phase3-a',
+    },
+    {
+      name: 'feat/mpi-phase3-b',
+      desc:
+        lang === 'es'
+          ? 'Fase 3 paralela con lectura distribuida de disco'
+          : 'Parallel Phase 3 with distributed disk reading',
+      url: 'https://github.com/ana-izaguirre/ProtSpaM/tree/feat/mpi-phase3-b',
+    },
+    {
+      name: 'feat/seq',
+      desc:
+        lang === 'es'
+          ? 'Línea base secuencial limpia con checksum de palabras'
+          : 'Clean sequential baseline with word checksum',
+      url: 'https://github.com/ana-izaguirre/ProtSpaM/tree/feat/seq',
+    },
+    {
+      name: 'feat/mpi-phase4-metacache-isend-calcopt',
+      desc:
+        lang === 'es'
+          ? 'Optimización de precálculo en ruta secuencial np=1'
+          : 'Pattern precomputation on sequential path np=1',
+      url: 'https://github.com/ana-izaguirre/ProtSpaM/tree/feat/mpi-phase4-metacache-isend-calcopt',
+    },
   ];
 
   // jsPDF and its html2canvas dependency are ~390 kB that only matter when the
@@ -227,7 +270,9 @@ function AppContent() {
                             : 'text-slate-300 hover:bg-slate-900 hover:text-slate-50'
                         }`}
                       >
-                        <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-slate-950' : 'text-emerald-400'}`} />
+                        <Icon
+                          className={`w-3.5 h-3.5 ${isActive ? 'text-slate-950' : 'text-emerald-400'}`}
+                        />
                         <span>{item.label}</span>
                       </button>
                     );
@@ -245,7 +290,9 @@ function AppContent() {
                 type="button"
                 onClick={() => setLang('es')}
                 className={`px-3.5 py-2.5 sm:px-2 sm:py-1 rounded-md transition-colors text-[11px] ${
-                  lang === 'es' ? 'bg-emerald-500 text-slate-950 font-bold' : 'text-slate-400 hover:text-slate-50'
+                  lang === 'es'
+                    ? 'bg-emerald-500 text-slate-950 font-bold'
+                    : 'text-slate-400 hover:text-slate-50'
                 }`}
               >
                 ES
@@ -254,7 +301,9 @@ function AppContent() {
                 type="button"
                 onClick={() => setLang('en')}
                 className={`px-3.5 py-2.5 sm:px-2 sm:py-1 rounded-md transition-colors text-[11px] ${
-                  lang === 'en' ? 'bg-emerald-500 text-slate-950 font-bold' : 'text-slate-400 hover:text-slate-50'
+                  lang === 'en'
+                    ? 'bg-emerald-500 text-slate-950 font-bold'
+                    : 'text-slate-400 hover:text-slate-50'
                 }`}
               >
                 EN
@@ -268,7 +317,11 @@ function AppContent() {
               className="p-2.5 sm:p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-slate-50 transition-colors"
               title={theme === 'dark' ? 'Cambiar a modo claro' : 'Switch to dark mode'}
             >
-              {theme === 'dark' ? <Sun className="w-3.5 h-3.5 text-amber-400" /> : <Moon className="w-3.5 h-3.5 text-blue-400" />}
+              {theme === 'dark' ? (
+                <Sun className="w-3.5 h-3.5 text-amber-400" />
+              ) : (
+                <Moon className="w-3.5 h-3.5 text-blue-400" />
+              )}
             </button>
 
             {/* GitHub Repo */}
@@ -306,7 +359,11 @@ function AppContent() {
               title="Toggle Menu"
               aria-label="Abrir menú"
             >
-              {mobileMenuOpen ? <X className="w-5 h-5 sm:w-4 sm:h-4" /> : <Menu className="w-5 h-5 sm:w-4 sm:h-4" />}
+              {mobileMenuOpen ? (
+                <X className="w-5 h-5 sm:w-4 sm:h-4" />
+              ) : (
+                <Menu className="w-5 h-5 sm:w-4 sm:h-4" />
+              )}
             </button>
           </div>
         </div>
@@ -336,12 +393,12 @@ function AppContent() {
                     }`}
                   >
                     <div className="flex items-center gap-2">
-                      <Icon className={`w-4 h-4 ${isActive ? 'text-slate-950' : 'text-emerald-400'}`} />
+                      <Icon
+                        className={`w-4 h-4 ${isActive ? 'text-slate-950' : 'text-emerald-400'}`}
+                      />
                       <span>{item.label}</span>
                     </div>
-                    {isActive && (
-                      <span className="w-2 h-2 rounded-full bg-slate-950"></span>
-                    )}
+                    {isActive && <span className="w-2 h-2 rounded-full bg-slate-950"></span>}
                   </button>
                 );
               })}
@@ -396,7 +453,11 @@ function AppContent() {
               <div className="text-slate-400 text-[11px] mt-0.5">
                 <span className="sm:hidden">Ana Izaguirre Matamoros</span>
                 <span className="hidden sm:inline">
-                  {t('app.author')}: <strong className="text-slate-200 font-medium">Ana Izaguirre Matamoros</strong> &middot; {t('app.director')}: <strong className="text-slate-200 font-medium">Jorge González Domínguez</strong> &middot; {t('app.system')} FinisTerrae III
+                  {t('app.author')}:{' '}
+                  <strong className="text-slate-200 font-medium">Ana Izaguirre Matamoros</strong>{' '}
+                  &middot; {t('app.director')}:{' '}
+                  <strong className="text-slate-200 font-medium">Jorge González Domínguez</strong>{' '}
+                  &middot; {t('app.system')} FinisTerrae III
                 </span>
               </div>
             </div>
@@ -410,7 +471,9 @@ function AppContent() {
             >
               <Download className="w-3.5 h-3.5 text-emerald-400" />
               <span className="sm:hidden">{downloadSuccess ? t('app.downloaded') : 'PDF'}</span>
-              <span className="hidden sm:inline">{downloadSuccess ? t('app.downloaded') : t('app.downloadFicha')}</span>
+              <span className="hidden sm:inline">
+                {downloadSuccess ? t('app.downloaded') : t('app.downloadFicha')}
+              </span>
             </button>
             <a
               href="https://github.com/ana-izaguirre/ProtSpaM"
@@ -448,7 +511,9 @@ function AppContent() {
                 </div>
                 <div>
                   <h2 className="text-base font-bold text-slate-50 tracking-wide">
-                    {lang === 'es' ? 'Memoria del TFM & Arquitectura HPC' : 'TFM Master\'s Thesis & HPC Architecture'}
+                    {lang === 'es'
+                      ? 'Memoria del TFM & Arquitectura HPC'
+                      : "TFM Master's Thesis & HPC Architecture"}
                   </h2>
                   <p className="text-[11px] text-slate-400">
                     Máster Interuniversitario en Computación de Altas Prestaciones (UDC / CESGA)
@@ -469,7 +534,7 @@ function AppContent() {
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <div className="text-xs uppercase tracking-wider text-emerald-400 font-bold font-mono">
-                    {lang === 'es' ? 'Trabajo de Fin de Máster' : 'Master\'s Thesis'}
+                    {lang === 'es' ? 'Trabajo de Fin de Máster' : "Master's Thesis"}
                   </div>
                   <h3 className="text-sm font-bold text-slate-50 mt-1 leading-snug">
                     {t('app.bannerTitle')}
@@ -487,19 +552,27 @@ function AppContent() {
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 border-t border-slate-800/80 font-mono text-[11px]">
                 <div>
-                  <span className="text-slate-500 block text-[10px] uppercase">{t('app.author')}</span>
+                  <span className="text-slate-500 block text-[10px] uppercase">
+                    {t('app.author')}
+                  </span>
                   <span className="text-slate-200 font-semibold">Ana Izaguirre Matamoros</span>
                 </div>
                 <div>
-                  <span className="text-slate-500 block text-[10px] uppercase">{t('app.director')}</span>
+                  <span className="text-slate-500 block text-[10px] uppercase">
+                    {t('app.director')}
+                  </span>
                   <span className="text-slate-200 font-semibold">Jorge González Domínguez</span>
                 </div>
                 <div>
-                  <span className="text-slate-500 block text-[10px] uppercase">{t('app.system')}</span>
+                  <span className="text-slate-500 block text-[10px] uppercase">
+                    {t('app.system')}
+                  </span>
                   <span className="text-slate-200 font-semibold">FinisTerrae III (CESGA)</span>
                 </div>
                 <div>
-                  <span className="text-slate-500 block text-[10px] uppercase">{t('app.date')}</span>
+                  <span className="text-slate-500 block text-[10px] uppercase">
+                    {t('app.date')}
+                  </span>
                   <span className="text-slate-200 font-semibold">29/07/2026</span>
                 </div>
               </div>
@@ -538,9 +611,7 @@ function AppContent() {
                       </span>
                       <ExternalLink className="w-3 h-3 text-slate-600 group-hover:text-slate-300 shrink-0" />
                     </div>
-                    <p className="text-[11px] text-slate-400 leading-tight">
-                      {b.desc}
-                    </p>
+                    <p className="text-[11px] text-slate-400 leading-tight">{b.desc}</p>
                   </a>
                 ))}
               </div>
@@ -550,7 +621,9 @@ function AppContent() {
             <div className="text-xs space-y-3.5 leading-relaxed text-slate-300 pt-2 border-t border-slate-800">
               <div className="bg-slate-950 p-4 rounded-xl border border-slate-800">
                 <h4 className="font-bold text-blue-400 uppercase text-[11px] mb-1.5">
-                  {lang === 'es' ? '1. Algoritmo 1: Partición Cíclica de la Media Matriz' : '1. Algorithm 1: Cyclic Partitioning of Half Matrix'}
+                  {lang === 'es'
+                    ? '1. Algoritmo 1: Partición Cíclica de la Media Matriz'
+                    : '1. Algorithm 1: Cyclic Partitioning of Half Matrix'}
                 </h4>
                 <p className="text-slate-400">
                   {lang === 'es'
@@ -561,7 +634,9 @@ function AppContent() {
 
               <div className="bg-slate-950 p-4 rounded-xl border border-slate-800">
                 <h4 className="font-bold text-emerald-400 uppercase text-[11px] mb-1.5">
-                  {lang === 'es' ? '2. Comunicación Asíncrona: isend vs metacache' : '2. Asynchronous Communication: isend vs metacache'}
+                  {lang === 'es'
+                    ? '2. Comunicación Asíncrona: isend vs metacache'
+                    : '2. Asynchronous Communication: isend vs metacache'}
                 </h4>
                 <p className="text-slate-400">
                   {lang === 'es'
@@ -572,7 +647,9 @@ function AppContent() {
 
               <div className="bg-slate-950 p-4 rounded-xl border border-slate-800">
                 <h4 className="font-bold text-orange-400 uppercase text-[11px] mb-1.5">
-                  {lang === 'es' ? '3. Invarianza Numérica y Cero Error en Coma Flotante' : '3. Numerical Invariance & Zero Floating-Point Error'}
+                  {lang === 'es'
+                    ? '3. Invarianza Numérica y Cero Error en Coma Flotante'
+                    : '3. Numerical Invariance & Zero Floating-Point Error'}
                 </h4>
                 <p className="text-slate-400">
                   {lang === 'es'
