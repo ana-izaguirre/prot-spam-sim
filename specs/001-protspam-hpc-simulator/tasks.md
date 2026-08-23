@@ -137,3 +137,20 @@ here so the migration diff stays reviewable.
   `og:url` tags are emitted in CI without hard-coding an origin in the repository.
   **Verify**: workflow YAML parses; the guard step passes locally; a build with
   `SITE_URL` set emits canonical and `og:url`, and omits both without it.
+
+- [X] **T022** — Move the deployment from Netlify to GitHub Pages
+  **Branch**: `ci/t022-github-pages-deploy` → base `main`
+  **Files**: `.github/workflows/ci.yml`, `astro.config.mjs`,
+  `src/layouts/BaseLayout.astro`, `src/pages/404.astro`, `playwright.config.ts`,
+  `tests/smoke.spec.ts`, `scripts/check-deployment.sh`, `public/.nojekyll` (new),
+  `README.md`, `README.es.md`; delete `netlify.toml`.
+  Netlify credits ran out. The deploy job is replaced by `upload-pages-artifact` +
+  `deploy-pages`, authenticated by the workflow's OIDC token rather than secrets.
+  Pages serves a project site from `/<repo>/`, so production builds set `BASE_PATH`
+  and the two hard-coded root-relative URLs move to `import.meta.env.BASE_URL`; the
+  Playwright config and suite follow the same variable so the smoke suite exercises the
+  real production path.
+  **Trade-offs accepted**: one site per repository, so no per-pull-request previews, and
+  Pages serves no custom cache or security headers (`netlify.toml` is gone).
+  **Verify**: build with and without `BASE_PATH` emits correctly prefixed asset, favicon
+  and 404 URLs; the smoke suite passes in both configurations.

@@ -14,6 +14,10 @@ const { title, description, lang = 'es' } = Astro.props;
 // (`site` in astro.config.mjs). Without one, a canonical or og:url tag would
 // point at localhost, which is worse than omitting it.
 const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
+
+// Under a project-site base path, a root-relative URL would resolve to the
+// origin rather than to the site. BASE_URL carries the configured prefix.
+const base = import.meta.env.BASE_URL;
 ---
 
 <!doctype html>
@@ -32,7 +36,7 @@ const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : un
     <meta name="color-scheme" content="dark light" />
     <meta name="theme-color" content="#020617" />
 
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`.replace('//', '/')} />
     {canonical && <link rel="canonical" href={canonical} />}
 
     <meta property="og:type" content="website" />

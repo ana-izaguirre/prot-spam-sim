@@ -15,6 +15,11 @@ export default defineConfig({
   // localhost is worse than omitting them.
   site: process.env.SITE_URL || undefined,
 
+  // GitHub Pages serves a project site from /<repo>/, not from the origin root,
+  // so every emitted URL needs that prefix. BASE_PATH is set by the workflow;
+  // locally it stays '/' so `astro dev` behaves as before.
+  base: process.env.BASE_PATH || '/',
+
   // React 19 powers the seven interactive modules, mounted as a single island.
   integrations: [react()],
 

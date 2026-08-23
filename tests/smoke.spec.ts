@@ -30,7 +30,8 @@ function collectErrors(page: Page): string[] {
 }
 
 test('the site is up and serves prerendered content', async ({ page }) => {
-  const response = await page.goto('/');
+  // './' rather than '/': under a base path the root is not the site.
+  const response = await page.goto('./');
   expect(response?.status(), 'the site should respond').toBe(200);
   await expect(page).toHaveTitle(/ProtSpam/);
 
@@ -46,7 +47,7 @@ test('the island hydrates and every module opens', async ({ page }) => {
   // A wide viewport keeps all seven items in the navigation bar rather than
   // behind the overflow menu.
   await page.setViewportSize({ width: 1800, height: 1000 });
-  await page.goto('/');
+  await page.goto('./');
 
   // Hydration is observable: an un-hydrated island ignores this click.
   const nav = page.locator('header nav button:visible');
@@ -64,7 +65,7 @@ test('the island hydrates and every module opens', async ({ page }) => {
 
 test('language and theme switch and survive a reload', async ({ page }) => {
   await page.setViewportSize({ width: 1800, height: 1000 });
-  await page.goto('/');
+  await page.goto('./');
 
   await page.locator('header button', { hasText: /^EN$/ }).first().click();
   await expect(page.locator('header nav button:visible').first()).toContainText('Base Algorithm');
@@ -80,7 +81,7 @@ test('language and theme switch and survive a reload', async ({ page }) => {
 
 test('the base simulator advances a step', async ({ page }) => {
   await page.setViewportSize({ width: 1800, height: 1000 });
-  await page.goto('/');
+  await page.goto('./');
 
   const counter = page.locator('main').getByText(/Paso\s+\d+\s+de\s+\d+/).first();
   await expect(counter).toContainText('Paso 0');

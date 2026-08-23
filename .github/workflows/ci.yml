@@ -15,6 +15,8 @@ concurrency:
 
 permissions:
   contents: read
+  pages: write
+  id-token: write
 
 jobs:
   check:
@@ -40,6 +42,10 @@ jobs:
           # Set the SITE_URL repository variable to the production origin so the
           # build emits canonical and og:url tags. Without it they are omitted.
           SITE_URL: ${{ vars.SITE_URL }}
+          # GitHub Pages serves a project site from /<repo>/, so every emitted
+          # URL needs that prefix. Pull requests build at the root, which is what
+          # the smoke suite expects.
+          BASE_PATH: ${{ github.ref == 'refs/heads/main' && format('/{0}/', github.event.repository.name) || '/' }}
 
       - name: Check the build produced what it should
         run: |
@@ -96,17 +102,15 @@ jobs:
           retention-days: 7
 
   deploy:
-    name: Deploy to Netlify
+    name: Deploy to GitHub Pages
     needs: [check, smoke]
+    # Pages publishes one site per repository, so only main deploys. Pull
+    # requests still run check and smoke; they simply have nowhere to publish.
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    # Secrets are not exposed to pull requests from forks, so a fork PR would
-    # fail here rather than deploy. Let it build and skip the deploy instead.
-    if: >-
-      github.event_name != 'pull_request' ||
-      github.event.pull_request.head.repo.full_name == github.repository
     environment:
-      name: ${{ github.ref == 'refs/heads/main' && 'production' || 'preview' }}
-      url: ${{ steps.netlify.outputs.url }}
+      name: github-pages
+      url: ${{ steps.pages.outputs.page_url }}
     steps:
       - name: Download the built site
         uses: actions/download-artifact@v4
@@ -114,44 +118,21 @@ jobs:
           name: dist
           path: dist
 
+      - name: Package it for Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
       - name: Deploy
-        id: netlify
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-        run: |
-          set -euo pipefail
-
-          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            # Production deploy of an already-built directory.
-            npx --yes netlify-cli@27 deploy \
-              --dir=dist --prod --no-build \
-              --message "main@${{ github.sha }} (run ${{ github.run_number }})" \
-              --json > deploy.json
-            url=$(node -p "require('./deploy.json').deploy_url || require('./deploy.json').url")
-          else
-            # Preview deploy, aliased so the URL is stable across pushes to the PR.
-            npx --yes netlify-cli@27 deploy \
-              --dir=dist --no-build \
-              --alias "pr-${{ github.event.number }}" \
-              --message "PR ${{ github.event.number }} @${{ github.sha }}" \
-              --json > deploy.json
-            url=$(node -p "require('./deploy.json').deploy_url")
-          fi
-
-          echo "url=$url" >> "$GITHUB_OUTPUT"
-          {
-            echo "### Deployed"
-            echo
-            echo "$url"
-          } >> "$GITHUB_STEP_SUMMARY"
+        id: pages
+        uses: actions/deploy-pages@v4
 
       - name: Verify the deployment is actually serving
         run: |
           set -euo pipefail
-          url="${{ steps.netlify.outputs.url }}"
+          url="${{ steps.pages.outputs.page_url }}"
 
-          # Netlify can answer before the deploy has fully propagated, so retry.
+          # Pages can answer before the deploy has propagated to the edge.
           for attempt in 1 2 3 4 5; do
             code=$(curl -sS -o body.html -w '%{http_code}' --max-time 30 "$url" || echo 000)
             [ "$code" = "200" ] && break
@@ -163,3 +144,9 @@ jobs:
           grep -q 'ProtSpam HPC Suite' body.html \
             || { echo "::error::$url responded but served no prerendered markup"; exit 1; }
           echo "$url is up and serving prerendered HTML"
+
+          {
+            echo "### Deployed"
+            echo
+            echo "$url"
+          } >> "$GITHUB_STEP_SUMMARY"
