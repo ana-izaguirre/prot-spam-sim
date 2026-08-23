@@ -1,0 +1,13 @@
+---
+import AppShell from '../islands/AppShell';
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="ProtSpam MPI HPC Suite & Simulator"
+  description="Simulador de reparto de carga MPI, matrices triangulares y escalabilidad HPC para ProtSpam."
+>
+  <!-- The active module, language and theme are shared client state, so the whole
+       suite hydrates as one island. See specs/.../plan.md, decision D3. -->
+  <AppShell client:only="react" />
+</BaseLayout>

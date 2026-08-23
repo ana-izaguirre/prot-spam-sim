@@ -1,5 +1,5 @@
 import jsPDF from 'jspdf';
-import { Language } from '../context/LanguageThemeContext';
+import type { Language } from '../context/LanguageThemeContext';
 
 export function generateTFMPdf(lang: Language = 'es') {
   const doc = new jsPDF({

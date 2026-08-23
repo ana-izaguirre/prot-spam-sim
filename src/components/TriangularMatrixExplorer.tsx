@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { SPECIES_300_UNBALANCED, Species } from '../data/speciesData';
+import { SPECIES_300_UNBALANCED } from '../data/speciesData';
+import type { Species } from '../data/speciesData';
 import { useAppLanguageTheme } from '../context/LanguageThemeContext';
 import { Grid, Eye, Cpu, Zap, Sparkles } from 'lucide-react';
 
