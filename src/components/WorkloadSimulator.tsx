@@ -34,8 +34,6 @@ import {
   Sliders,
   BarChart3,
   Server,
-  Activity,
-  CheckCircle2,
 } from 'lucide-react';
 
 Chart.register(BarController, BarElement, CategoryScale, LinearScale, Tooltip, Legend);
@@ -55,7 +53,9 @@ export const WorkloadSimulator: React.FC = () => {
   const [numProcesses, setNumProcesses] = useState<number>(8);
   const [datasetType, setDatasetType] = useState<'64' | '300'>('300');
   const [viewMetric, setViewMetric] = useState<'maa' | 'species' | 'comparisons'>('maa');
-  const [algoType, setAlgoType] = useState<'algoritmo1_cyclic' | 'naive_block'>('algoritmo1_cyclic');
+  const [algoType, setAlgoType] = useState<'algoritmo1_cyclic' | 'naive_block'>(
+    'algoritmo1_cyclic',
+  );
 
   // Automated Demo Mode state
   const [isDemoActive, setIsDemoActive] = useState<boolean>(false);
@@ -247,7 +247,7 @@ export const WorkloadSimulator: React.FC = () => {
         (l) =>
           `[${l.time}] [${l.phase}] [${l.level.toUpperCase()}] ${l.message}${
             l.detail ? ` (${l.detail})` : ''
-          }`
+          }`,
       )
       .join('\n');
     // The Clipboard API rejects when the permission is denied, when the page is
@@ -450,12 +450,12 @@ export const WorkloadSimulator: React.FC = () => {
           ? 'Carga en Maa (Millones de Aminoácidos)'
           : 'Workload in Maa (Million Amino Acids)'
         : viewMetric === 'comparisons'
-        ? lang === 'es'
-          ? 'Pares Asignados (j > i)'
-          : 'Assigned Pairs (j > i)'
-        : lang === 'es'
-        ? 'Especies Asignadas'
-        : 'Assigned Species';
+          ? lang === 'es'
+            ? 'Pares Asignados (j > i)'
+            : 'Assigned Pairs (j > i)'
+          : lang === 'es'
+            ? 'Especies Asignadas'
+            : 'Assigned Species';
 
     if (chartInstanceRef.current) {
       chartInstanceRef.current.data.labels = labels;
@@ -468,8 +468,7 @@ export const WorkloadSimulator: React.FC = () => {
       // the cartesian-only members are narrowed away. The chart is created below
       // as a bar chart, so the cartesian shape is guaranteed at runtime.
       const xTicks = chartInstanceRef.current.options.scales?.x?.ticks as
-        | { font?: Record<string, unknown>; maxRotation?: number }
-        | undefined;
+        { font?: Record<string, unknown>; maxRotation?: number } | undefined;
       if (xTicks) {
         xTicks.font = {
           family: 'JetBrains Mono',
@@ -479,16 +478,15 @@ export const WorkloadSimulator: React.FC = () => {
       }
 
       const yScale = chartInstanceRef.current.options.scales?.y as
-        | { title?: { text?: string } }
-        | undefined;
+        { title?: { text?: string } } | undefined;
       const yTitle = yScale?.title;
       if (yTitle) {
         yTitle.text =
           viewMetric === 'maa'
             ? 'Millones de Aminoácidos (Maa)'
             : viewMetric === 'comparisons'
-            ? 'Comparaciones (j > i)'
-            : 'Nº Especies';
+              ? 'Comparaciones (j > i)'
+              : 'Nº Especies';
       }
 
       // The instance is mutated rather than recreated, so a theme switch has to
@@ -588,8 +586,8 @@ export const WorkloadSimulator: React.FC = () => {
                 viewMetric === 'maa'
                   ? 'Millones de Aminoácidos (Maa)'
                   : viewMetric === 'comparisons'
-                  ? 'Comparaciones (j > i)'
-                  : 'Nº Especies',
+                    ? 'Comparaciones (j > i)'
+                    : 'Nº Especies',
               color: chartInk.axisTitle,
               font: { size: 11 },
             },
@@ -763,9 +761,7 @@ export const WorkloadSimulator: React.FC = () => {
               <span>Ratio &lambda;:</span>
               <strong
                 className={
-                  imbalanceFactor > 1.4
-                    ? 'text-orange-400 font-mono'
-                    : 'text-emerald-400 font-mono'
+                  imbalanceFactor > 1.4 ? 'text-orange-400 font-mono' : 'text-emerald-400 font-mono'
                 }
               >
                 {imbalanceFactor.toFixed(2)}x
@@ -849,7 +845,9 @@ export const WorkloadSimulator: React.FC = () => {
                       : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700'
                   }`}
                 >
-                  <span className="whitespace-nowrap">{lang === 'es' ? '64 Especies' : '64 Species'}</span>
+                  <span className="whitespace-nowrap">
+                    {lang === 'es' ? '64 Especies' : '64 Species'}
+                  </span>
                   <span className="text-[10px] font-normal opacity-80 whitespace-nowrap">
                     {lang === 'es' ? '(Homogéneo)' : '(Homogeneous)'}
                   </span>
@@ -863,7 +861,9 @@ export const WorkloadSimulator: React.FC = () => {
                       : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700'
                   }`}
                 >
-                  <span className="whitespace-nowrap">{lang === 'es' ? '300 Especies' : '300 Species'}</span>
+                  <span className="whitespace-nowrap">
+                    {lang === 'es' ? '300 Especies' : '300 Species'}
+                  </span>
                   <span className="text-[10px] font-normal opacity-80 whitespace-nowrap">
                     {lang === 'es' ? '(Desbalanceado)' : '(Unbalanced)'}
                   </span>
@@ -886,7 +886,9 @@ export const WorkloadSimulator: React.FC = () => {
                       : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700'
                   }`}
                 >
-                  <span className="whitespace-nowrap">{lang === 'es' ? 'Carga (Maa)' : 'Workload (Maa)'}</span>
+                  <span className="whitespace-nowrap">
+                    {lang === 'es' ? 'Carga (Maa)' : 'Workload (Maa)'}
+                  </span>
                   <span className="text-[10px] font-normal opacity-80 whitespace-nowrap">
                     {lang === 'es' ? 'Aminoácidos' : 'Amino Acids'}
                   </span>
@@ -900,7 +902,9 @@ export const WorkloadSimulator: React.FC = () => {
                       : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700'
                   }`}
                 >
-                  <span className="whitespace-nowrap">{lang === 'es' ? 'Pares (j > i)' : 'Pairs (j > i)'}</span>
+                  <span className="whitespace-nowrap">
+                    {lang === 'es' ? 'Pares (j > i)' : 'Pairs (j > i)'}
+                  </span>
                   <span className="text-[10px] font-normal opacity-80 whitespace-nowrap">
                     {lang === 'es' ? 'Media Matriz' : 'Half-Matrix'}
                   </span>
@@ -924,7 +928,9 @@ export const WorkloadSimulator: React.FC = () => {
                   }`}
                 >
                   <span className="whitespace-nowrap">{t('workload.cyclic')}</span>
-                  <span className="text-[10px] font-normal opacity-80 whitespace-nowrap">(i % P)</span>
+                  <span className="text-[10px] font-normal opacity-80 whitespace-nowrap">
+                    (i % P)
+                  </span>
                 </button>
                 <button
                   type="button"
@@ -997,8 +1003,8 @@ export const WorkloadSimulator: React.FC = () => {
                   ? 'Cíclico (i % P)'
                   : 'Cyclic (i % P)'
                 : lang === 'es'
-                ? 'Bloques (i / B)'
-                : 'Blocks (i / B)'}
+                  ? 'Bloques (i / B)'
+                  : 'Blocks (i / B)'}
             </div>
           </div>
 
@@ -1015,7 +1021,9 @@ export const WorkloadSimulator: React.FC = () => {
               {datasetType === '300' && (
                 <>
                   <span className="w-2.5 h-2.5 rounded bg-orange-500 inline-block ml-2" />
-                  <span className="text-orange-400 font-semibold">{lang === 'es' ? 'Homo sapiens (69.58 Maa)' : 'Homo sapiens (69.58 Maa)'}</span>
+                  <span className="text-orange-400 font-semibold">
+                    {lang === 'es' ? 'Homo sapiens (69.58 Maa)' : 'Homo sapiens (69.58 Maa)'}
+                  </span>
                 </>
               )}
             </div>
@@ -1070,8 +1078,8 @@ export const WorkloadSimulator: React.FC = () => {
             {datasetType === '300'
               ? 'Homo sapiens (69.58 Maa)'
               : lang === 'es'
-              ? 'Especie máx (~16 Maa)'
-              : 'Max species (~16 Maa)'}
+                ? 'Especie máx (~16 Maa)'
+                : 'Max species (~16 Maa)'}
           </div>
         </div>
 
@@ -1293,12 +1301,14 @@ export const WorkloadSimulator: React.FC = () => {
                       isWarn
                         ? 'bg-orange-500/10 border-l-2 border-orange-500 text-orange-200'
                         : isSuccess
-                        ? 'bg-emerald-500/10 border-l-2 border-emerald-500 text-emerald-200'
-                        : 'hover:bg-slate-900/60'
+                          ? 'bg-emerald-500/10 border-l-2 border-emerald-500 text-emerald-200'
+                          : 'hover:bg-slate-900/60'
                     }`}
                   >
                     {/* Timestamp */}
-                    <span className="text-slate-500 text-[11px] shrink-0 font-mono">{log.time}</span>
+                    <span className="text-slate-500 text-[11px] shrink-0 font-mono">
+                      {log.time}
+                    </span>
 
                     {/* Phase Badge */}
                     <span
@@ -1306,14 +1316,14 @@ export const WorkloadSimulator: React.FC = () => {
                         log.phase === 'INIT'
                           ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
                           : log.phase === 'DATA'
-                          ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
-                          : log.phase === 'PART'
-                          ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
-                          : log.phase === 'COMPUTE'
-                          ? 'bg-sky-500/20 text-sky-300 border border-sky-500/30'
-                          : log.phase === 'WARN'
-                          ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
-                          : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                            ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
+                            : log.phase === 'PART'
+                              ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
+                              : log.phase === 'COMPUTE'
+                                ? 'bg-sky-500/20 text-sky-300 border border-sky-500/30'
+                                : log.phase === 'WARN'
+                                  ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
+                                  : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
                       }`}
                     >
                       [{log.phase}]
@@ -1326,10 +1336,10 @@ export const WorkloadSimulator: React.FC = () => {
                           isWarn
                             ? 'text-orange-300 font-semibold'
                             : isSuccess
-                            ? 'text-emerald-300 font-semibold'
-                            : isMpi
-                            ? 'text-purple-300'
-                            : 'text-slate-200'
+                              ? 'text-emerald-300 font-semibold'
+                              : isMpi
+                                ? 'text-purple-300'
+                                : 'text-slate-200'
                         }`}
                       >
                         {log.message}
@@ -1349,13 +1359,24 @@ export const WorkloadSimulator: React.FC = () => {
           {/* Terminal Footer Status Bar */}
           <div className="bg-slate-900/60 border-t border-slate-800/80 px-4 py-2 flex flex-wrap items-center justify-between text-[10px] text-slate-500 font-mono gap-2">
             <div className="flex items-center gap-3">
-              <span>COMM: <strong className="text-slate-400">MPI_COMM_WORLD</strong></span>
-              <span>RANKS: <strong className="text-emerald-400">P={numProcesses}</strong></span>
-              <span>DATASET: <strong className="text-slate-400">{datasetType} species</strong></span>
+              <span>
+                COMM: <strong className="text-slate-400">MPI_COMM_WORLD</strong>
+              </span>
+              <span>
+                RANKS: <strong className="text-emerald-400">P={numProcesses}</strong>
+              </span>
+              <span>
+                DATASET: <strong className="text-slate-400">{datasetType} species</strong>
+              </span>
             </div>
             <div className="flex items-center gap-3">
-              <span>PAIRS: <strong className="text-blue-400">{totalComparisons.toLocaleString()}</strong></span>
-              <span>ENTRIES: <strong className="text-slate-400">{filteredLogs.length}</strong></span>
+              <span>
+                PAIRS:{' '}
+                <strong className="text-blue-400">{totalComparisons.toLocaleString()}</strong>
+              </span>
+              <span>
+                ENTRIES: <strong className="text-slate-400">{filteredLogs.length}</strong>
+              </span>
             </div>
           </div>
         </div>
@@ -1381,11 +1402,11 @@ export const WorkloadSimulator: React.FC = () => {
                   <code className="text-emerald-400 bg-slate-950 px-1.5 py-0.5 rounded font-mono">
                     j &gt; i
                   </code>
-                  ), la fila 0 requiere{' '}
-                  <span className="font-mono text-emerald-300">N - 1</span> comparaciones mientras la
-                  fila N-2 solo requiere <span className="font-mono text-emerald-300">1</span>. Una
-                  partición por bloques contiguos colapsaría el balance (Rank 0 asumiría hasta el 50%
-                  de las comparaciones).
+                  ), la fila 0 requiere <span className="font-mono text-emerald-300">N - 1</span>{' '}
+                  comparaciones mientras la fila N-2 solo requiere{' '}
+                  <span className="font-mono text-emerald-300">1</span>. Una partición por bloques
+                  contiguos colapsaría el balance (Rank 0 asumiría hasta el 50% de las
+                  comparaciones).
                 </>
               ) : (
                 <>
@@ -1393,10 +1414,11 @@ export const WorkloadSimulator: React.FC = () => {
                   <code className="text-emerald-400 bg-slate-950 px-1.5 py-0.5 rounded font-mono">
                     j &gt; i
                   </code>
-                  ), row 0 requires <span className="font-mono text-emerald-300">N - 1</span> pairwise
-                  comparisons while row N-2 requires only{' '}
-                  <span className="font-mono text-emerald-300">1</span>. Contiguous block partitioning
-                  collapses load balance (Rank 0 would handle up to 50% of the workload).
+                  ), row 0 requires <span className="font-mono text-emerald-300">N - 1</span>{' '}
+                  pairwise comparisons while row N-2 requires only{' '}
+                  <span className="font-mono text-emerald-300">1</span>. Contiguous block
+                  partitioning collapses load balance (Rank 0 would handle up to 50% of the
+                  workload).
                 </>
               )}
             </p>
@@ -1409,8 +1431,8 @@ export const WorkloadSimulator: React.FC = () => {
                     Rank = i mod P
                   </code>
                   ). Sin embargo, en el conjunto de 300 especies, la disparidad biológica del
-                  proteoma humano (<strong className="text-orange-400">69.58 Maa</strong> frente a ~1.5
-                  Maa de bacterias) impone una barrera de espera en{' '}
+                  proteoma humano (<strong className="text-orange-400">69.58 Maa</strong> frente a
+                  ~1.5 Maa de bacterias) impone una barrera de espera en{' '}
                   <code className="text-purple-400 bg-slate-950 px-1.5 py-0.5 rounded font-mono">
                     MPI_Reduce
                   </code>

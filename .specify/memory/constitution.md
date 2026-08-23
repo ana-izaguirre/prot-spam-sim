@@ -12,16 +12,17 @@ explicitly marked as an aspiration.
 ### I. Didactic Fidelity Over Computational Fidelity
 
 The application is a **teaching instrument**, not a re-implementation of the Prot-SpaM
-C++ tool. Every module simulates the *shape* of the real algorithm (spaced-word
+C++ tool. Every module simulates the _shape_ of the real algorithm (spaced-word
 extraction, lexicographic indexing, gap-free extension, triangular partitioning,
 point-to-point communication) at a scale a human can follow step by step.
 
 Rules:
+
 - Simulated results MUST be reproducible and deterministic; no randomness at runtime.
 - Where a simplification is made (reduced substitution matrix, synthetic distance
   formula, fixed 12-step communication timeline), it MUST be documented in
   `research.md` and SHOULD be surfaced to the user in the UI copy.
-- Numbers presented as *experimental results* MUST come from the thesis measurement
+- Numbers presented as _experimental results_ MUST come from the thesis measurement
   set stored in `src/data/speciesData.ts` and MUST NOT be recomputed or interpolated
   in the browser.
 
@@ -30,6 +31,7 @@ Rules:
 Spanish and English are first-class, equally complete languages.
 
 Rules:
+
 - Every user-visible string MUST resolve through the `t(key)` dictionary in
   `LanguageThemeContext`, or through an inline `lang === 'es' ? … : …` ternary.
 - A key added to one language MUST be added to the other in the same change.
@@ -43,6 +45,7 @@ The suite is a static single-page application. It has no server, no database, no
 authentication, and performs no network requests at runtime.
 
 Rules:
+
 - No runtime `fetch`/XHR to application APIs. All datasets are compiled into the bundle.
 - Artifacts the user takes away (the TFM PDF factsheet) MUST be generated in-browser.
 - The only permitted external network dependency is the Google Fonts stylesheet in
@@ -53,6 +56,7 @@ Rules:
 The suite exists to communicate a specific Master's thesis. Every claim is attributable.
 
 Rules:
+
 - Performance figures, branch names, hardware descriptions, and speedup ratios MUST
   match the thesis and the public repository `ana-izaguirre/ProtSpaM`.
 - Each of the six Git branches described in the UI MUST link to its real branch URL.
@@ -64,6 +68,7 @@ Rules:
 A user must always be able to answer "why does the screen show this?".
 
 Rules:
+
 - Simulation state MUST be derived from explicit, enumerable step arrays or from pure
   functions of the control inputs — never from wall-clock time or accumulated drift.
 - Every animation MUST be steppable manually (previous/next) in addition to autoplay.
@@ -75,6 +80,7 @@ A pull request carries exactly one change: one defect fixed, one capability adde
 one refactor performed. A branch that fixes two unrelated defects is two branches.
 
 Rules:
+
 - The PR title states the single change. If it needs "and", it is two PRs.
 - Where changes are inherently sequential, they are **stacked**: each PR targets the
   previous one and they merge in order, rather than being collapsed into one diff.
@@ -93,6 +99,7 @@ started against an already-broken deployment produces changes whose effect canno
 attributed.
 
 Rules:
+
 - Run `npm run status:site` (or open the Netlify badge) before the first change of a
   session, and record the result in the first message about that work.
 - If production is down, restoring it takes precedence over whatever the task was.

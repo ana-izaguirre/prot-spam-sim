@@ -59,24 +59,26 @@ const base = import.meta.env.BASE_URL;
       rel="stylesheet"
     />
 
-    {/*
+    {
+      /*
       Apply the stored theme and language before first paint, so a returning
       visitor never sees the default dark/Spanish shell flash before React
       reconciles. This must stay in sync with LanguageThemeProvider: same two
       keys, same class names, same fallbacks.
-    */}
+    */
+    }
     <script is:inline>
       (function () {
         try {
-          var theme = window.localStorage.getItem('protspam_theme');
-          var root = document.documentElement;
+          const theme = window.localStorage.getItem('protspam_theme');
+          const root = document.documentElement;
           if (theme === 'light') {
             root.classList.add('light-theme');
             root.classList.remove('dark');
           }
-          var lang = window.localStorage.getItem('protspam_lang');
+          const lang = window.localStorage.getItem('protspam_lang');
           if (lang === 'en' || lang === 'es') root.lang = lang;
-        } catch (e) {
+        } catch {
           /* storage blocked: keep the server-rendered defaults */
         }
       })();

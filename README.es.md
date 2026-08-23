@@ -68,15 +68,15 @@ entregó a la siguiente, y sigue siendo el contrato al que se somete el código.
 
 ## Qué muestra el simulador
 
-| Módulo | Qué hace visible |
-|---|---|
-| **Algoritmo base** | Extracción de palabras espaciadas, indexación y extensión acotada por X-drop, narradas paso a paso |
-| **Ramas TFM** | Las seis ramas de desarrollo en C++, su fase y su aceleración medida |
-| **Reparto de carga** | Carga por rank con partición cíclica frente a por bloques: de dónde sale realmente el desbalance |
-| **Tráfico MPI** | `MPI_Send` bloqueante serializándose frente a `MPI_Isend` no bloqueante solapando |
-| **Matriz triangular** | Qué rank posee cada par y por qué media matriz no se calcula nunca |
-| **Escalabilidad** | Curvas medidas en FinisTerrae III, de 1 a 256 procesos, incluida la inversión de `metacache` a partir de 64 |
-| **Invarianza** | Valores PHYLIP secuenciales frente a paralelos, comparados a nivel de bits IEEE-754 |
+| Módulo                | Qué hace visible                                                                                            |
+| --------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **Algoritmo base**    | Extracción de palabras espaciadas, indexación y extensión acotada por X-drop, narradas paso a paso          |
+| **Ramas TFM**         | Las seis ramas de desarrollo en C++, su fase y su aceleración medida                                        |
+| **Reparto de carga**  | Carga por rank con partición cíclica frente a por bloques: de dónde sale realmente el desbalance            |
+| **Tráfico MPI**       | `MPI_Send` bloqueante serializándose frente a `MPI_Isend` no bloqueante solapando                           |
+| **Matriz triangular** | Qué rank posee cada par y por qué media matriz no se calcula nunca                                          |
+| **Escalabilidad**     | Curvas medidas en FinisTerrae III, de 1 a 256 procesos, incluida la inversión de `metacache` a partir de 64 |
+| **Invarianza**        | Valores PHYLIP secuenciales frente a paralelos, comparados a nivel de bits IEEE-754                         |
 
 Todo es cliente y determinista: sin backend, sin llamadas a API en ejecución, sin
 aleatoriedad. Los números de escalabilidad están transcritos del TFM y nunca se recalculan
@@ -128,7 +128,7 @@ npm run status:site   # ¿está producción en pie?
 **Despliegue.** Cada push a `main` y cada pull request ejecuta type-check → build → suite de
 humo en navegador; los push a `main` publican además en **GitHub Pages**. Un despliegue que
 no responda 200 con HTML prerenderizado hace fallar el run. No hacen falta secretos —Pages
-se autentica con el token OIDC del propio workflow—, pero *Settings → Pages → Source* debe
+se autentica con el token OIDC del propio workflow—, pero _Settings → Pages → Source_ debe
 estar en **GitHub Actions**. Define la variable `SITE_URL` como
 `https://ana-izaguirre.github.io/prot-spam-sim/` para emitir las etiquetas `canonical` y
 `og:url`.

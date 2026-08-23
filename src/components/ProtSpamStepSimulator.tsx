@@ -1,19 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAppLanguageTheme } from '../context/LanguageThemeContext';
-import {
-  Play,
-  Pause,
-  ChevronLeft,
-  ChevronRight,
-  RotateCcw,
-  HelpCircle,
-  Binary,
-  GitBranch,
-  Sparkles,
-  ArrowRight,
-  Calculator,
-  CheckCircle2,
-} from 'lucide-react';
+import { Play, Pause, ChevronLeft, ChevronRight, RotateCcw, Binary, Sparkles } from 'lucide-react';
 
 interface StepData {
   phase: string;
@@ -72,7 +59,7 @@ function scoreWindow(
   S2: string[],
   s1Pos: number,
   s2Pos: number,
-  length: number
+  length: number,
 ): number {
   let total = 0;
   for (let k = 0; k < length; k++) {
@@ -96,7 +83,7 @@ function extendWithDropoff(
   inBounds: (a: number, b: number) => boolean,
   S1: string[],
   S2: string[],
-  dropoff: number
+  dropoff: number,
 ): { length: number; score: number } {
   let running = 0;
   let best = 0;
@@ -132,11 +119,17 @@ export const ProtSpamStepSimulator: React.FC = () => {
   const [steps, setSteps] = useState<StepData[]>([]);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [playSpeed, setPlaySpeed] = useState<number>(1000);
-  const [blosumExplainer, setBlosumExplainer] = useState<{ a: string; b: string; score: number } | null>(null);
+  const [blosumExplainer, setBlosumExplainer] = useState<{
+    a: string;
+    b: string;
+    score: number;
+  } | null>(null);
 
   const generateSimulationSteps = () => {
     const rawPats = patternInput.split(',');
-    let patternList = rawPats.map((p) => p.trim().replace(/[^1*]/g, '')).filter((p) => p.length > 0);
+    let patternList = rawPats
+      .map((p) => p.trim().replace(/[^1*]/g, ''))
+      .filter((p) => p.length > 0);
     if (patternList.length === 0) patternList = ['1*11*1'];
 
     const s1Raw = s1Input.toUpperCase().replace(/[^A-Z]/g, '') || 'ACTG';
@@ -185,9 +178,10 @@ export const ProtSpamStepSimulator: React.FC = () => {
         s2Pos: -1,
         key: '-',
         patternStr: patternStr,
-        desc: lang === 'es' 
-          ? `<strong>spacedwords():</strong> Iniciando patrón binario <code>${patternStr}</code> en la secuencia S1.`
-          : `<strong>spacedwords():</strong> Starting binary pattern <code>${patternStr}</code> on sequence S1.`,
+        desc:
+          lang === 'es'
+            ? `<strong>spacedwords():</strong> Iniciando patrón binario <code>${patternStr}</code> en la secuencia S1.`
+            : `<strong>spacedwords():</strong> Starting binary pattern <code>${patternStr}</code> on sequence S1.`,
         memoryState: JSON.parse(JSON.stringify(tempMemoryState)),
         stackState: JSON.parse(JSON.stringify(tempStackState)),
         matchesState: [],
@@ -221,9 +215,10 @@ export const ProtSpamStepSimulator: React.FC = () => {
             s2Pos: -1,
             key,
             patternStr,
-            desc: lang === 'es'
-              ? `Extrayendo palabra espaciada: <strong>"${key}"</strong> en S1[${i}] según máscara <code>${patternStr}</code>.`
-              : `Extracting spaced word: <strong>"${key}"</strong> at S1[${i}] with mask <code>${patternStr}</code>.`,
+            desc:
+              lang === 'es'
+                ? `Extrayendo palabra espaciada: <strong>"${key}"</strong> en S1[${i}] según máscara <code>${patternStr}</code>.`
+                : `Extracting spaced word: <strong>"${key}"</strong> at S1[${i}] with mask <code>${patternStr}</code>.`,
             memoryState: JSON.parse(JSON.stringify(tempMemoryState)),
             stackState: JSON.parse(JSON.stringify(tempStackState)),
             matchesState: [],
@@ -246,9 +241,10 @@ export const ProtSpamStepSimulator: React.FC = () => {
         s2Pos: -1,
         key: '-',
         patternStr,
-        desc: lang === 'es'
-          ? `<strong>std::sort():</strong> Indexando ${sortedList.length} palabras espaciadas lexicográficamente en memoria para búsqueda O(log N).`
-          : `<strong>std::sort():</strong> Lexicographically sorting ${sortedList.length} spaced words in memory for fast O(log N) lookup.`,
+        desc:
+          lang === 'es'
+            ? `<strong>std::sort():</strong> Indexando ${sortedList.length} palabras espaciadas lexicográficamente en memoria para búsqueda O(log N).`
+            : `<strong>std::sort():</strong> Lexicographically sorting ${sortedList.length} spaced words in memory for fast O(log N) lookup.`,
         memoryState: JSON.parse(JSON.stringify(tempMemoryState)),
         stackState: JSON.parse(JSON.stringify(tempStackState)),
         matchesState: [],
@@ -284,16 +280,18 @@ export const ProtSpamStepSimulator: React.FC = () => {
               });
 
               newSteps.push({
-                phase: lang === 'es' ? 'Fase 4: calc_matches() (Hit)' : 'Phase 4: calc_matches() (Hit)',
+                phase:
+                  lang === 'es' ? 'Fase 4: calc_matches() (Hit)' : 'Phase 4: calc_matches() (Hit)',
                 badgeClass: 'bg-[#10b981] text-[#002113]',
                 activeFn: 'setwords',
                 s1Pos,
                 s2Pos: j,
                 key: s2Key,
                 patternStr,
-                desc: lang === 'es'
-                  ? `<strong>¡Coincidencia exacta de patrón!</strong> Clave <code>${s2Key}</code> coincide en S1[${s1Pos}] y S2[${j}].`
-                  : `<strong>Exact pattern match!</strong> Key <code>${s2Key}</code> matches at S1[${s1Pos}] and S2[${j}].`,
+                desc:
+                  lang === 'es'
+                    ? `<strong>¡Coincidencia exacta de patrón!</strong> Clave <code>${s2Key}</code> coincide en S1[${s1Pos}] y S2[${j}].`
+                    : `<strong>Exact pattern match!</strong> Key <code>${s2Key}</code> matches at S1[${s1Pos}] and S2[${j}].`,
                 matchedKey: s2Key,
                 memoryState: JSON.parse(JSON.stringify(accumulatedMemory)),
                 stackState: JSON.parse(JSON.stringify(tempStackState)),
@@ -317,7 +315,7 @@ export const ProtSpamStepSimulator: React.FC = () => {
                 (a, b) => a >= 0 && b >= 0,
                 S1,
                 S2,
-                paramD
+                paramD,
               );
 
               const rightExtension = extendWithDropoff(
@@ -325,7 +323,7 @@ export const ProtSpamStepSimulator: React.FC = () => {
                 (a, b) => a < S1.length && b < S2.length,
                 S1,
                 S2,
-                paramD
+                paramD,
               );
 
               const extLeft = leftExtension.length;
@@ -387,16 +385,18 @@ export const ProtSpamStepSimulator: React.FC = () => {
             activeStack.noMatches.push({ key: s2Key, s2Pos: j });
 
             newSteps.push({
-              phase: lang === 'es' ? 'Fase 4: calc_matches() (Miss)' : 'Phase 4: calc_matches() (Miss)',
+              phase:
+                lang === 'es' ? 'Fase 4: calc_matches() (Miss)' : 'Phase 4: calc_matches() (Miss)',
               badgeClass: 'bg-rose-500 text-slate-50',
               activeFn: 'setwords',
               s1Pos: -1,
               s2Pos: j,
               key: s2Key,
               patternStr,
-              desc: lang === 'es'
-                ? `Sin coincidencia para <code>${s2Key}</code> en S2[${j}]. Se avanza la ventana.`
-                : `No match for <code>${s2Key}</code> in S2[${j}]. Advancing sliding window.`,
+              desc:
+                lang === 'es'
+                  ? `Sin coincidencia para <code>${s2Key}</code> en S2[${j}]. Se avanza la ventana.`
+                  : `No match for <code>${s2Key}</code> in S2[${j}]. Advancing sliding window.`,
               matchedKey: null,
               memoryState: JSON.parse(JSON.stringify(accumulatedMemory)),
               stackState: JSON.parse(JSON.stringify(tempStackState)),
@@ -407,7 +407,9 @@ export const ProtSpamStepSimulator: React.FC = () => {
         }
       }
 
-      accumulatedPatternStack.push(JSON.parse(JSON.stringify(tempStackState[tempStackState.length - 1])));
+      accumulatedPatternStack.push(
+        JSON.parse(JSON.stringify(tempStackState[tempStackState.length - 1])),
+      );
 
       // Extension Evaluation Steps
       matchesEvaluated.forEach((match) => {
@@ -428,13 +430,14 @@ export const ProtSpamStepSimulator: React.FC = () => {
             patternStr: match.pattern,
             s1Extend: match.s1ExtIndices,
             s2Extend: match.s2ExtIndices,
-            desc: lang === 'es'
-              ? `Extensión sin gaps [${stepIdx + 1}/${fullAlignData.s1.length}]: S1(<strong>${char1Active}</strong>) &times; S2(<strong>${char2Active}</strong>) &rarr; puntuación: <strong>${
-                  subScore >= 0 ? '+' + subScore : subScore
-                }</strong> | Acumulado: <strong style="color:#38bdf8;">${subAccum}</strong>`
-              : `Gap-free extension [${stepIdx + 1}/${fullAlignData.s1.length}]: S1(<strong>${char1Active}</strong>) &times; S2(<strong>${char2Active}</strong>) &rarr; score: <strong>${
-                  subScore >= 0 ? '+' + subScore : subScore
-                }</strong> | Accumulated: <strong style="color:#38bdf8;">${subAccum}</strong>`,
+            desc:
+              lang === 'es'
+                ? `Extensión sin gaps [${stepIdx + 1}/${fullAlignData.s1.length}]: S1(<strong>${char1Active}</strong>) &times; S2(<strong>${char2Active}</strong>) &rarr; puntuación: <strong>${
+                    subScore >= 0 ? '+' + subScore : subScore
+                  }</strong> | Acumulado: <strong style="color:#38bdf8;">${subAccum}</strong>`
+                : `Gap-free extension [${stepIdx + 1}/${fullAlignData.s1.length}]: S1(<strong>${char1Active}</strong>) &times; S2(<strong>${char2Active}</strong>) &rarr; score: <strong>${
+                    subScore >= 0 ? '+' + subScore : subScore
+                  }</strong> | Accumulated: <strong style="color:#38bdf8;">${subAccum}</strong>`,
             memoryState: JSON.parse(JSON.stringify(accumulatedMemory)),
             stackState: JSON.parse(JSON.stringify(accumulatedPatternStack)),
             matchesState: JSON.parse(JSON.stringify(matchesEvaluated)),
@@ -460,8 +463,7 @@ export const ProtSpamStepSimulator: React.FC = () => {
       });
     });
 
-    const avgDist =
-      globalResults.reduce((acc, r) => acc + r.dist, 0) / (globalResults.length || 1);
+    const avgDist = globalResults.reduce((acc, r) => acc + r.dist, 0) / (globalResults.length || 1);
 
     newSteps.push({
       phase: lang === 'es' ? 'Fase 4: Matriz PHYLIP Completa' : 'Phase 4: Complete PHYLIP Matrix',
@@ -471,9 +473,10 @@ export const ProtSpamStepSimulator: React.FC = () => {
       s2Pos: -1,
       key: 'FIN',
       patternStr: 'GLOBAL',
-      desc: lang === 'es'
-        ? '<strong>Simulación finalizada.</strong> Se han consolidado todos los patrones, extensiones y la matriz de distancia evolutiva PHYLIP.'
-        : '<strong>Simulation finished.</strong> All spaced patterns, gap-free extensions, and the final PHYLIP evolutionary distance matrix are consolidated.',
+      desc:
+        lang === 'es'
+          ? '<strong>Simulación finalizada.</strong> Se han consolidado todos los patrones, extensiones y la matriz de distancia evolutiva PHYLIP.'
+          : '<strong>Simulation finished.</strong> All spaced patterns, gap-free extensions, and the final PHYLIP evolutionary distance matrix are consolidated.',
       memoryState: JSON.parse(JSON.stringify(accumulatedMemory)),
       stackState: JSON.parse(JSON.stringify(accumulatedPatternStack)),
       matchesState: [],
@@ -532,12 +535,8 @@ export const ProtSpamStepSimulator: React.FC = () => {
               <Binary className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-slate-50 tracking-wide">
-                {t('core.title')}
-              </h2>
-              <p className="text-xs text-slate-400">
-                {t('core.subtitle')}
-              </p>
+              <h2 className="text-base font-bold text-slate-50 tracking-wide">{t('core.title')}</h2>
+              <p className="text-xs text-slate-400">{t('core.subtitle')}</p>
             </div>
           </div>
 
@@ -553,9 +552,7 @@ export const ProtSpamStepSimulator: React.FC = () => {
             <Sparkles className="w-3.5 h-3.5" />
             <span>{t('core.howItWorks')}</span>
           </div>
-          <p className="text-slate-400">
-            {t('core.howItWorksDesc')}
-          </p>
+          <p className="text-slate-400">{t('core.howItWorksDesc')}</p>
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 pt-1 font-mono text-[11px]">
             <div className="bg-slate-900/80 p-2 rounded-lg border border-slate-800">
               <span className="text-pink-400 font-bold block">1. spacedwords()</span>
@@ -588,7 +585,8 @@ export const ProtSpamStepSimulator: React.FC = () => {
             {currentStepData?.phase || 'Fase 3'}
           </span>
           <span className="text-xs text-slate-400 font-mono">
-            {t('core.step')} <strong className="text-slate-50">{currentStep}</strong> {t('core.of')} {steps.length - 1}
+            {t('core.step')} <strong className="text-slate-50">{currentStep}</strong> {t('core.of')}{' '}
+            {steps.length - 1}
           </span>
         </div>
 
@@ -636,7 +634,9 @@ export const ProtSpamStepSimulator: React.FC = () => {
 
           {/* Speed controls */}
           <div className="flex items-center gap-1 pl-2 border-l border-slate-800">
-            <span className="text-[10px] text-slate-500 uppercase font-mono mr-1">{t('core.speed')}:</span>
+            <span className="text-[10px] text-slate-500 uppercase font-mono mr-1">
+              {t('core.speed')}:
+            </span>
             {[1500, 1000, 400].map((spd, idx) => (
               <button
                 key={spd}
@@ -743,7 +743,9 @@ export const ProtSpamStepSimulator: React.FC = () => {
 
           {/* S1 Row */}
           <div className="bg-slate-950 border border-slate-800 rounded-xl p-3">
-            <div className="text-[10px] font-bold text-slate-500 uppercase mb-1.5">S1 (Base Proteome)</div>
+            <div className="text-[10px] font-bold text-slate-500 uppercase mb-1.5">
+              S1 (Base Proteome)
+            </div>
             <div className="flex gap-1 overflow-x-auto pb-1">
               {s1Chars.map((char, idx) => {
                 const isWindow =
@@ -761,10 +763,10 @@ export const ProtSpamStepSimulator: React.FC = () => {
                       isExtended
                         ? 'bg-purple-600/30 border-purple-500 text-purple-200'
                         : isWindow
-                        ? currentStepData.matchedKey
-                          ? 'bg-emerald-500 border-emerald-400 text-slate-950'
-                          : 'bg-blue-600 border-blue-500 text-slate-50'
-                        : 'bg-slate-900 border-slate-800 text-slate-300'
+                          ? currentStepData.matchedKey
+                            ? 'bg-emerald-500 border-emerald-400 text-slate-950'
+                            : 'bg-blue-600 border-blue-500 text-slate-50'
+                          : 'bg-slate-900 border-slate-800 text-slate-300'
                     }`}
                   >
                     <span className="text-[8px] text-slate-500 leading-none">{idx}</span>
@@ -777,7 +779,9 @@ export const ProtSpamStepSimulator: React.FC = () => {
 
           {/* S2 Row */}
           <div className="bg-slate-950 border border-slate-800 rounded-xl p-3">
-            <div className="text-[10px] font-bold text-slate-500 uppercase mb-1.5">S2 (Query Proteome)</div>
+            <div className="text-[10px] font-bold text-slate-500 uppercase mb-1.5">
+              S2 (Query Proteome)
+            </div>
             <div className="flex gap-1 overflow-x-auto pb-1">
               {s2Chars.map((char, idx) => {
                 const isWindow =
@@ -795,10 +799,10 @@ export const ProtSpamStepSimulator: React.FC = () => {
                       isExtended
                         ? 'bg-purple-600/30 border-purple-500 text-purple-200'
                         : isWindow
-                        ? currentStepData.matchedKey
-                          ? 'bg-emerald-500 border-emerald-400 text-slate-950'
-                          : 'bg-blue-600 border-blue-500 text-slate-50'
-                        : 'bg-slate-900 border-slate-800 text-slate-300'
+                          ? currentStepData.matchedKey
+                            ? 'bg-emerald-500 border-emerald-400 text-slate-950'
+                            : 'bg-blue-600 border-blue-500 text-slate-50'
+                          : 'bg-slate-900 border-slate-800 text-slate-300'
                     }`}
                   >
                     <span className="text-[8px] text-slate-500 leading-none">{idx}</span>
@@ -876,20 +880,32 @@ export const ProtSpamStepSimulator: React.FC = () => {
                   }`}
                 >
                   <div className="flex justify-between font-mono text-[10px] text-blue-400 mb-1.5">
-                    <span>{lang === 'es' ? 'Patrón: ' : 'Pattern: '}{block.pattern}</span>
-                    <span>{block.status === 'ready' ? (lang === 'es' ? '✔ Listo' : '✔ Ready') : (lang === 'es' ? '⏳ Procesando' : '⏳ Indexing')}</span>
+                    <span>
+                      {lang === 'es' ? 'Patrón: ' : 'Pattern: '}
+                      {block.pattern}
+                    </span>
+                    <span>
+                      {block.status === 'ready'
+                        ? lang === 'es'
+                          ? '✔ Listo'
+                          : '✔ Ready'
+                        : lang === 'es'
+                          ? '⏳ Procesando'
+                          : '⏳ Indexing'}
+                    </span>
                   </div>
                   <div className="flex flex-wrap gap-1">
-                    {(block.status === 'extracting' ? block.rawWordsList : block.sortedWordsList)?.map(
-                      (w: any, wIdx: number) => (
-                        <span
-                          key={wIdx}
-                          className="px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800 font-mono text-[10px] text-slate-300"
-                        >
-                          "{w.key}" &rarr; {w.pos}
-                        </span>
-                      )
-                    )}
+                    {(block.status === 'extracting'
+                      ? block.rawWordsList
+                      : block.sortedWordsList
+                    )?.map((w: any, wIdx: number) => (
+                      <span
+                        key={wIdx}
+                        className="px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800 font-mono text-[10px] text-slate-300"
+                      >
+                        "{w.key}" &rarr; {w.pos}
+                      </span>
+                    ))}
                   </div>
                 </div>
               );
@@ -902,19 +918,32 @@ export const ProtSpamStepSimulator: React.FC = () => {
           </div>
           <div className="max-h-[120px] overflow-y-auto space-y-2">
             {currentStepData?.stackState?.map((st: any, idx: number) => (
-              <div key={idx} className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-[11px]">
+              <div
+                key={idx}
+                className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-[11px]"
+              >
                 <div className="flex justify-between font-mono text-[10px] text-pink-400 mb-1.5">
-                  <span>{lang === 'es' ? 'Patrón: ' : 'Pattern: '}{st.pattern}</span>
-                  <span>Matches: {st.matches.length} | {lang === 'es' ? 'Descarte: ' : 'Miss: '}{st.noMatches.length}</span>
+                  <span>
+                    {lang === 'es' ? 'Patrón: ' : 'Pattern: '}
+                    {st.pattern}
+                  </span>
+                  <span>
+                    Matches: {st.matches.length} | {lang === 'es' ? 'Descarte: ' : 'Miss: '}
+                    {st.noMatches.length}
+                  </span>
                 </div>
                 <div className="grid grid-cols-2 gap-1.5 text-[10px] font-mono">
                   <div className="bg-slate-900 p-1.5 rounded-lg border border-slate-800">
                     <span className="text-emerald-400 font-bold">✔ Matches: </span>
-                    <span className="text-slate-300">{st.matches.map((m: any) => m.key).join(', ') || '-'}</span>
+                    <span className="text-slate-300">
+                      {st.matches.map((m: any) => m.key).join(', ') || '-'}
+                    </span>
                   </div>
                   <div className="bg-slate-900 p-1.5 rounded-lg border border-slate-800">
                     <span className="text-rose-400 font-bold">✖ Misses: </span>
-                    <span className="text-slate-400">{st.noMatches.map((nm: any) => nm.key).join(', ') || '-'}</span>
+                    <span className="text-slate-400">
+                      {st.noMatches.map((nm: any) => nm.key).join(', ') || '-'}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -976,7 +1005,9 @@ export const ProtSpamStepSimulator: React.FC = () => {
                           })
                         }
                         className={`p-1 rounded font-bold cursor-pointer hover:opacity-80 ${
-                          s >= 0 ? 'bg-emerald-950 text-emerald-400 border border-emerald-800' : 'bg-rose-950 text-rose-400 border border-rose-800'
+                          s >= 0
+                            ? 'bg-emerald-950 text-emerald-400 border border-emerald-800'
+                            : 'bg-rose-950 text-rose-400 border border-rose-800'
                         }`}
                       >
                         {s >= 0 ? `+${s}` : s}
@@ -986,7 +1017,10 @@ export const ProtSpamStepSimulator: React.FC = () => {
                   <tr>
                     <td className="text-[10px] text-slate-500 p-1 text-right">Accum</td>
                     {currentStepData.alignmentData.accum.map((a: number, k: number) => (
-                      <td key={k} className="p-1 rounded bg-slate-900 border border-slate-800 text-blue-400 font-bold">
+                      <td
+                        key={k}
+                        className="p-1 rounded bg-slate-900 border border-slate-800 text-blue-400 font-bold"
+                      >
                         {a}
                       </td>
                     ))}
@@ -996,7 +1030,9 @@ export const ProtSpamStepSimulator: React.FC = () => {
             </div>
           ) : (
             <div className="bg-slate-950 border border-slate-800 rounded-xl p-4 text-center text-xs text-slate-500 italic">
-              {lang === 'es' ? 'El alineamiento aparecerá tras indexar las coincidencias.' : 'The alignment will appear once matches are indexed.'}
+              {lang === 'es'
+                ? 'El alineamiento aparecerá tras indexar las coincidencias.'
+                : 'The alignment will appear once matches are indexed.'}
             </div>
           )}
 
@@ -1020,10 +1056,16 @@ export const ProtSpamStepSimulator: React.FC = () => {
               </p>
               <p className="text-slate-400 text-[10px]">
                 {blosumExplainer.a === blosumExplainer.b
-                  ? (lang === 'es' ? 'Coincidencia exacta de símbolo (+4).' : 'Exact symbol match (+4).')
+                  ? lang === 'es'
+                    ? 'Coincidencia exacta de símbolo (+4).'
+                    : 'Exact symbol match (+4).'
                   : blosumExplainer.score >= 0
-                  ? (lang === 'es' ? 'Sustitución conservadora favorable.' : 'Conservative favorable substitution.')
-                  : (lang === 'es' ? 'Sustitución desfavorable penalizada.' : 'Unfavorable penalized substitution.')}
+                    ? lang === 'es'
+                      ? 'Sustitución conservadora favorable.'
+                      : 'Conservative favorable substitution.'
+                    : lang === 'es'
+                      ? 'Sustitución desfavorable penalizada.'
+                      : 'Unfavorable penalized substitution.'}
               </p>
             </div>
           )}

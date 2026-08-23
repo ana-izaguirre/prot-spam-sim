@@ -6,14 +6,14 @@
 **Input**: "Analyse this Vite prototype and produce the technical specification of its
 components, simulator logic and static data, using GitHub Spec Kit, documented in English."
 
-> **Scope note.** This is a *descriptive* specification: it states what the existing
+> **Scope note.** This is a _descriptive_ specification: it states what the existing
 > prototype does and why, in Spec Kit format, so that it can be re-planned, ported, or
 > extended without re-reading 6 800 lines of TSX. Requirements marked **[GAP]** describe
 > behaviour that the current build does not yet satisfy; they are tracked in `tasks.md`.
 
 ---
 
-## User Scenarios & Testing *(mandatory)*
+## User Scenarios & Testing _(mandatory)_
 
 ### User Story 1 — Understand the Prot-SpaM algorithm step by step (Priority: P1)
 
@@ -28,21 +28,21 @@ in the suite — partitioning, communication, scalability — is only meaningful
 unit of work is understood.
 
 **Independent Test**: Load the app with no interaction. The base-algorithm simulator is
-visible, a step counter reads `Step 0 of N`, and pressing *Next* advances through
+visible, a step counter reads `Step 0 of N`, and pressing _Next_ advances through
 extraction → sorting → match/miss → extension → final matrix with a written narration
 for each step.
 
 **Acceptance Scenarios**:
 
 1. **Given** the default parameters (patterns `1*11*1, 11**1, 1**11`, S1 `ACTGACACTG`,
-   S2 `ATTGCAATTG`), **When** the user presses *Play*, **Then** the simulation advances
+   S2 `ATTGCAATTG`), **When** the user presses _Play_, **Then** the simulation advances
    one step per tick at the selected speed and stops on the final step.
 2. **Given** any step of the extraction phase, **When** the step is displayed, **Then**
    the characters of S1 covered by the current pattern window are highlighted and the
    extracted key is shown verbatim.
 3. **Given** a hit between S1 and S2, **When** the extension steps run, **Then** each
    aligned character pair shows its substitution score and the running accumulated score.
-4. **Given** the user edits the patterns or sequences, **When** they press *Recompute*,
+4. **Given** the user edits the patterns or sequences, **When** they press _Recompute_,
    **Then** a new step list is generated from scratch and the view resets to step 0.
 5. **Given** the user switches language, **When** the switch completes, **Then** the
    narration of every step is regenerated in the new language.
@@ -62,7 +62,7 @@ disparity). The suite must make it visible rather than merely assert it.
 **Independent Test**: Open the Workload module, choose the 300-species heterogeneous
 dataset with 32 processes and cyclic partitioning; the chart shows one rank far above
 the others, the imbalance KPI exceeds 2×, and the log names the rank holding
-*Homo sapiens*.
+_Homo sapiens_.
 
 **Acceptance Scenarios**:
 
@@ -70,7 +70,7 @@ the others, the imbalance KPI exceeds 2×, and the log names the rank holding
    (amino-acid load / assigned species / assigned pairs), **Then** the same partition is
    re-rendered under the new metric without changing the partition itself.
 2. **Given** the heterogeneous dataset, **When** the metric is amino-acid load, **Then**
-   the rank owning *Homo sapiens* is drawn in the warning colour and flagged in the KPIs.
+   the rank owning _Homo sapiens_ is drawn in the warning colour and flagged in the KPIs.
 3. **Given** any parameter change, **When** it is applied, **Then** a timestamped MPI-style
    execution log records initialisation, dataset load, partition strategy, pair count,
    any imbalance warning, and completion.
@@ -96,7 +96,7 @@ observe all destinations receiving in one burst with a `PendingSend` queue filli
 **Acceptance Scenarios**:
 
 1. **Given** `metacache` mode, **When** the timeline advances, **Then** exactly one
-   receiver rank is in the *receiving* state at a time and the others are idle-waiting.
+   receiver rank is in the _receiving_ state at a time and the others are idle-waiting.
 2. **Given** `isend` mode, **When** the timeline advances past the burst steps, **Then**
    all four receiver ranks are computing concurrently and the `PendingSend` queue lists
    one active request per destination.
@@ -211,7 +211,7 @@ performance highlights and branch directory, generated entirely in the browser.
 
 ---
 
-## Requirements *(mandatory)*
+## Requirements _(mandatory)_
 
 ### Functional Requirements
 
@@ -266,7 +266,7 @@ performance highlights and branch directory, generated entirely in the browser.
   six process counts (2–64), two partitioning strategies, and three display metrics.
 - **FR-020**: The system MUST compute, per rank, the assigned species, their count, their
   summed amino-acid load, the number of owned upper-triangle pairs, and whether the rank
-  owns *Homo sapiens*.
+  owns _Homo sapiens_.
 - **FR-021**: The system MUST report the imbalance factor (max load ÷ mean load), the
   bottleneck rank, the max-vs-min spread, and the total pair count.
 - **FR-022**: The system MUST emit a timestamped, level-tagged execution log for every
@@ -322,7 +322,7 @@ performance highlights and branch directory, generated entirely in the browser.
   highlighting.
 - **ProcessWorkload** — everything an MPI rank owns after partitioning: rank index,
   assigned species indices and count, owned upper-triangle pair count, summed Maa load,
-  and the *Homo sapiens* flag.
+  and the _Homo sapiens_ flag.
 - **Step** — one frame of the base-algorithm narration: phase label and badge style,
   active function, cursor positions in S1/S2, current key and pattern, narration,
   optional extension indices and alignment table, index/memory snapshot, match and miss
@@ -340,7 +340,7 @@ performance highlights and branch directory, generated entirely in the browser.
 
 ---
 
-## Success Criteria *(mandatory)*
+## Success Criteria _(mandatory)_
 
 - **SC-001**: A reader with no MPI background can explain, after one pass through the
   base-algorithm module, what a spaced word is and how a distance is produced from

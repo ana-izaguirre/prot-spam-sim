@@ -10,19 +10,19 @@
 
 ### A.1 Inventory
 
-| File | Lines | Role |
-|---|---:|---|
-| `src/components/WorkloadSimulator.tsx` | 1 381 | Load-balancing module (largest) |
-| `src/components/ProtSpamStepSimulator.tsx` | 974 | Step-by-step algorithm narrator |
-| `src/App.tsx` | 564 | Shell: header, nav, banner, docs modal, module router |
-| `src/components/TFMBranchExplorer.tsx` | 461 | Git branch dossier |
-| `src/components/TriangularMatrixExplorer.tsx` | 457 | Matrix/partition explorer |
-| `src/components/ScalabilityCharts.tsx` | 421 | Measured speedup curves |
-| `src/context/LanguageThemeContext.tsx` | 397 | i18n dictionary + theme state |
-| `src/utils/generatePdf.ts` | 265 | jsPDF factsheet generator |
-| `src/components/NumericCorrectness.tsx` | 211 | IEEE-754 comparison table |
-| `src/data/speciesData.ts` | 202 | All static datasets and the partitioner |
-| `src/index.css` | 142 | Tailwind entry, theme overrides, Bento card styles |
+| File                                          | Lines | Role                                                  |
+| --------------------------------------------- | ----: | ----------------------------------------------------- |
+| `src/components/WorkloadSimulator.tsx`        | 1 381 | Load-balancing module (largest)                       |
+| `src/components/ProtSpamStepSimulator.tsx`    |   974 | Step-by-step algorithm narrator                       |
+| `src/App.tsx`                                 |   564 | Shell: header, nav, banner, docs modal, module router |
+| `src/components/TFMBranchExplorer.tsx`        |   461 | Git branch dossier                                    |
+| `src/components/TriangularMatrixExplorer.tsx` |   457 | Matrix/partition explorer                             |
+| `src/components/ScalabilityCharts.tsx`        |   421 | Measured speedup curves                               |
+| `src/context/LanguageThemeContext.tsx`        |   397 | i18n dictionary + theme state                         |
+| `src/utils/generatePdf.ts`                    |   265 | jsPDF factsheet generator                             |
+| `src/components/NumericCorrectness.tsx`       |   211 | IEEE-754 comparison table                             |
+| `src/data/speciesData.ts`                     |   202 | All static datasets and the partitioner               |
+| `src/index.css`                               |   142 | Tailwind entry, theme overrides, Bento card styles    |
 
 ### A.2 Architectural findings
 
@@ -73,17 +73,17 @@ Chart.js and jsPDF load whether or not the visitor ever opens them.
 These are deliberate didactic simplifications. They are listed so nobody mistakes the
 simulator for the C++ tool.
 
-| Prototype | Real Prot-SpaM |
-|---|---|
-| `BLOSUM62` is a 4×4 table over `A/C/T/G` with a `a === b ? 4 : -1` fallback | 20×20 amino-acid substitution matrix |
-| Extension runs to the sequence boundary in both directions | X-drop termination bounds the extension |
+| Prototype                                                                     | Real Prot-SpaM                                                                       |
+| ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `BLOSUM62` is a 4×4 table over `A/C/T/G` with a `a === b ? 4 : -1` fallback   | 20×20 amino-acid substitution matrix                                                 |
+| Extension runs to the sequence boundary in both directions                    | X-drop termination bounds the extension                                              |
 | Per-pattern distance is `1 / (approvedMatches + 1)`, averaged across patterns | Kimura correction over the match ratio; the formula is displayed but never evaluated |
-| Matrix inspector distance is `0.125 + (i + j) × 0.015` | Computed from actual spaced-word matches |
-| Comparison cost proxy is `maa(i) × maa(j)` | Actual pattern-scaled word counts |
-| MPI timeline is a fixed 12-step script for 1 sender and 4 receivers | Real point-to-point traffic across up to 256 ranks |
-| Scalability numbers are a stored measurement table | Live benchmark output from FinisTerrae III |
+| Matrix inspector distance is `0.125 + (i + j) × 0.015`                        | Computed from actual spaced-word matches                                             |
+| Comparison cost proxy is `maa(i) × maa(j)`                                    | Actual pattern-scaled word counts                                                    |
+| MPI timeline is a fixed 12-step script for 1 sender and 4 receivers           | Real point-to-point traffic across up to 256 ranks                                   |
+| Scalability numbers are a stored measurement table                            | Live benchmark output from FinisTerrae III                                           |
 
-The scalability tables are the one place where the numbers are *real*: they are the
+The scalability tables are the one place where the numbers are _real_: they are the
 thesis' measured results and must never be recomputed client-side (Constitution I).
 
 ---
@@ -116,7 +116,7 @@ tool for a Tailwind 4 project.
 state. Splitting the modules into sibling islands would require an external store to
 share it, which is a rewrite, not a migration — and it would win nothing at runtime,
 because only one module is ever mounted.
-**Consequence**: the *hydration* boundary is coarse, so the payload win must come from
+**Consequence**: the _hydration_ boundary is coarse, so the payload win must come from
 code splitting instead (D5).
 
 ### D4 — Prerender-safe context, plus an inline boot script
@@ -129,7 +129,7 @@ values, producing a hydration mismatch.
 storage inside `useEffect`, and add an inline `<head>` script that applies the stored
 theme class and `lang` attribute before first paint.
 **Rationale**: server and first client render agree exactly; the visible flash that the
-reconciliation would otherwise cause is eliminated *before* React runs. The boot script
+reconciliation would otherwise cause is eliminated _before_ React runs. The boot script
 and the React effect enforce the same contract, so they cannot drift apart in behaviour.
 
 ### D5 — `React.lazy` per module

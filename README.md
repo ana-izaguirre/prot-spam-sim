@@ -65,15 +65,15 @@ stage handed to the next, and it is still the contract the code is held to. It l
 
 ## What the simulator shows
 
-| Module | What it makes visible |
-|---|---|
-| **Base algorithm** | Spaced-word extraction, indexing, and X-drop bounded extension, narrated one step at a time |
-| **TFM branches** | The six C++ development branches, their phase and their measured speedup |
-| **Workload** | Per-rank load under cyclic vs block partitioning — where load imbalance actually comes from |
-| **MPI traffic** | Blocking `MPI_Send` serialising against non-blocking `MPI_Isend` overlapping |
-| **Triangular matrix** | Which rank owns which pair, and why half the matrix is never computed |
-| **Scalability** | Measured FinisTerrae III curves, 1 to 256 processes — including `metacache` inverting past 64 |
-| **Correctness** | Sequential vs parallel PHYLIP values, compared at the level of raw IEEE-754 bits |
+| Module                | What it makes visible                                                                         |
+| --------------------- | --------------------------------------------------------------------------------------------- |
+| **Base algorithm**    | Spaced-word extraction, indexing, and X-drop bounded extension, narrated one step at a time   |
+| **TFM branches**      | The six C++ development branches, their phase and their measured speedup                      |
+| **Workload**          | Per-rank load under cyclic vs block partitioning — where load imbalance actually comes from   |
+| **MPI traffic**       | Blocking `MPI_Send` serialising against non-blocking `MPI_Isend` overlapping                  |
+| **Triangular matrix** | Which rank owns which pair, and why half the matrix is never computed                         |
+| **Scalability**       | Measured FinisTerrae III curves, 1 to 256 processes — including `metacache` inverting past 64 |
+| **Correctness**       | Sequential vs parallel PHYLIP values, compared at the level of raw IEEE-754 bits              |
 
 Everything is client-side and deterministic: no backend, no runtime API calls, no
 randomness. The measured scalability numbers are transcribed from the thesis and never
@@ -124,7 +124,7 @@ npm run status:site   # is production up?
 **Deployment.** Every push to `main` and every pull request runs type-check → build →
 browser smoke suite; pushes to `main` then publish to **GitHub Pages**. A deploy that does
 not answer 200 with prerendered markup fails the run. No secrets are needed — Pages
-authenticates through the workflow's OIDC token — but *Settings → Pages → Source* must be
+authenticates through the workflow's OIDC token — but _Settings → Pages → Source_ must be
 set to **GitHub Actions**. Set the `SITE_URL` repository variable to
 `https://ana-izaguirre.github.io/prot-spam-sim/` to emit canonical and `og:url` tags.
 

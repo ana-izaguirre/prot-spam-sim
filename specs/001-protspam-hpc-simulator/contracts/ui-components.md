@@ -15,20 +15,22 @@ export const <Module>: React.FC   // no props, no children
 **Export**: default `App` (wraps `AppContent` in `LanguageThemeProvider`).
 
 **State**
-| Name | Type | Purpose |
-|---|---|---|
-| `activeSection` | `SectionId` | Which module renders; defaults to `'core_sim'` |
-| `showDocsModal` | `boolean` | Documentation modal visibility |
-| `mobileMenuOpen` | `boolean` | Drawer visibility below `lg` |
-| `moreNavOpen` | `boolean` | Overflow menu between `lg` and `2xl` |
-| `downloadSuccess` | `boolean` | PDF confirmation, auto-clears after 3 500 ms |
+
+| Name              | Type        | Purpose                                        |
+| ----------------- | ----------- | ---------------------------------------------- |
+| `activeSection`   | `SectionId` | Which module renders; defaults to `'core_sim'` |
+| `showDocsModal`   | `boolean`   | Documentation modal visibility                 |
+| `mobileMenuOpen`  | `boolean`   | Drawer visibility below `lg`                   |
+| `moreNavOpen`     | `boolean`   | Overflow menu between `lg` and `2xl`           |
+| `downloadSuccess` | `boolean`   | PDF confirmation, auto-clears after 3 500 ms   |
 
 ```ts
-type SectionId = 'core_sim' | 'tfm_branches' | 'workload'
-               | 'mpi_comm' | 'matrix' | 'scalability' | 'correctness';
+type SectionId =
+  'core_sim' | 'tfm_branches' | 'workload' | 'mpi_comm' | 'matrix' | 'scalability' | 'correctness';
 ```
 
 **Responsive navigation contract**
+
 - `≥ 2xl`: all seven items inline.
 - `lg … xl`: first four inline, remaining three inside a "More" dropdown; the dropdown
   button shows the active style when the active module lives inside it.
@@ -38,6 +40,7 @@ type SectionId = 'core_sim' | 'tfm_branches' | 'workload'
 outside click; registered once on mount, removed on unmount.
 
 **Invariants**
+
 - Exactly one module is mounted at a time (unmounting resets that module's local state —
   this is intentional and users rely on it as a reset).
 - Selecting an item from the drawer or the dropdown closes it.
@@ -48,15 +51,16 @@ outside click; registered once on mount, removed on unmount.
 ## `ProtSpamStepSimulator` — base algorithm
 
 **Inputs (local state)**: `patternInput` (comma-separated), `s1Input`, `s2Input`,
-`thresholdInput`, `dropoffInput` *(stored, never applied, no control rendered)*.
+`thresholdInput`, `dropoffInput` _(stored, never applied, no control rendered)_.
 
 **Playback state**: `steps: StepData[]`, `currentStep`, `isPlaying`,
 `playSpeed ∈ {1500, 1000, 400}` ms, `blosumExplainer`.
 
 **Contract**
+
 - `generateSimulationSteps()` fully rebuilds `steps` and resets `currentStep` to 0.
 - It runs on mount and on every language change; parameter edits require the explicit
-  *Recompute* action (`spec.md` FR-017).
+  _Recompute_ action (`spec.md` FR-017).
 - Autoplay advances one step per `playSpeed` tick and stops itself at the last step.
 - Rendering reads only `steps[currentStep]` — no derived mutation, so backward stepping is
   exact.
@@ -77,12 +81,13 @@ outside click; registered once on mount, removed on unmount.
 `totalComparisons`, `avgComparisons`.
 
 **Chart contract**
+
 - Chart.js registration is module-scoped: `BarController`, `BarElement`, `CategoryScale`,
   `LinearScale`, `Tooltip`, `Legend`.
 - The instance is created once and **mutated** on subsequent updates (`.update()`), which
   preserves the bar transition; it is never destroyed between parameter changes.
 - Tick font size and rotation adapt to `numProcesses` (smaller and rotated above 16/32).
-- Bars turn to the warning colour only when the rank owns *Homo sapiens* **and** the
+- Bars turn to the warning colour only when the rank owns _Homo sapiens_ **and** the
   dataset is `'300'` **and** the metric is `'maa'`.
 
 **Log contract**: one batch per parameter change, emitted after a 150 ms timeout that is
@@ -102,18 +107,18 @@ level; auto-scroll pins to the bottom when enabled. Copy uses `navigator.clipboa
 
 **State machine** — pure functions of `(animStep, mode)` for ranks 1…4:
 
-| Predicate | `metacache` | `isend` |
-|---|---|---|
-| `isSendActive(r)` | `animStep === r × 2 − 1` | `1 ≤ animStep ≤ 3` |
-| `isComputing(r)` | `r × 2 ≤ animStep < r × 2 + 2` | `3 ≤ animStep ≤ 9` |
-| `isIdleWaiting(r)` | not sending, not computing, `animStep < 10` | `animStep === 0` |
-| `isSynchronized` | `animStep ≥ 10` | `animStep ≥ 10` |
+| Predicate          | `metacache`                                 | `isend`            |
+| ------------------ | ------------------------------------------- | ------------------ |
+| `isSendActive(r)`  | `animStep === r × 2 − 1`                    | `1 ≤ animStep ≤ 3` |
+| `isComputing(r)`   | `r × 2 ≤ animStep < r × 2 + 2`              | `3 ≤ animStep ≤ 9` |
+| `isIdleWaiting(r)` | not sending, not computing, `animStep < 10` | `animStep === 0`   |
+| `isSynchronized`   | `animStep ≥ 10`                             | `animStep ≥ 10`    |
 
 The contrast is the entire point: `metacache` serves exactly one receiver per step, while
 `isend` overlaps all four.
 
 **`PendingSend` queue**: four fixed 1.4 MB requests targeting ranks 1–4, entering the
-*active* state at `animStep ≥ 1, 2, 2, 3` respectively and flipping to *completed* at
+_active_ state at `animStep ≥ 1, 2, 2, 3` respectively and flipping to _completed_ at
 `animStep ≥ 10`.
 
 ---
@@ -125,6 +130,7 @@ The contrast is the entire point: `metacache` serves exactly one receiver per st
 `hoveredRank`.
 
 **Ownership**
+
 ```ts
 cyclic: owner(i) = i % P
 block : owner(i) = min(floor(i / ceil(N / P)), P − 1)
@@ -151,10 +157,11 @@ always shows the heaviest key taxa — deliberate.
 `'phase4_speedup'`), `datasetChoice ∈ {'unbalanced', 'balanced'}` (default `'unbalanced'`).
 
 **Chart contract**
+
 - Registers `LineController`, `LineElement`, `PointElement`, `LinearScale`,
   `CategoryScale`, `LogarithmicScale`, `Tooltip`, `Legend`.
 - Unlike the workload chart, the instance is **destroyed and recreated** on every
-  dependency change, because the dataset *shape* (number and identity of series) changes
+  dependency change, because the dataset _shape_ (number and identity of series) changes
   between tabs.
 - Interaction mode `'index'` with `intersect: false`, so hovering a process count reveals
   every series at once — the comparison is the point.
@@ -170,6 +177,7 @@ always shows the heaviest key taxa — deliberate.
 **State**: `searchTerm`, `selectedPair` (defaults to the first sample row).
 
 **Contract**
+
 - Filter matches `spA` **or** `spB`, case-insensitive substring.
 - `toHexFloat64(n)` writes the double into an 8-byte `ArrayBuffer` and reads back
   `Uint32[1]` then `Uint32[0]`, each zero-padded to 8 hex digits, upper-cased with a `0x`
