@@ -95,8 +95,10 @@ here so the migration diff stays reviewable.
 - [ ] **D002** — The light theme is implemented as an override stylesheet keyed on specific
   Tailwind class names; any utility not listed keeps its dark value. Move to CSS custom
   properties or a `dark:` variant strategy.
-- [ ] **D003** — `navigator.clipboard.writeText` in the workload log has no rejection
+- [X] **D003** — `navigator.clipboard.writeText` in the workload log has no rejection
   handler; a denied clipboard permission silently shows a false success toast.
+  *Fixed in `fix/t013-clipboard-failure`: the promise is handled, and the button now has
+  a third state that reports the failure instead of claiming success.*
 - [ ] **D004** — `generatePdf` localises its body but not its title line, which is
   hard-coded in Spanish.
 - [X] **D005** — The triangular matrix inspector shows a positional placeholder value

@@ -65,7 +65,7 @@ export const WorkloadSimulator: React.FC = () => {
   const [logs, setLogs] = useState<ExecutionLogEntry[]>([]);
   const [logFilter, setLogFilter] = useState<'all' | 'info' | 'mpi' | 'warn' | 'success'>('all');
   const [autoScroll, setAutoScroll] = useState<boolean>(true);
-  const [copiedToast, setCopiedToast] = useState<boolean>(false);
+  const [copyState, setCopyState] = useState<'idle' | 'copied' | 'failed'>('idle');
   const [executionStatus, setExecutionStatus] = useState<'idle' | 'running' | 'done'>('done');
 
   const chartCanvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -238,9 +238,19 @@ export const WorkloadSimulator: React.FC = () => {
           }`
       )
       .join('\n');
-    navigator.clipboard.writeText(logText);
-    setCopiedToast(true);
-    setTimeout(() => setCopiedToast(false), 2000);
+    // The Clipboard API rejects when the permission is denied, when the page is
+    // not focused, and in any insecure context. Reporting success regardless
+    // tells the user the log is on their clipboard when it is not.
+    navigator.clipboard
+      .writeText(logText)
+      .then(() => setCopyState('copied'))
+      .catch((err) => {
+        console.error('Clipboard write failed:', err);
+        setCopyState('failed');
+      })
+      .finally(() => {
+        window.setTimeout(() => setCopyState('idle'), 2500);
+      });
   };
 
   // Clear logs handler
@@ -1188,15 +1198,26 @@ export const WorkloadSimulator: React.FC = () => {
               <button
                 type="button"
                 onClick={handleCopyLogs}
-                className="p-1.5 bg-slate-950 border border-slate-800 text-slate-300 hover:text-white rounded-lg transition-colors flex items-center gap-1 text-[11px] font-mono"
-                title={t('workload.copyLog')}
+                className={`p-1.5 bg-slate-950 border rounded-lg transition-colors flex items-center gap-1 text-[11px] font-mono ${
+                  copyState === 'failed'
+                    ? 'border-rose-500/50 text-rose-400'
+                    : 'border-slate-800 text-slate-300 hover:text-white'
+                }`}
+                title={copyState === 'failed' ? t('workload.logCopyFailed') : t('workload.copyLog')}
               >
-                {copiedToast ? (
+                {copyState === 'copied' && (
                   <>
                     <Check className="w-3.5 h-3.5 text-emerald-400" />
                     <span className="text-emerald-400">{t('workload.logCopied')}</span>
                   </>
-                ) : (
+                )}
+                {copyState === 'failed' && (
+                  <>
+                    <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
+                    <span className="text-rose-400">{t('workload.logCopyFailed')}</span>
+                  </>
+                )}
+                {copyState === 'idle' && (
                   <>
                     <Copy className="w-3.5 h-3.5" />
                     <span className="hidden md:inline">{t('workload.copyLog')}</span>
