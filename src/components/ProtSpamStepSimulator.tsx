@@ -44,7 +44,15 @@ interface StepData {
   avgDist?: number;
 }
 
-const BLOSUM62: Record<string, Record<string, number>> = {
+/**
+ * Didactic stand-in for BLOSUM62.
+ *
+ * Prot-SpaM scores extensions with the real 20x20 amino-acid BLOSUM62 matrix.
+ * A 20x20 lookup cannot be followed by eye one cell at a time, which is the
+ * whole point of this module, so the simulator uses a 4-symbol table with the
+ * same shape: positive on the diagonal, penalties off it. The UI says so.
+ */
+const DEMO_SUBSTITUTION_MATRIX: Record<string, Record<string, number>> = {
   A: { A: 4, C: 0, T: 0, G: 0 },
   C: { A: 0, C: 9, T: -1, G: -3 },
   T: { A: 0, C: -1, T: 5, G: -2 },
@@ -52,7 +60,9 @@ const BLOSUM62: Record<string, Record<string, number>> = {
 };
 
 function getBlosumScore(a: string, b: string): number {
-  if (BLOSUM62[a] && BLOSUM62[a][b] !== undefined) return BLOSUM62[a][b];
+  if (DEMO_SUBSTITUTION_MATRIX[a] && DEMO_SUBSTITUTION_MATRIX[a][b] !== undefined) {
+    return DEMO_SUBSTITUTION_MATRIX[a][b];
+  }
   return a === b ? 4 : -1;
 }
 
@@ -238,7 +248,7 @@ export const ProtSpamStepSimulator: React.FC = () => {
                 showMatrix: false,
               });
 
-              // Extensión bidireccional BLOSUM62
+              // Extensión bidireccional con la matriz didáctica
               let extLeft = 0;
               while (s1Pos - extLeft - 1 >= 0 && j - extLeft - 1 >= 0) {
                 extLeft++;
@@ -337,7 +347,7 @@ export const ProtSpamStepSimulator: React.FC = () => {
           const subAccum = fullAlignData.accum[stepIdx];
 
           newSteps.push({
-            phase: lang === 'es' ? 'Fase 4: Extensión BLOSUM62' : 'Phase 4: BLOSUM62 Extension',
+            phase: lang === 'es' ? 'Fase 4: Extensión sin gaps' : 'Phase 4: Gap-free extension',
             badgeClass: 'bg-[#a855f7] text-white',
             activeFn: 'none',
             s1Pos: match.s1Pos,
@@ -347,10 +357,10 @@ export const ProtSpamStepSimulator: React.FC = () => {
             s1Extend: match.s1ExtIndices,
             s2Extend: match.s2ExtIndices,
             desc: lang === 'es'
-              ? `Extensión sin gaps [${stepIdx + 1}/${fullAlignData.s1.length}]: S1(<strong>${char1Active}</strong>) &times; S2(<strong>${char2Active}</strong>) &rarr; BLOSUM62: <strong>${
+              ? `Extensión sin gaps [${stepIdx + 1}/${fullAlignData.s1.length}]: S1(<strong>${char1Active}</strong>) &times; S2(<strong>${char2Active}</strong>) &rarr; puntuación: <strong>${
                   subScore >= 0 ? '+' + subScore : subScore
                 }</strong> | Acumulado: <strong style="color:#38bdf8;">${subAccum}</strong>`
-              : `Gap-free extension [${stepIdx + 1}/${fullAlignData.s1.length}]: S1(<strong>${char1Active}</strong>) &times; S2(<strong>${char2Active}</strong>) &rarr; BLOSUM62: <strong>${
+              : `Gap-free extension [${stepIdx + 1}/${fullAlignData.s1.length}]: S1(<strong>${char1Active}</strong>) &times; S2(<strong>${char2Active}</strong>) &rarr; score: <strong>${
                   subScore >= 0 ? '+' + subScore : subScore
                 }</strong> | Accumulated: <strong style="color:#38bdf8;">${subAccum}</strong>`,
             memoryState: JSON.parse(JSON.stringify(accumulatedMemory)),
@@ -390,8 +400,8 @@ export const ProtSpamStepSimulator: React.FC = () => {
       key: 'FIN',
       patternStr: 'GLOBAL',
       desc: lang === 'es'
-        ? '<strong>Simulación finalizada.</strong> Se han consolidado todos los patrones, extensiones BLOSUM62 y la matriz de distancia evolutiva PHYLIP.'
-        : '<strong>Simulation finished.</strong> All spaced patterns, BLOSUM62 extensions, and the final PHYLIP evolutionary distance matrix are consolidated.',
+        ? '<strong>Simulación finalizada.</strong> Se han consolidado todos los patrones, extensiones y la matriz de distancia evolutiva PHYLIP.'
+        : '<strong>Simulation finished.</strong> All spaced patterns, gap-free extensions, and the final PHYLIP evolutionary distance matrix are consolidated.',
       memoryState: JSON.parse(JSON.stringify(accumulatedMemory)),
       stackState: JSON.parse(JSON.stringify(accumulatedPatternStack)),
       matchesState: [],
@@ -485,7 +495,7 @@ export const ProtSpamStepSimulator: React.FC = () => {
             </div>
             <div className="bg-slate-900/80 p-2 rounded-lg border border-slate-800">
               <span className="text-blue-400 font-bold block">3. calc_matches()</span>
-              <span className="text-slate-400 text-[10px]">Extensión BLOSUM62</span>
+              <span className="text-slate-400 text-[10px]">Extensión sin gaps</span>
             </div>
             <div className="bg-slate-900/80 p-2 rounded-lg border border-slate-800">
               <span className="text-emerald-400 font-bold block">4. Distancia Kimura</span>
@@ -827,7 +837,7 @@ export const ProtSpamStepSimulator: React.FC = () => {
         {/* Column 3: Extension & Matrices */}
         <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5 space-y-3">
           <div className="text-xs font-semibold uppercase tracking-wider text-white border-b border-slate-800 pb-3">
-            {lang === 'es' ? 'Extensión BLOSUM62 & Distancia' : 'BLOSUM62 Extension & Distance'}
+            {lang === 'es' ? 'Extensión & Distancia' : 'Extension & Distance'}
           </div>
 
           {/* Alignment Table */}
@@ -898,15 +908,21 @@ export const ProtSpamStepSimulator: React.FC = () => {
             </div>
           ) : (
             <div className="bg-slate-950 border border-slate-800 rounded-xl p-4 text-center text-xs text-slate-500 italic">
-              {lang === 'es' ? 'Alineamiento BLOSUM62 listo para evaluar tras indexación.' : 'BLOSUM62 alignment will appear upon match indexation.'}
+              {lang === 'es' ? 'El alineamiento aparecerá tras indexar las coincidencias.' : 'The alignment will appear once matches are indexed.'}
             </div>
           )}
+
+          {/* The scoring table is a teaching stand-in, not BLOSUM62. Say it where
+              the reader is looking at the scores, not only in the docs. */}
+          <p className="text-[10px] text-amber-400/80 leading-snug bg-amber-500/5 border border-amber-500/20 rounded-lg p-2">
+            {t('core.demoMatrixHint')}
+          </p>
 
           {/* Interactive Cell Explainer */}
           {blosumExplainer && (
             <div className="bg-purple-500/10 border border-purple-500/40 p-3 rounded-xl text-xs space-y-1">
               <div className="font-semibold text-purple-400 flex items-center justify-between">
-                <span>{lang === 'es' ? 'Consulta Matriz BLOSUM62:' : 'BLOSUM62 Matrix Lookup:'}</span>
+                <span>{t('core.demoMatrixTitle')}</span>
                 <span className="font-mono text-sm font-bold">
                   {blosumExplainer.score >= 0 ? `+${blosumExplainer.score}` : blosumExplainer.score}
                 </span>
@@ -916,7 +932,7 @@ export const ProtSpamStepSimulator: React.FC = () => {
               </p>
               <p className="text-slate-400 text-[10px]">
                 {blosumExplainer.a === blosumExplainer.b
-                  ? (lang === 'es' ? 'Coincidencia exacta de aminoácido (+4).' : 'Exact amino acid match (+4).')
+                  ? (lang === 'es' ? 'Coincidencia exacta de símbolo (+4).' : 'Exact symbol match (+4).')
                   : blosumExplainer.score >= 0
                   ? (lang === 'es' ? 'Sustitución conservadora favorable.' : 'Conservative favorable substitution.')
                   : (lang === 'es' ? 'Sustitución desfavorable penalizada.' : 'Unfavorable penalized substitution.')}

@@ -105,9 +105,12 @@ here so the migration diff stays reviewable.
   *Fixed in `fix/t011-illustrative-distance-label`: relabelled as an illustrative value,
   with a note pointing at the Correctness module for the real ones. The cost proxy no
   longer calls itself "BLOSUM62 complexity".*
-- [ ] **D006** — `BLOSUM62` in the step simulator is a 4×4 nucleotide-alphabet stand-in for
+- [X] **D006** — `BLOSUM62` in the step simulator is a 4×4 nucleotide-alphabet stand-in for
   a 20×20 amino-acid matrix. Acceptable didactically, but it should be named honestly in
   the UI.
+  *Fixed in `fix/t012-didactic-matrix-naming`: the constant is now
+  `DEMO_SUBSTITUTION_MATRIX`, the phase labels and narration no longer claim BLOSUM62,
+  and a note next to the scores says what the table is and what the real tool uses.*
 
 ---
 
