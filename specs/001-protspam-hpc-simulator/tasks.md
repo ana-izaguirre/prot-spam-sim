@@ -99,8 +99,10 @@ here so the migration diff stays reviewable.
   handler; a denied clipboard permission silently shows a false success toast.
   *Fixed in `fix/t013-clipboard-failure`: the promise is handled, and the button now has
   a third state that reports the failure instead of claiming success.*
-- [ ] **D004** — `generatePdf` localises its body but not its title line, which is
+- [X] **D004** — `generatePdf` localises its body but not its title line, which is
   hard-coded in Spanish.
+  *Fixed in `fix/t014-pdf-title-language`: the title, degree line, supercomputer label
+  and page footer follow `lang`. Verified by extracting the text of both PDFs.*
 - [X] **D005** — The triangular matrix inspector shows a positional placeholder value
   (`0.125 + (i + j) × 0.015`) labelled "estimated distance"; it should be labelled as
   illustrative or derived from the sample PHYLIP data.
