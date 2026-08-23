@@ -3,7 +3,14 @@
 [English](./README.md) · **Español**
 
 [![CI](https://github.com/ana-izaguirre/prot-spam-sim/actions/workflows/ci.yml/badge.svg)](https://github.com/ana-izaguirre/prot-spam-sim/actions/workflows/ci.yml)
+[![Smoke tests](https://img.shields.io/badge/smoke%20tests-Playwright-2EAD33?logo=playwright&logoColor=white)](./tests/smoke.spec.ts)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/1f070c7e-b6d8-4bf8-addb-f03bcb9cd28b/deploy-status)](https://app.netlify.com/projects/prot-spam/deploys)
+
+> El badge de **CI** cubre toda la tubería —type-check, build y la suite de humo de
+> Playwright— porque el job de despliegue depende del de humo: si la suite falla, no se
+> publica nada. GitHub no expone badges por job, así que el badge de CI en verde es lo que
+> indica que la suite de humo pasó.
+
 
 Simulador interactivo y explorador de arquitecturas paralelas de **Prot-SpaM**, una
 herramienta de reconstrucción filogenética libre de alineamiento para secuencias de
