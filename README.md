@@ -1,95 +1,248 @@
-# Prot-SpaM HPC Suite & Simulador Interactivo
+# Prot-SpaM HPC Suite & Interactive Simulator
 
-Simulador interactivo y explorador de arquitecturas paralelas de **Prot-SpaM** para la reconstrucción filogenética libre de alineamiento a escala de proteoma completo sobre sistemas de memoria distribuida (MPI).
+**English** · [Español](./README.es.md)
 
-Basado en el **Trabajo de Fin de Máster (TFM)**:
-> **"Reconstrucción filogenética de secuencias de proteoma completo en paralelo sobre sistemas de memoria distribuida"**  
-> **Autora:** Ana Izaguirre Matamoros  
-> **Director:** Jorge González Domínguez  
-> **Titulación:** Máster Interuniversitario en Computación de Altas Prestaciones  
-> **Institución:** Facultade de Informática da Coruña, Universidade da Coruña (UDC) / Centro de Supercomputación de Galicia (CESGA)  
-> **Supercomputador:** FinisTerrae III (Intel Xeon Platinum 8352Y, 64 cores/nodo, OpenMPI 5.0.9, SLURM)
+An interactive simulator and architecture explorer for **Prot-SpaM**, an alignment-free
+phylogenetic reconstruction tool for whole-proteome sequences, parallelised for
+distributed-memory systems with MPI.
 
----
-
-## 🔗 Enlaces del Proyecto y Repositorio Oficial
-
-- **Repositorio GitHub (Fork con ramas del TFM):** [https://github.com/ana-izaguirre/ProtSpaM](https://github.com/ana-izaguirre/ProtSpaM)
-- **Ramas de desarrollo incremental:**
-  - `feat/seq`: Implementación secuencial limpia de referencia e instrumentación de checksum.
-  - `feat/mpi-phase3-a`: Paralelización de Fase 3 con Opción A (Lectura centralizada en Rank 0 y distribución punto a punto).
-  - `feat/mpi-phase3-b`: Paralelización de Fase 3 con Opción B (Lectura distribuida independiente en cada proceso).
-  - `feat/mpi-phase4-metacache`: Paralelización de Fase 4 con comunicación punto a punto bloqueante (`MPI_Send`/`MPI_Recv`) y caché de metadatos.
-  - `feat/mpi-phase4-metacache-isend`: Comunicación no bloqueante en ráfagas (`MPI_Isend` + cola `PendingSend` + sincronización `MPI_Waitall`).
-  - `feat/mpi-phase4-metacache-isend-calcopt`: Optimización de precálculo por patrón trasladada a la ruta secuencial ($np=1$).
+Built as a static [Astro](https://astro.build) site with React islands. No backend, no
+database, no runtime API calls — everything runs in the browser.
 
 ---
 
-## 🏛️ Arquitectura Computacional de Prot-SpaM
+## Academic context
 
-Prot-SpaM estima distancias filogenéticas sin alineamiento múltiple comparando secuencias completas de proteínas a través de **palabras espaciadas** (*spaced words*) definidas por patrones binarios (ej. $w=6$ posiciones de coincidencia, $\ell=46$, $dc=40$ posiciones don't-care, $m=5$ patrones, umbral $T=0$ y matriz BLOSUM62).
+Based on the **Master's Thesis (TFM)**:
 
-El algoritmo consta de 5 fases:
+> **"Reconstrucción filogenética de secuencias de proteoma completo en paralelo sobre
+> sistemas de memoria distribuida"**
+> *(Parallel phylogenetic reconstruction of whole-proteome sequences on distributed-memory systems)*
+
+| | |
+|---|---|
+| **Author** | Ana Izaguirre Matamoros |
+| **Advisor** | Jorge González Domínguez |
+| **Degree** | Interuniversity Master's in High Performance Computing (MUI HPC) |
+| **Institution** | Facultade de Informática, Universidade da Coruña (UDC) / CESGA |
+| **Supercomputer** | FinisTerrae III — Intel Xeon Platinum 8352Y, 64 cores/node, OpenMPI 5.0.9, SLURM |
+
+**C++ source repository**: [github.com/ana-izaguirre/ProtSpaM](https://github.com/ana-izaguirre/ProtSpaM)
+
+### Development branches
+
+| Branch | Role |
+|---|---|
+| [`feat/seq`](https://github.com/ana-izaguirre/ProtSpaM/tree/feat/seq) | Clean sequential baseline with word checksums |
+| [`feat/mpi-phase3-a`](https://github.com/ana-izaguirre/ProtSpaM/tree/feat/mpi-phase3-a) | Phase 3 with centralised FASTA reading on rank 0 |
+| [`feat/mpi-phase3-b`](https://github.com/ana-izaguirre/ProtSpaM/tree/feat/mpi-phase3-b) | Phase 3 with independent distributed reading |
+| [`feat/mpi-phase4-metacache`](https://github.com/ana-izaguirre/ProtSpaM/tree/feat/mpi-phase4-metacache) | Phase 4 with blocking `MPI_Send`/`MPI_Recv` and a metadata cache |
+| [`feat/mpi-phase4-metacache-isend`](https://github.com/ana-izaguirre/ProtSpaM/tree/feat/mpi-phase4-metacache-isend) | **Recommended** — non-blocking `MPI_Isend` bursts with a `PendingSend` queue and `MPI_Waitall` |
+| [`feat/mpi-phase4-metacache-isend-calcopt`](https://github.com/ana-izaguirre/ProtSpaM/tree/feat/mpi-phase4-metacache-isend-calcopt) | Pattern precomputation on the sequential path (rejected: +19.5 % sequential time) |
+
+---
+
+## The algorithm being simulated
+
+Prot-SpaM estimates phylogenetic distances without multiple sequence alignment, by
+comparing whole protein sequences through **spaced words** defined by binary patterns
+(w = 6 match positions, ℓ = 46, 40 don't-care positions, m = 5 patterns, threshold T = 0,
+BLOSUM62).
 
 ```
 ┌─────────────────┐     ┌─────────────────────┐     ┌────────────────────────────────┐
-│ 1. Patrones     │ ──> │ 2. Lectura FASTA    │ ──> │ 3. Palabras Espaciadas         │
-│ (Θ(m·ℓ))        │     │ (Θ(Σ n_i))          │     │ (Θ(m·Σ n_i log n_i))           │
-│ Carga fija      │     │ Proteomas completos │     │ Extracción + std::sort         │
+│ 1. Patterns     │ ──> │ 2. FASTA reading    │ ──> │ 3. Spaced words                │
+│ Θ(m·ℓ)          │     │ Θ(Σ nᵢ)             │     │ Θ(m·Σ nᵢ log nᵢ)               │
+│ Fixed cost      │     │ Whole proteomes     │     │ Extraction + std::sort         │
 └─────────────────┘     └─────────────────────┘     └────────────────────────────────┘
                                                                     │
-                                                                    ▼
-┌─────────────────┐                                 ┌────────────────────────────────┐
-│ 5. Salida DMat  │ <────────────────────────────── │ 4. Coincidencias y Distancia   │
-│ (Θ(N²))         │        MPI_Reduce final         │ (Θ(m·N²·ñ))                    │
-│ Matriz PHYLIP   │                                 │ BLOSUM62 + Kimura (j > i)      │
+┌─────────────────┐                                 ┌───────────────▼────────────────┐
+│ 5. DMat output  │ <────────────────────────────── │ 4. Matches and distance        │
+│ Θ(N²)           │        final MPI_Reduce         │ Θ(m·N²·ñ)                      │
+│ PHYLIP matrix   │                                 │ BLOSUM62 + Kimura (j > i)      │
 └─────────────────┘                                 └────────────────────────────────┘
 ```
 
-### 1. Fase 3: Generación y Ordenación de Palabras Espaciadas
-- **Unidad de cómputo:** Por especie.
-- **Cuello de botella secuencial:** La llamada a `std::sort` representa ~37.3% del tiempo total de la herramienta secuencial.
-- **Paralelización:** Cada proceso genera y ordena localmente las palabras de sus especies asignadas sin sincronización intermedia.
-- **Estrategias evaluadas:**
-  - **Opción A (Centralizada):** Proceso 0 lee de disco y envía bloques con `MPI_Send`. Escala mejor en grandes conjuntos (30 y 300 especies).
-  - **Opción B (Distribuida):** Todos los procesos leen en paralelo de disco compartido (I/O intensivo).
+**Phase 3 — spaced word generation and sorting.** Unit of work: one species. `std::sort`
+alone is ~37.3 % of sequential runtime. Each process generates and sorts its own species'
+words with no intermediate synchronisation.
 
-### 2. Fase 4: Cálculo Distribuido de Coincidencias
-- **Unidad de cómputo:** Pares de especies ($j > i$, media matriz triangular superior con $N(N-1)/2$ pares).
-- **Caché de metadatos (`metacache`):** Cabeceras, secuencias y metadatos se transmiten una única vez antes del bucle de patrones.
-- **Streaming patrón a patrón:** Se evita saturación de memoria RAM descartando los buffers de palabras tras procesar cada patrón.
-- **Mecanismo Bloqueante (`metacache`):** Usa `MPI_Send` secuencial sobre cada destino. A partir de 64-128 procesos sufre de contención y serialización por el protocolo *rendezvous*.
-- **Mecanismo No Bloqueante (`isend`):** Dispara `MPI_Isend` concurrentes almacenados en la estructura `PendingSend` y espera con un único `MPI_Waitall`, logrando hasta un **45% de reducción de tiempo** frente a `metacache` en 128 cores en el CESGA FinisTerrae III.
+**Phase 4 — distributed match computation.** Unit of work: a species pair (j > i), i.e.
+N(N−1)/2 pairs of the upper triangle. Headers, sequences and metadata are transmitted once
+before the pattern loop (`metacache`), and word buffers are discarded after each pattern to
+bound memory. The blocking variant serialises behind the rendezvous protocol beyond 64–128
+processes; the non-blocking variant fires concurrent `MPI_Isend` calls tracked in a
+`PendingSend` queue and synchronises once with `MPI_Waitall`, **up to 45 % faster at 128
+cores**.
 
-### 3. Balanceo de Carga y Límites Teóricos
-1. **Desbalance por Estructura Triangular:** Asignar bloques contiguos de tamaño $b = N/P$ concentra más pares en el Rank 0 ($b(N-1)$ pares) y casi ninguno en el Rank $P-1$, imponiendo un límite estructural de eficiencia de ~50%.
-2. **Disparidad de Tamaños de Proteoma:** En datasets heterogéneos, especies como *Homo sapiens* (69.58 Maa) concentran hasta 207× más carga que especies microbianas (0.34 Maa), reduciendo la cota $E_{max} = \bar{n} / n_{max}$ al 12.6%.
+**Load balancing.** Contiguous blocks of size N/P concentrate work on rank 0 — a structural
+efficiency ceiling around 50 %. Proteome size disparity compounds it: *Homo sapiens*
+(69.58 Maa) carries up to 207× the load of a microbial proteome (0.34 Maa), pushing the
+bound E_max = n̄ / n_max down to 12.6 %.
 
-### 4. Invarianza Numérica (Exactitud IEEE-754)
-Al calcular cada par $(i,j)$ de manera indivisible en un único proceso y consolidar con `MPI_Reduce(MPI_SUM)` sobre posiciones disjuntas inicializadas en 0.0 exacto, la matriz PHYLIP paralela es **100% idéntica bit a bit** a la secuencial ($\Delta = 0.000000000000$).
-
----
-
-## 💻 ¿Cómo fue construido este Simulador Web?
-
-El simulador interactivo está desarrollado como una SPA reactiva moderna optimizada para demostración científica y visualización de conceptos de HPC:
-
-- **Core & Runtime:** Vite + React 19 + TypeScript (ESNext / C++11 aligned).
-- **Estilos & Diseño:** Tailwind CSS 4 configurado con **Bento Grid** minimalista (fondo `slate-950`, tarjetas `slate-900/50`, bordes `slate-800`, paleta semántica esmeralda/azul/ámbar/rosa).
-- **Gráficos Interactivos:** Chart.js + `react-chartjs-2` con curvas de *Strong Scaling* (Aceleración $S_p$, Eficiencia $E_p$, tiempo de ejecución $T(P)$) y anotaciones de puntos críticos (128P / 256P).
-- **Iconografía:** `lucide-react`.
-- **Módulos Interactivos:**
-  1. *Simulador de Distribución de Carga (Workload)*: Carga por rank, efecto de *Homo sapiens*, métricas de balanceo.
-  2. *Visualizador de Comunicación MPI*: Animación de paquetes en tránsito, estado de colas `PendingSend`, comparación `metacache` vs `isend`.
-  3. *Explorador de Matriz Triangular*: Inspección par a par de especies con cálculo de complejidad BLOSUM62 y asignación de proceso $i \pmod P$.
-  4. *Simulador Algorítmico Paso a Paso*: Secuencias $S_1$/$S_2$, extracción de ventanas, matriz BLOSUM62, acumulación y cálculo de distancia de Kimura.
-  5. *Curvas de Escalabilidad HPC*: Datos experimentales reales tomados en el supercomputador FinisTerrae III (1 a 256 procesos).
-  6. *Verificador de Corrección Numérica*: Comparador IEEE-754 en coma flotante de 64 bits con inspección hexadecimal y bitwise XOR.
-
+**Numerical invariance.** Computing each pair (i, j) indivisibly on one process and
+consolidating with `MPI_Reduce(MPI_SUM)` over disjoint positions initialised to exact 0.0
+makes the parallel PHYLIP matrix bit-for-bit identical to the sequential one (Δ = 0.0).
 
 ---
 
-## 📄 Descargas y Recursos Académicos
+## The seven interactive modules
 
-- **Memoria del TFM:** Disponible para consulta y descarga mediante el botón "Descargar Memoria TFM (PDF)" en la barra superior y modal de documentación del simulador.
-- **Código Fuente C++:** [GitHub ana-izaguirre/ProtSpaM](https://github.com/ana-izaguirre/ProtSpaM)
+| Module | What it shows |
+|---|---|
+| **Base algorithm** | Step-by-step narration of the core algorithm: spaced-word extraction, `std::sort` indexing, hit/miss decisions, gap-free BLOSUM62 extension, and the final distance matrix |
+| **TFM branches** | The six Git branches with their phase, status, headline speedup, design decisions and representative C++ snippets |
+| **Workload** | Per-rank load for two datasets, six process counts, two partitioning strategies and three metrics, with imbalance KPIs and a live MPI-style execution log |
+| **MPI traffic** | Blocking `MPI_Send` versus non-blocking `MPI_Isend` on a stepped timeline, with the `PendingSend` queue and per-rank states |
+| **Triangular matrix** | An N×N grid coloured by owning rank, with per-cell inspection of the two species, the owner and the relative cost |
+| **Scalability** | Measured FinisTerrae III curves from 1 to 256 processes: Phase 3 speedup, Phase 4 `metacache` vs `isend`, and total runtime |
+| **Correctness** | Sequential vs parallel PHYLIP values with their raw IEEE-754 encodings, proving bitwise identity |
+
+Both languages (Spanish/English) and both themes (dark/light) apply to every module and
+persist across reloads.
+
+---
+
+## Architecture
+
+### Why Astro
+
+The suite was originally a plain Vite SPA: seven modules, Chart.js and jsPDF in a single
+959 kB bundle that had to execute before anything appeared on screen. The migration to
+Astro changed the delivery model, not the features.
+
+| | Before (Vite SPA) | After (Astro islands) |
+|---|---|---|
+| First paint | after the JS bundle executes | server-prerendered HTML |
+| Initial JS | 958.9 kB (~300 kB gzipped) | **270.6 kB (~82 kB gzipped)** |
+| Module code | one bundle, all seven modules | one chunk per module, on demand |
+| Chart.js (167 kB) | always | only with the two chart modules |
+| jsPDF (398 kB) | always | only when a factsheet is downloaded |
+| Theme/language boot | after hydration (visible flash) | inline head script, before paint |
+| Head / SEO | hand-written `index.html` | typed, composable Astro layout |
+
+### How it fits together
+
+```
+Astro (build time, static)                React (browser, one island)
+┌──────────────────────────────┐          ┌────────────────────────────────┐
+│ BaseLayout.astro             │          │ AppShell → App                 │
+│  · <head>, fonts, SEO tags   │          │  · LanguageThemeProvider       │
+│  · inline theme/lang boot    │─ client: │  · header, nav, docs modal     │
+│ index.astro                  │  load ──>│  · Suspense module switch      │
+│  · the single route          │          │      ├── base algorithm (eager)│
+│ 404.astro                    │          │      └── 6 modules (lazy)      │
+└──────────────────────────────┘          └────────────────────────────────┘
+```
+
+**One island, not seven.** The active module, the language and the theme are shared
+mutable client state, so splitting the modules into sibling islands would need an external
+store — a rewrite rather than a migration, and it would buy nothing at runtime because only
+one module is ever mounted. The payload win comes from `React.lazy` instead.
+
+**Prerender-safe state.** Astro runs the island in Node at build time, so the provider
+starts from the documented defaults (`es`, `dark`) and reconciles with `localStorage` in a
+mount effect. An inline `<head>` script applies the stored theme class and `lang` attribute
+before first paint, so the reconciliation is invisible. Both implementations share the same
+exported keys and defaults so they cannot drift apart.
+
+**Storage is defensive.** Private-browsing modes and blocked site data make `localStorage`
+throw; every read and write is wrapped and degrades to the documented default.
+
+### Project structure
+
+```
+astro.config.mjs              # static output, React integration, Tailwind 4 Vite plugin
+src/
+├── pages/
+│   ├── index.astro           # the single route
+│   └── 404.astro             # static not-found page
+├── layouts/
+│   └── BaseLayout.astro      # <head>, fonts, SEO, theme/lang boot script
+├── islands/
+│   └── AppShell.tsx          # hydration entry point
+├── App.tsx                   # shell: header, nav, banner, docs modal, module switch
+├── components/               # the seven modules (React, unchanged by the migration)
+├── context/
+│   └── LanguageThemeContext.tsx   # i18n dictionary + theme, prerender-safe
+├── data/
+│   └── speciesData.ts        # datasets, the partitioner, measured scalability series
+├── utils/
+│   └── generatePdf.ts        # in-browser jsPDF factsheet (dynamically imported)
+└── index.css                 # Tailwind entry, light-theme overrides, card styles
+public/                       # favicon.svg, robots.txt
+specs/                        # GitHub Spec Kit specification (see below)
+```
+
+### Static data
+
+Everything is compiled into the bundle — there is no data fetching at runtime.
+
+| Dataset | Contents |
+|---|---|
+| `SPECIES_64_HOMOGENEOUS` | 64 synthetic species, ≈12.4–16.0 Maa. Sizes span 1.3×, so any imbalance shown is purely geometric |
+| `SPECIES_300_UNBALANCED` | 300 species: 15 real key taxa (*Homo sapiens* 69.58 Maa … *M. genitalium* 0.58 Maa) plus 285 log-normal fillers. The largest proteomes sit at the lowest indices, so geometric and biological imbalance stack on the same ranks |
+| `SCALABILITY_DATA` | Measured FinisTerrae III results for 1–256 processes, balanced and unbalanced, Phase 3 / Phase 4 / total, `metacache` and `isend` |
+| `PHYLIP_SAMPLE_DATA` | 16 verified matrix cells with sequential value, parallel value, delta (always exactly 0) and owning rank |
+
+The scalability tables are the one place where the numbers are experimental measurements
+from the thesis. They are transcribed, never interpolated or recomputed in the browser.
+
+---
+
+## Getting started
+
+Requires **Node.js 20+**.
+
+```bash
+npm install
+npm run dev       # dev server on http://localhost:3000
+npm run build     # static site into dist/
+npm run preview   # serve the built site
+npm run lint      # astro check — TypeScript and Astro diagnostics
+```
+
+### Deployment
+
+The build output is fully static, so any static host works with no configuration:
+
+```bash
+npm run build && npx serve dist    # or Netlify, Vercel, GitHub Pages, S3, nginx
+```
+
+Set `site` in `astro.config.mjs` to the deployment origin to emit canonical and `og:url`
+tags. The only external request the page makes is the Google Fonts stylesheet; without it
+the suite falls back to system fonts and stays fully functional.
+
+---
+
+## Specification
+
+The project is documented with [GitHub Spec Kit](https://github.com/github/spec-kit).
+
+| Document | Contents |
+|---|---|
+| [`.specify/memory/constitution.md`](./.specify/memory/constitution.md) | The five governing principles |
+| [`specs/001-protspam-hpc-simulator/spec.md`](./specs/001-protspam-hpc-simulator/spec.md) | User stories, 38 functional requirements, success criteria |
+| [`…/plan.md`](./specs/001-protspam-hpc-simulator/plan.md) | The Vite → Astro migration plan |
+| [`…/tasks.md`](./specs/001-protspam-hpc-simulator/tasks.md) | The seven migration tasks and the deferred defects |
+| [`…/research.md`](./specs/001-protspam-hpc-simulator/research.md) | Prototype analysis and migration decisions |
+| [`…/data-model.md`](./specs/001-protspam-hpc-simulator/data-model.md) | Every entity and static dataset |
+| [`…/contracts/`](./specs/001-protspam-hpc-simulator/contracts/) | Component, simulation-engine and i18n contracts |
+| [`…/quickstart.md`](./specs/001-protspam-hpc-simulator/quickstart.md) | Commands, manual verification scenarios, deployment |
+
+### Known simplifications
+
+The simulator is a **teaching instrument**, not a re-implementation of the C++ tool. The
+deliberate simplifications — a 4×4 substitution table standing in for BLOSUM62, an
+extension that is not X-drop bounded, a synthetic per-pattern distance, a scripted MPI
+timeline — are listed in
+[`research.md`](./specs/001-protspam-hpc-simulator/research.md) §A.3, and the open defects
+in [`tasks.md`](./specs/001-protspam-hpc-simulator/tasks.md) (D001–D006).
+
+---
+
+## Resources
+
+- **C++ source**: [github.com/ana-izaguirre/ProtSpaM](https://github.com/ana-izaguirre/ProtSpaM)
+- **TFM factsheet**: generated in-browser as a PDF from the header or the documentation modal
