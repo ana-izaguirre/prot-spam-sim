@@ -18,6 +18,13 @@ permissions:
   pages: write
   id-token: write
 
+# GitHub Pages serves a project site from /<repo>/, so the production build must
+# emit that prefix. It is defined once, at workflow level, because the build, the
+# preview server and the smoke suite all have to agree on it: a site built for a
+# base path but served from the root loads its HTML and none of its assets.
+env:
+  BASE_PATH: ${{ github.ref == 'refs/heads/main' && format('/{0}/', github.event.repository.name) || '/' }}
+
 jobs:
   check:
     name: Type-check and build
@@ -42,10 +49,6 @@ jobs:
           # Set the SITE_URL repository variable to the production origin so the
           # build emits canonical and og:url tags. Without it they are omitted.
           SITE_URL: ${{ vars.SITE_URL }}
-          # GitHub Pages serves a project site from /<repo>/, so every emitted
-          # URL needs that prefix. Pull requests build at the root, which is what
-          # the smoke suite expects.
-          BASE_PATH: ${{ github.ref == 'refs/heads/main' && format('/{0}/', github.event.repository.name) || '/' }}
 
       - name: Check the build produced what it should
         run: |
@@ -91,6 +94,9 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run the smoke suite against the built site
+        # BASE_PATH comes from the workflow env: `astro preview` serves at that
+        # prefix and Playwright's baseURL uses it, so the suite exercises the
+        # artifact exactly as Pages will serve it.
         run: npm test
 
       - name: Upload the report on failure
