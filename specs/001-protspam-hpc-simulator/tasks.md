@@ -94,9 +94,13 @@ here so the migration diff stays reviewable.
   implement X-drop termination or remove the parameter (`spec.md` FR-018).
   *Fixed in `feat/t015-xdrop-extension`: X-drop termination implemented, the input
   control rendered, and the accept/reject decision now uses the trimmed HSP score.*
-- [ ] **D002** — The light theme is implemented as an override stylesheet keyed on specific
+- [X] **D002** — The light theme is implemented as an override stylesheet keyed on specific
   Tailwind class names; any utility not listed keeps its dark value. Move to CSS custom
   properties or a `dark:` variant strategy.
+  *Fixed in `refactor/t019-light-theme-tokens`: the theme is now a remap of Tailwind 4's
+  colour variables, so every utility follows automatically, including ones written later.
+  Chart.js paints to a canvas and cannot inherit CSS, so its ink is derived from the active
+  theme in both chart modules.*
 - [X] **D003** — `navigator.clipboard.writeText` in the workload log has no rejection
   handler; a denied clipboard permission silently shows a false success toast.
   *Fixed in `fix/t013-clipboard-failure`: the promise is handled, and the button now has

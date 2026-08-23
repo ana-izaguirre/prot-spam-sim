@@ -29,11 +29,24 @@ type ActiveTab = 'phase3_speedup' | 'phase4_speedup' | 'total_time';
 type DatasetChoice = 'unbalanced' | 'balanced';
 
 export const ScalabilityCharts: React.FC = () => {
-  const { lang, t } = useAppLanguageTheme();
+  const { lang, t, theme } = useAppLanguageTheme();
   const [activeTab, setActiveTab] = useState<ActiveTab>('phase4_speedup');
   const [datasetChoice, setDatasetChoice] = useState<DatasetChoice>('unbalanced');
   const chartCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const chartInstanceRef = useRef<Chart | null>(null);
+
+  // Chart.js paints to a canvas, so it cannot inherit the CSS theme: the text
+  // colours have to be handed to it explicitly.
+  const isLight = theme === 'light';
+  const chartInk = {
+    legend: isLight ? '#1e293b' : '#e2e8f0',
+    axis: isLight ? '#475569' : '#64748b',
+    axisTitle: isLight ? '#334155' : '#94a3b8',
+    tooltipBg: isLight ? '#ffffff' : '#0f172a',
+    tooltipBorder: isLight ? '#cbd5e1' : '#334155',
+    tooltipTitle: isLight ? '#047857' : '#10b981',
+    tooltipBody: isLight ? '#1e293b' : '#e2e8f0',
+  };
 
   const processes = SCALABILITY_DATA.processes;
   const currentData = SCALABILITY_DATA[datasetChoice];
@@ -155,7 +168,7 @@ export const ScalabilityCharts: React.FC = () => {
             display: true,
             position: 'top',
             labels: {
-              color: '#e2e8f0',
+              color: chartInk.legend,
               font: { family: 'Inter', size: 11, weight: 500 },
               boxWidth: 14,
               boxHeight: 14,
@@ -163,11 +176,11 @@ export const ScalabilityCharts: React.FC = () => {
             },
           },
           tooltip: {
-            backgroundColor: '#0f172a',
-            borderColor: '#334155',
+            backgroundColor: chartInk.tooltipBg,
+            borderColor: chartInk.tooltipBorder,
             borderWidth: 1,
-            titleColor: '#10b981',
-            bodyColor: '#e2e8f0',
+            titleColor: chartInk.tooltipTitle,
+            bodyColor: chartInk.tooltipBody,
             padding: 10,
             callbacks: {
               afterBody: (tooltipItems) => {
@@ -198,20 +211,20 @@ export const ScalabilityCharts: React.FC = () => {
           x: {
             grid: { color: 'rgba(51, 65, 85, 0.4)' },
             ticks: {
-              color: '#64748b',
+              color: chartInk.axis,
               font: { family: 'JetBrains Mono', size: 11 },
             },
           },
           y: {
             grid: { color: 'rgba(51, 65, 85, 0.4)' },
             ticks: {
-              color: '#64748b',
+              color: chartInk.axis,
               font: { family: 'JetBrains Mono', size: 11 },
             },
             title: {
               display: true,
               text: yAxisTitle,
-              color: '#94a3b8',
+              color: chartInk.axisTitle,
               font: { size: 11 },
             },
           },
@@ -224,7 +237,7 @@ export const ScalabilityCharts: React.FC = () => {
         chartInstanceRef.current.destroy();
       }
     };
-  }, [activeTab, datasetChoice, currentData, processes, lang]);
+  }, [activeTab, datasetChoice, currentData, processes, lang, theme]);
 
   return (
     <div className="space-y-4">
@@ -259,7 +272,7 @@ export const ScalabilityCharts: React.FC = () => {
             onClick={() => setActiveTab('total_time')}
             className={`flex-1 py-2 px-3 text-xs font-bold rounded-lg transition-colors text-center ${
               activeTab === 'total_time'
-                ? 'bg-purple-500 text-white shadow'
+                ? 'bg-purple-500 text-slate-50 shadow'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
@@ -299,7 +312,7 @@ export const ScalabilityCharts: React.FC = () => {
       {/* Main Chart Container */}
       <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5">
         <div className="flex justify-between items-center mb-3">
-          <h3 className="text-sm font-semibold uppercase tracking-wider text-white">
+          <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-50">
             {lang === 'es' ? 'Curvas de Escalabilidad Fuerte (Strong Scaling, N=300 Especies)' : 'Strong Scaling Curves (N=300 Species)'}
           </h3>
           <span className="text-xs text-slate-400 font-mono">
@@ -359,7 +372,7 @@ export const ScalabilityCharts: React.FC = () => {
 
       {/* Scalability Detailed Data Table */}
       <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5">
-        <div className="text-xs font-semibold uppercase tracking-wider text-white mb-3 flex items-center justify-between">
+        <div className="text-xs font-semibold uppercase tracking-wider text-slate-50 mb-3 flex items-center justify-between">
           <span>{lang === 'es' ? 'Tabla Comparativa de Eficiencia Paralela (N=300 Especies)' : 'Parallel Efficiency Benchmark Table (N=300 Species)'}</span>
           <span className="text-[11px] text-slate-500 font-normal font-mono">Ep = Sp / P</span>
         </div>
@@ -394,7 +407,7 @@ export const ScalabilityCharts: React.FC = () => {
                     <td className="p-2.5 text-slate-200">{tP3.toFixed(2)}s</td>
                     <td className="p-2.5 text-rose-400">{tMeta.toFixed(2)}s</td>
                     <td className="p-2.5 text-emerald-400 font-semibold">{tIsend.toFixed(2)}s</td>
-                    <td className="p-2.5 text-white font-bold">{spIsend}x</td>
+                    <td className="p-2.5 text-slate-50 font-bold">{spIsend}x</td>
                     <td className="p-2.5 text-slate-200">
                       <span
                         className={`px-2 py-0.5 rounded text-[10px] ${

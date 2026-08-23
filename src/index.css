@@ -2,6 +2,13 @@
 
 @layer base {
   :root {
+    --surface-card: rgba(15, 23, 42, 0.7);
+    --surface-card-subtle: rgba(2, 6, 23, 0.6);
+    --surface-border: #1e293b;
+    --scrollbar-track: #020617;
+    --scrollbar-thumb: #1e293b;
+    --scrollbar-thumb-hover: #334155;
+
     --bg-color: #020617;
     --card-bg: #0f172a;
     --card-bg-subtle: #090e1a;
@@ -23,66 +30,78 @@
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
   }
 
-  /* Light theme mode */
+  /*
+   * Light theme.
+   *
+   * Tailwind 4 compiles every colour utility to `var(--color-<name>-<step>)`,
+   * so the theme is a remap of those variables rather than a list of overrides.
+   * The previous implementation enumerated specific class names with
+   * `!important`, which meant any utility the author had not listed kept its
+   * dark value — the theme was only as complete as that list.
+   *
+   * The slate ramp is inverted: what was the darkest surface becomes the
+   * lightest, and what was the lightest text becomes the darkest. Every
+   * `bg-slate-950` / `text-slate-100` / `border-slate-800` in the app follows
+   * automatically, including ones written after this file.
+   */
+  html.light-theme {
+    --color-slate-950: #f8fafc;
+    --color-slate-900: #ffffff;
+    --color-slate-800: #e2e8f0;
+    --color-slate-700: #cbd5e1;
+    --color-slate-600: #94a3b8;
+    --color-slate-500: #64748b;
+    --color-slate-400: #475569;
+    --color-slate-300: #334155;
+    --color-slate-200: #1e293b;
+    --color-slate-100: #0f172a;
+    --color-slate-50: #020617;
+
+    /*
+     * The -400 accents are chosen for legibility on a near-black surface; on
+     * white they fall well below 4.5:1. Darkened here so the same utilities
+     * stay readable in both themes.
+     */
+    --color-emerald-400: #047857;
+    --color-blue-400: #1d4ed8;
+    --color-cyan-400: #0e7490;
+    --color-purple-400: #7e22ce;
+    --color-pink-400: #be185d;
+    --color-rose-400: #be123c;
+    --color-amber-400: #b45309;
+    --color-orange-400: #c2410c;
+
+    /*
+     * The -200/-300 accents are used as text inside tinted chips
+     * (`bg-blue-500/20 text-blue-300`). On a light tint they wash out
+     * completely, so they collapse onto the same darkened values.
+     */
+    --color-emerald-300: #047857;
+    --color-emerald-200: #065f46;
+    --color-blue-300: #1d4ed8;
+    --color-cyan-300: #0e7490;
+    --color-purple-300: #7e22ce;
+    --color-purple-200: #6b21a8;
+    --color-pink-300: #be185d;
+    --color-rose-300: #be123c;
+    --color-rose-500: #be123c;
+    --color-amber-300: #b45309;
+    --color-orange-300: #c2410c;
+    --color-orange-200: #9a3412;
+    --color-sky-300: #0369a1;
+
+    /* Surfaces defined outside Tailwind (see the card styles below). */
+    --surface-card: rgba(255, 255, 255, 0.92);
+    --surface-card-subtle: rgba(248, 250, 252, 0.85);
+    --surface-border: #cbd5e1;
+    --scrollbar-track: #e2e8f0;
+    --scrollbar-thumb: #cbd5e1;
+    --scrollbar-thumb-hover: #94a3b8;
+  }
+
   html.light-theme body {
     background-color: #f8fafc;
     color: #0f172a;
-  }
-
-  html.light-theme .bg-slate-950 {
-    background-color: #f1f5f9 !important;
-    color: #0f172a !important;
-  }
-
-  html.light-theme .bg-slate-950\/90,
-  html.light-theme .bg-slate-950\/85,
-  html.light-theme .bg-slate-950\/80,
-  html.light-theme .bg-slate-950\/60 {
-    background-color: rgba(241, 245, 249, 0.92) !important;
-    color: #0f172a !important;
-  }
-
-  html.light-theme .bg-slate-900 {
-    background-color: #ffffff !important;
-    color: #0f172a !important;
-  }
-
-  html.light-theme .bg-slate-900\/50,
-  html.light-theme .bg-slate-900\/40,
-  html.light-theme .bg-slate-900\/70 {
-    background-color: rgba(255, 255, 255, 0.95) !important;
-    color: #0f172a !important;
-  }
-
-  html.light-theme .border-slate-800,
-  html.light-theme .border-slate-800\/80,
-  html.light-theme .border-slate-800\/60,
-  html.light-theme .border-slate-800\/90 {
-    border-color: #cbd5e1 !important;
-  }
-
-  html.light-theme .text-white {
-    color: #0f172a !important;
-  }
-
-  html.light-theme .text-slate-100,
-  html.light-theme .text-slate-200,
-  html.light-theme .text-slate-300 {
-    color: #1e293b !important;
-  }
-
-  html.light-theme .text-slate-400 {
-    color: #475569 !important;
-  }
-
-  html.light-theme .text-slate-500 {
-    color: #64748b !important;
-  }
-
-  html.light-theme .bg-slate-800,
-  html.light-theme .bg-slate-800\/80 {
-    background-color: #e2e8f0 !important;
-    color: #1e293b !important;
   }
 
   code, pre, .font-mono {
@@ -92,9 +111,9 @@
 
 /* Bento Grid Cards & Micro-interactions */
 .bento-card {
-  background: rgba(15, 23, 42, 0.7);
+  background: var(--surface-card);
   backdrop-filter: blur(12px);
-  border: 1px solid #1e293b;
+  border: 1px solid var(--surface-border);
   border-radius: 1rem; /* rounded-2xl */
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
@@ -104,8 +123,8 @@
 }
 
 .bento-card-subtle {
-  background: rgba(2, 6, 23, 0.6);
-  border: 1px solid #1e293b;
+  background: var(--surface-card-subtle);
+  border: 1px solid var(--surface-border);
   border-radius: 0.75rem; /* rounded-xl */
 }
 
@@ -116,16 +135,16 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #020617;
+  background: var(--scrollbar-track);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
+  background: var(--scrollbar-thumb);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: var(--scrollbar-thumb-hover);
 }
 
 @keyframes packet-transit {

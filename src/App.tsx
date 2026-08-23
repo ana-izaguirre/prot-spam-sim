@@ -138,7 +138,7 @@ function AppContent() {
               &Pi;
             </div>
             <div className="flex flex-col">
-              <span className="font-bold text-xs sm:text-sm text-white tracking-tight whitespace-nowrap">
+              <span className="font-bold text-xs sm:text-sm text-slate-50 tracking-tight whitespace-nowrap">
                 {t('app.title')}
               </span>
               <span className="text-[9px] text-slate-400 font-mono hidden sm:inline leading-none">
@@ -440,7 +440,7 @@ function AppContent() {
                   <GraduationCap className="w-4 h-4" />
                 </div>
                 <div>
-                  <h2 className="text-base font-bold text-white tracking-wide">
+                  <h2 className="text-base font-bold text-slate-50 tracking-wide">
                     {lang === 'es' ? 'Memoria del TFM & Arquitectura HPC' : 'TFM Master\'s Thesis & HPC Architecture'}
                   </h2>
                   <p className="text-[11px] text-slate-400">
@@ -464,7 +464,7 @@ function AppContent() {
                   <div className="text-xs uppercase tracking-wider text-emerald-400 font-bold font-mono">
                     {lang === 'es' ? 'Trabajo de Fin de Máster' : 'Master\'s Thesis'}
                   </div>
-                  <h3 className="text-sm font-bold text-white mt-1 leading-snug">
+                  <h3 className="text-sm font-bold text-slate-50 mt-1 leading-snug">
                     {t('app.bannerTitle')}
                   </h3>
                 </div>
