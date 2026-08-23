@@ -16,8 +16,7 @@ export default defineConfig({
     // `astro preview` honours the configured base path, so the suite has to
     // start from it. BASE_PATH is unset locally and on pull requests, where the
     // site is served from the root.
-    baseURL:
-      process.env.SMOKE_URL || `http://localhost:4321${process.env.BASE_PATH || '/'}`,
+    baseURL: process.env.SMOKE_URL || `http://localhost:4321${process.env.BASE_PATH || '/'}`,
     trace: 'on-first-retry',
   },
 

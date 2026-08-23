@@ -12,7 +12,7 @@ import {
 } from 'chart.js';
 import { SCALABILITY_DATA } from '../data/speciesData';
 import { useAppLanguageTheme } from '../context/LanguageThemeContext';
-import { TrendingUp, AlertTriangle, Cpu, CheckCircle2, Info } from 'lucide-react';
+import { TrendingUp, AlertTriangle, CheckCircle2 } from 'lucide-react';
 
 Chart.register(
   LineController,
@@ -22,7 +22,7 @@ Chart.register(
   CategoryScale,
   LogarithmicScale,
   Tooltip,
-  Legend
+  Legend,
 );
 
 type ActiveTab = 'phase3_speedup' | 'phase4_speedup' | 'total_time';
@@ -63,14 +63,16 @@ export const ScalabilityCharts: React.FC = () => {
 
     const labels = processes.map((p) => `${p} P`);
 
-    let datasets: any[] = [];
-    let yAxisTitle = lang === 'es' ? 'Aceleración (Speedup Sp = T1 / Tp)' : 'Speedup (Sp = T1 / Tp)';
+    let datasets: any[];
+    let yAxisTitle: string;
 
     if (activeTab === 'phase3_speedup') {
-      yAxisTitle = lang === 'es' ? 'Aceleración Fase 3 (Sp = T1 / Tp)' : 'Phase 3 Speedup (Sp = T1 / Tp)';
+      yAxisTitle =
+        lang === 'es' ? 'Aceleración Fase 3 (Sp = T1 / Tp)' : 'Phase 3 Speedup (Sp = T1 / Tp)';
       datasets = [
         {
-          label: lang === 'es' ? 'Aceleración Ideal (Lineal Sp = P)' : 'Ideal Speedup (Linear Sp = P)',
+          label:
+            lang === 'es' ? 'Aceleración Ideal (Lineal Sp = P)' : 'Ideal Speedup (Linear Sp = P)',
           data: currentData.phase3.speedup_ideal,
           borderColor: '#87929a',
           borderDash: [6, 6],
@@ -91,7 +93,8 @@ export const ScalabilityCharts: React.FC = () => {
         },
       ];
     } else if (activeTab === 'phase4_speedup') {
-      yAxisTitle = lang === 'es' ? 'Aceleración Fase 4 (Sp = T1 / Tp)' : 'Phase 4 Speedup (Sp = T1 / Tp)';
+      yAxisTitle =
+        lang === 'es' ? 'Aceleración Fase 4 (Sp = T1 / Tp)' : 'Phase 4 Speedup (Sp = T1 / Tp)';
       datasets = [
         {
           label: lang === 'es' ? 'Aceleración Ideal (Sp = P)' : 'Ideal Speedup (Sp = P)',
@@ -124,7 +127,8 @@ export const ScalabilityCharts: React.FC = () => {
         },
       ];
     } else {
-      yAxisTitle = lang === 'es' ? 'Tiempo de Ejecución Total (Segundos)' : 'Total Execution Time (Seconds)';
+      yAxisTitle =
+        lang === 'es' ? 'Tiempo de Ejecución Total (Segundos)' : 'Total Execution Time (Seconds)';
       datasets = [
         {
           label: lang === 'es' ? 'Tiempo Total con isend' : 'Total Time with isend',
@@ -313,12 +317,18 @@ export const ScalabilityCharts: React.FC = () => {
       <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5">
         <div className="flex justify-between items-center mb-3">
           <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-50">
-            {lang === 'es' ? 'Curvas de Escalabilidad Fuerte (Strong Scaling, N=300 Especies)' : 'Strong Scaling Curves (N=300 Species)'}
+            {lang === 'es'
+              ? 'Curvas de Escalabilidad Fuerte (Strong Scaling, N=300 Especies)'
+              : 'Strong Scaling Curves (N=300 Species)'}
           </h3>
           <span className="text-xs text-slate-400 font-mono">
             {datasetChoice === 'unbalanced'
-              ? (lang === 'es' ? 'Con heterogeneidad en tamaño de proteomas' : 'With real heterogeneous proteome distribution')
-              : (lang === 'es' ? 'Proteomas sintéticos uniformes' : 'Uniform synthetic proteomes')}
+              ? lang === 'es'
+                ? 'Con heterogeneidad en tamaño de proteomas'
+                : 'With real heterogeneous proteome distribution'
+              : lang === 'es'
+                ? 'Proteomas sintéticos uniformes'
+                : 'Uniform synthetic proteomes'}
           </span>
         </div>
 
@@ -334,7 +344,9 @@ export const ScalabilityCharts: React.FC = () => {
         <div className="bg-slate-900/50 border border-slate-800 border-l-4 border-l-rose-500 p-4 rounded-2xl space-y-1.5 text-xs">
           <div className="font-bold text-rose-400 flex items-center gap-1.5">
             <AlertTriangle className="w-3.5 h-3.5" />
-            {lang === 'es' ? 'Caída en 128 Procesos (metacache)' : 'Drop at 128 Processes (metacache)'}
+            {lang === 'es'
+              ? 'Caída en 128 Procesos (metacache)'
+              : 'Drop at 128 Processes (metacache)'}
           </div>
           <p className="text-[11px] text-slate-400 leading-relaxed">
             {lang === 'es'
@@ -347,12 +359,14 @@ export const ScalabilityCharts: React.FC = () => {
         <div className="bg-slate-900/50 border border-slate-800 border-l-4 border-l-emerald-500 p-4 rounded-2xl space-y-1.5 text-xs">
           <div className="font-bold text-emerald-400 flex items-center gap-1.5">
             <TrendingUp className="w-3.5 h-3.5" />
-            {lang === 'es' ? 'Límite en 256 Procesos (isend)' : 'Threshold at 256 Processes (isend)'}
+            {lang === 'es'
+              ? 'Límite en 256 Procesos (isend)'
+              : 'Threshold at 256 Processes (isend)'}
           </div>
           <p className="text-[11px] text-slate-400 leading-relaxed">
             {lang === 'es'
               ? 'isend alcanza un Speedup de 122.4x en 256 procesos (tiempo reducido a 7.74s). El límite de escalabilidad aquí se debe a la sobrecarga de red y la fracción secuencial de E/S según la Ley de Amdahl.'
-              : 'isend achieves 122.4x Speedup at 256 processes (time down to 7.74s). The scaling ceiling stems from network latency and Amdahl\'s sequential disk I/O.'}
+              : "isend achieves 122.4x Speedup at 256 processes (time down to 7.74s). The scaling ceiling stems from network latency and Amdahl's sequential disk I/O."}
           </p>
         </div>
 
@@ -360,7 +374,9 @@ export const ScalabilityCharts: React.FC = () => {
         <div className="bg-slate-900/50 border border-slate-800 border-l-4 border-l-blue-500 p-4 rounded-2xl space-y-1.5 text-xs">
           <div className="font-bold text-blue-400 flex items-center gap-1.5">
             <CheckCircle2 className="w-3.5 h-3.5" />
-            {lang === 'es' ? 'Fase 3: Alta Eficiencia Paralela' : 'Phase 3: High Parallel Efficiency'}
+            {lang === 'es'
+              ? 'Fase 3: Alta Eficiencia Paralela'
+              : 'Phase 3: High Parallel Efficiency'}
           </div>
           <p className="text-[11px] text-slate-400 leading-relaxed">
             {lang === 'es'
@@ -373,20 +389,36 @@ export const ScalabilityCharts: React.FC = () => {
       {/* Scalability Detailed Data Table */}
       <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5">
         <div className="text-xs font-semibold uppercase tracking-wider text-slate-50 mb-3 flex items-center justify-between">
-          <span>{lang === 'es' ? 'Tabla Comparativa de Eficiencia Paralela (N=300 Especies)' : 'Parallel Efficiency Benchmark Table (N=300 Species)'}</span>
+          <span>
+            {lang === 'es'
+              ? 'Tabla Comparativa de Eficiencia Paralela (N=300 Especies)'
+              : 'Parallel Efficiency Benchmark Table (N=300 Species)'}
+          </span>
           <span className="text-[11px] text-slate-500 font-normal font-mono">Ep = Sp / P</span>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full border-collapse font-mono text-xs text-center">
             <thead>
               <tr className="bg-slate-950 text-slate-400 text-[10px] uppercase border border-slate-800">
-                <th className="p-2.5 text-left">{lang === 'es' ? 'Procesos (P)' : 'Processes (P)'}</th>
+                <th className="p-2.5 text-left">
+                  {lang === 'es' ? 'Procesos (P)' : 'Processes (P)'}
+                </th>
                 <th className="p-2.5">{lang === 'es' ? 'T. Fase 3 (s)' : 'Phase 3 Time (s)'}</th>
-                <th className="p-2.5 text-rose-400">{lang === 'es' ? 'T. Metacache (s)' : 'Metacache Time (s)'}</th>
-                <th className="p-2.5 text-emerald-400">{lang === 'es' ? 'T. Isend (s)' : 'Isend Time (s)'}</th>
-                <th className="p-2.5">{lang === 'es' ? 'Speedup Isend (Sp)' : 'Isend Speedup (Sp)'}</th>
-                <th className="p-2.5">{lang === 'es' ? 'Eficiencia Isend (Ep)' : 'Isend Efficiency (Ep)'}</th>
-                <th className="p-2.5 text-orange-400">{lang === 'es' ? 'Ganancia Isend/Meta' : 'Isend/Meta Gain'}</th>
+                <th className="p-2.5 text-rose-400">
+                  {lang === 'es' ? 'T. Metacache (s)' : 'Metacache Time (s)'}
+                </th>
+                <th className="p-2.5 text-emerald-400">
+                  {lang === 'es' ? 'T. Isend (s)' : 'Isend Time (s)'}
+                </th>
+                <th className="p-2.5">
+                  {lang === 'es' ? 'Speedup Isend (Sp)' : 'Isend Speedup (Sp)'}
+                </th>
+                <th className="p-2.5">
+                  {lang === 'es' ? 'Eficiencia Isend (Ep)' : 'Isend Efficiency (Ep)'}
+                </th>
+                <th className="p-2.5 text-orange-400">
+                  {lang === 'es' ? 'Ganancia Isend/Meta' : 'Isend/Meta Gain'}
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -414,14 +446,16 @@ export const ScalabilityCharts: React.FC = () => {
                           parseFloat(epIsend) >= 70
                             ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
                             : parseFloat(epIsend) >= 40
-                            ? 'bg-orange-500/20 text-orange-400 border border-orange-500/40'
-                            : 'bg-rose-500/20 text-rose-400 border border-rose-500/40'
+                              ? 'bg-orange-500/20 text-orange-400 border border-orange-500/40'
+                              : 'bg-rose-500/20 text-rose-400 border border-rose-500/40'
                         }`}
                       >
                         {epIsend}%
                       </span>
                     </td>
-                    <td className="p-2.5 text-orange-400 font-bold">{gain}x {lang === 'es' ? 'más rápido' : 'faster'}</td>
+                    <td className="p-2.5 text-orange-400 font-bold">
+                      {gain}x {lang === 'es' ? 'más rápido' : 'faster'}
+                    </td>
                   </tr>
                 );
               })}

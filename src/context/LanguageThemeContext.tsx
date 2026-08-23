@@ -34,7 +34,8 @@ const translations: Record<Language, Record<string, string>> = {
     'app.director': 'Director',
     'app.system': 'Supercomputador',
     'app.date': 'Fecha',
-    'app.bannerTitle': 'TFM: Reconstrucción filogenética de secuencias de proteoma completo sobre memoria distribuida',
+    'app.bannerTitle':
+      'TFM: Reconstrucción filogenética de secuencias de proteoma completo sobre memoria distribuida',
     'app.sectionsTitle': 'Secciones y Módulos',
 
     // Modal TFM
@@ -44,22 +45,27 @@ const translations: Record<Language, Record<string, string>> = {
     'modal.univ': 'Universidade da Coruña (UDC) — Facultade de Informática',
     'modal.cesga': 'Centro de Supercomputación de Galicia (CESGA) — FinisTerrae III',
     'modal.summaryTitle': 'Resumen Ejecutivo & Aportaciones:',
-    'modal.summaryP1': 'Este trabajo aborda la paralelización en memoria distribuida con MPI del algoritmo Prot-SpaM (Spaced Words for Protein Alignment), eliminando la necesidad de alineamientos múltiples tradicionales.',
-    'modal.summaryP2': 'Se implementó una estrategia híbrida distribuyendo tanto la indexación de palabras espaciadas (Fase 3) como el cálculo de la media matriz triangular (Fase 4), alcanzando un speedup de 26.8x en 128 núcleos del FinisTerrae III y reduciendo el tiempo de >31 horas a 70 minutos para 300 especies de proteoma completo.',
+    'modal.summaryP1':
+      'Este trabajo aborda la paralelización en memoria distribuida con MPI del algoritmo Prot-SpaM (Spaced Words for Protein Alignment), eliminando la necesidad de alineamientos múltiples tradicionales.',
+    'modal.summaryP2':
+      'Se implementó una estrategia híbrida distribuyendo tanto la indexación de palabras espaciadas (Fase 3) como el cálculo de la media matriz triangular (Fase 4), alcanzando un speedup de 26.8x en 128 núcleos del FinisTerrae III y reduciendo el tiempo de >31 horas a 70 minutos para 300 especies de proteoma completo.',
     'modal.downloadPdfBtn': 'Descargar Ficha en PDF',
     'modal.close': 'Cerrar',
 
     // Core Simulator
     'core.title': 'Simulador del Algoritmo Prot-SpaM Original',
-    'core.subtitle': 'Exploración interactiva del flujo base: extracción de palabras espaciadas, ordenación std::sort, extensión BLOSUM62 y cálculo de distancias de Kimura.',
+    'core.subtitle':
+      'Exploración interactiva del flujo base: extracción de palabras espaciadas, ordenación std::sort, extensión BLOSUM62 y cálculo de distancias de Kimura.',
     'core.howItWorks': '¿Cómo funciona Prot-SpaM?',
-    'core.howItWorksDesc': 'Prot-SpaM compara secuencias de proteínas completas sin necesidad de alineamiento múltiple tradicional. Genera palabras espaciadas fijadas por patrones binarios, las indexa en tiempo casi lineal, calcula extensiones con matrices BLOSUM62 y estima distancias evolutivas mediante la fórmula de Kimura.',
-    'core.patterns': 'Patrones Binarios (1: Coincidencia, *: Don\'t Care)',
+    'core.howItWorksDesc':
+      'Prot-SpaM compara secuencias de proteínas completas sin necesidad de alineamiento múltiple tradicional. Genera palabras espaciadas fijadas por patrones binarios, las indexa en tiempo casi lineal, calcula extensiones con matrices BLOSUM62 y estima distancias evolutivas mediante la fórmula de Kimura.',
+    'core.patterns': "Patrones Binarios (1: Coincidencia, *: Don't Care)",
     'core.seq1': 'Secuencia 1 (S1)',
     'core.seq2': 'Secuencia 2 (S2)',
     'core.threshold': 'Umbral Puntuación (T)',
     'core.dropoff': 'Caída Dropoff (X)',
-    'core.dropoffHint': 'La extensión se corta cuando la puntuación cae más de X por debajo de la mejor alcanzada, y se recorta hasta ese máximo.',
+    'core.dropoffHint':
+      'La extensión se corta cuando la puntuación cae más de X por debajo de la mejor alcanzada, y se recorta hasta ese máximo.',
     'core.updateParams': 'Recalcular Simulación',
     'core.playback': 'Controles de Ejecución',
     'core.prevStep': 'Paso Anterior',
@@ -77,11 +83,13 @@ const translations: Record<Language, Record<string, string>> = {
     'core.finalMatrix': 'Matriz de Distancias PHYLIP Resultante',
     'core.kimuraEq': 'd = -ln(1 - p - 0.2·p²)',
     'core.demoMatrixTitle': 'Matriz de sustitución didáctica (4×4)',
-    'core.demoMatrixHint': 'Prot-SpaM usa BLOSUM62, una matriz 20×20 de aminoácidos. Este simulador emplea una tabla reducida de 4 símbolos para que la extensión quepa en pantalla y se pueda seguir a mano.',
+    'core.demoMatrixHint':
+      'Prot-SpaM usa BLOSUM62, una matriz 20×20 de aminoácidos. Este simulador emplea una tabla reducida de 4 símbolos para que la extensión quepa en pantalla y se pueda seguir a mano.',
 
     // Branches & TFM Explorer
     'tfm.title': 'Evolución del TFM: Fases de Paralelización y Ramas Git',
-    'tfm.subtitle': 'Cómo se transformó la herramienta secuencial en una solución MPI escalable en el supercomputador FinisTerrae III.',
+    'tfm.subtitle':
+      'Cómo se transformó la herramienta secuencial en una solución MPI escalable en el supercomputador FinisTerrae III.',
     'tfm.branchSelect': 'Seleccionar Rama de Desarrollo:',
     'tfm.viewOnGithub': 'Ver Rama en GitHub',
     'tfm.summaryBadge': 'Resumen de Rendimiento & Aceleración',
@@ -101,7 +109,8 @@ const translations: Record<Language, Record<string, string>> = {
     'workload.demoMode': 'Modo Demo Automático',
     'workload.demoRunning': 'Demo en Curso (Escalado P)',
     'workload.demoSpeed': 'Velocidad',
-    'workload.demoExplanation': 'Visualiza cómo evoluciona la carga y el balanceo al incrementar los procesos de 2 a 64.',
+    'workload.demoExplanation':
+      'Visualiza cómo evoluciona la carga y el balanceo al incrementar los procesos de 2 a 64.',
     'workload.controlCockpit': 'Cabina de Control y Topología MPI',
     'workload.chartTitle': 'Distribución de Carga por Proceso MPI (Fases 3 y 4)',
     'workload.kpiImbalance': 'Factor Desbalance (λ)',
@@ -122,7 +131,8 @@ const translations: Record<Language, Record<string, string>> = {
 
     // MPI Communication
     'mpi.title': 'Visualizador de Tráfico y Comunicación MPI',
-    'mpi.subtitle': 'Comparación directa de contención de red y concurrencia entre MPI_Send bloqueante y MPI_Isend asíncrono.',
+    'mpi.subtitle':
+      'Comparación directa de contención de red y concurrencia entre MPI_Send bloqueante y MPI_Isend asíncrono.',
     'mpi.mechanism': 'Mecanismo MPI:',
     'mpi.blocking': 'METACACHE (MPI_Send Bloqueante)',
     'mpi.nonblocking': 'MPI_ISEND (No Bloqueante)',
@@ -140,7 +150,8 @@ const translations: Record<Language, Record<string, string>> = {
 
     // Triangular Matrix
     'matrix.title': 'Explorador Interactivo de Matriz Triangular',
-    'matrix.subtitle': 'Visualización del cálculo de media matriz superior (j > i) y reparto geométrico entre rangos MPI.',
+    'matrix.subtitle':
+      'Visualización del cálculo de media matriz superior (j > i) y reparto geométrico entre rangos MPI.',
     'matrix.dimension': 'Dimensión Matriz (N)',
     'matrix.strategy': 'Algoritmo de Asignación',
     'matrix.cyclicDesc': 'Algoritmo 1 (i % P)',
@@ -154,11 +165,13 @@ const translations: Record<Language, Record<string, string>> = {
     'matrix.speciesB': 'Especie j:',
     'matrix.estimatedDist': 'Distancia Estimada:',
     'matrix.illustrativeDist': 'Distancia (valor ilustrativo):',
-    'matrix.illustrativeDistHint': 'Valor de ejemplo derivado de la posición de la celda, no calculado a partir de las secuencias. Los valores reales están en el módulo de Invarianza.',
+    'matrix.illustrativeDistHint':
+      'Valor de ejemplo derivado de la posición de la celda, no calculado a partir de las secuencias. Los valores reales están en el módulo de Invarianza.',
 
     // Scalability
     'scall.title': 'Evaluación de Rendimiento & Curvas de Escalabilidad',
-    'scall.subtitle': 'Resultados experimentales en el supercomputador FinisTerrae III (CESGA, Intel Xeon Platinum 8352Y, 64 cores/nodo).',
+    'scall.subtitle':
+      'Resultados experimentales en el supercomputador FinisTerrae III (CESGA, Intel Xeon Platinum 8352Y, 64 cores/nodo).',
     'scall.phase3Tab': 'Aceleración Fase 3',
     'scall.phase4Tab': 'Aceleración Fase 4 (metacache vs isend)',
     'scall.totalTimeTab': 'Tiempo Total de Ejecución',
@@ -170,7 +183,8 @@ const translations: Record<Language, Record<string, string>> = {
 
     // Correctness
     'num.title': 'Verificación de Invarianza Numérica (IEEE-754)',
-    'num.subtitle': 'Garantía matemática de reproducibilidad: la matriz de distancias paralela es 100% idéntica bit a bit a la referencia secuencial.',
+    'num.subtitle':
+      'Garantía matemática de reproducibilidad: la matriz de distancias paralela es 100% idéntica bit a bit a la referencia secuencial.',
     'num.exactMatch': '100% Coincidencia Exacta / 0.0% Error',
     'num.maxDelta': 'Error Máximo (Δ)',
     'num.verifiedPairs': 'Pares Verificados',
@@ -205,32 +219,38 @@ const translations: Record<Language, Record<string, string>> = {
     'app.director': 'Advisor',
     'app.system': 'Supercomputer',
     'app.date': 'Date',
-    'app.bannerTitle': 'Master\'s Thesis: Parallel phylogenetic reconstruction of whole proteome sequences on distributed memory systems',
+    'app.bannerTitle':
+      "Master's Thesis: Parallel phylogenetic reconstruction of whole proteome sequences on distributed memory systems",
     'app.sectionsTitle': 'Sections & Modules',
 
     // Modal TFM
-    'modal.title': 'Master\'s Thesis (TFM) Executive Factsheet',
+    'modal.title': "Master's Thesis (TFM) Executive Factsheet",
     'modal.thesisTitle': 'Thesis Title:',
     'modal.degree': 'Interuniversity Master in High Performance Computing (MUI HPC)',
     'modal.univ': 'Universidade da Coruña (UDC) — Faculty of Computer Science',
     'modal.cesga': 'Supercomputing Center of Galicia (CESGA) — FinisTerrae III',
     'modal.summaryTitle': 'Executive Summary & Scientific Contributions:',
-    'modal.summaryP1': 'This thesis addresses the distributed-memory parallelization using MPI of the Prot-SpaM (Spaced Words for Protein Alignment) algorithm, eliminating the need for expensive traditional multiple sequence alignments.',
-    'modal.summaryP2': 'A hybrid strategy was designed and deployed across FinisTerrae III compute nodes, distributing both spaced words indexing (Phase 3) and upper triangular half-matrix distance estimation (Phase 4). It achieved a 26.8x speedup on 128 cores, slashing computation time from >31 sequential hours to 70 minutes for 300 whole proteome species.',
+    'modal.summaryP1':
+      'This thesis addresses the distributed-memory parallelization using MPI of the Prot-SpaM (Spaced Words for Protein Alignment) algorithm, eliminating the need for expensive traditional multiple sequence alignments.',
+    'modal.summaryP2':
+      'A hybrid strategy was designed and deployed across FinisTerrae III compute nodes, distributing both spaced words indexing (Phase 3) and upper triangular half-matrix distance estimation (Phase 4). It achieved a 26.8x speedup on 128 cores, slashing computation time from >31 sequential hours to 70 minutes for 300 whole proteome species.',
     'modal.downloadPdfBtn': 'Download PDF Factsheet',
     'modal.close': 'Close',
 
     // Core Simulator
     'core.title': 'Original Prot-SpaM Core Algorithm Simulator',
-    'core.subtitle': 'Interactive exploration of the foundation: spaced words extraction, std::sort indexation, BLOSUM62 extension, and Kimura distance estimation.',
+    'core.subtitle':
+      'Interactive exploration of the foundation: spaced words extraction, std::sort indexation, BLOSUM62 extension, and Kimura distance estimation.',
     'core.howItWorks': 'How does Prot-SpaM work?',
-    'core.howItWorksDesc': 'Prot-SpaM compares complete protein sequences without traditional multiple sequence alignment. It generates spaced words defined by binary patterns, indexes them in quasi-linear time, scores extensions using BLOSUM62 matrices, and computes evolutionary distances using Kimura\'s model.',
-    'core.patterns': 'Binary Patterns (1: Match, *: Don\'t Care)',
+    'core.howItWorksDesc':
+      "Prot-SpaM compares complete protein sequences without traditional multiple sequence alignment. It generates spaced words defined by binary patterns, indexes them in quasi-linear time, scores extensions using BLOSUM62 matrices, and computes evolutionary distances using Kimura's model.",
+    'core.patterns': "Binary Patterns (1: Match, *: Don't Care)",
     'core.seq1': 'Sequence 1 (S1)',
     'core.seq2': 'Sequence 2 (S2)',
     'core.threshold': 'Score Threshold (T)',
     'core.dropoff': 'Dropoff Decay (X)',
-    'core.dropoffHint': 'The extension stops once the score falls more than X below the best reached, and is trimmed back to that maximum.',
+    'core.dropoffHint':
+      'The extension stops once the score falls more than X below the best reached, and is trimmed back to that maximum.',
     'core.updateParams': 'Recompute Simulation',
     'core.playback': 'Execution Controls',
     'core.prevStep': 'Previous Step',
@@ -248,11 +268,13 @@ const translations: Record<Language, Record<string, string>> = {
     'core.finalMatrix': 'Resulting PHYLIP Distance Matrix',
     'core.kimuraEq': 'd = -ln(1 - p - 0.2·p²)',
     'core.demoMatrixTitle': 'Didactic substitution matrix (4×4)',
-    'core.demoMatrixHint': 'Prot-SpaM uses BLOSUM62, a 20×20 amino-acid matrix. This simulator uses a reduced 4-symbol table so the extension fits on screen and can be followed by hand.',
+    'core.demoMatrixHint':
+      'Prot-SpaM uses BLOSUM62, a 20×20 amino-acid matrix. This simulator uses a reduced 4-symbol table so the extension fits on screen and can be followed by hand.',
 
     // Branches & TFM Explorer
     'tfm.title': 'TFM Evolution: Parallelization Phases & Git Branches',
-    'tfm.subtitle': 'How the sequential tool was transformed into a scalable MPI solution on the FinisTerrae III supercomputer.',
+    'tfm.subtitle':
+      'How the sequential tool was transformed into a scalable MPI solution on the FinisTerrae III supercomputer.',
     'tfm.branchSelect': 'Select Development Branch:',
     'tfm.viewOnGithub': 'View Branch on GitHub',
     'tfm.summaryBadge': 'Performance & Speedup Summary',
@@ -272,7 +294,8 @@ const translations: Record<Language, Record<string, string>> = {
     'workload.demoMode': 'Automated Demo Mode',
     'workload.demoRunning': 'Demo Running (Scaling P)',
     'workload.demoSpeed': 'Speed',
-    'workload.demoExplanation': 'Visualize how workload balance and bottlenecks evolve as processes scale from 2 to 64.',
+    'workload.demoExplanation':
+      'Visualize how workload balance and bottlenecks evolve as processes scale from 2 to 64.',
     'workload.controlCockpit': 'MPI Control & Topology Cockpit',
     'workload.chartTitle': 'MPI Process Workload Distribution (Phases 3 & 4)',
     'workload.kpiImbalance': 'Imbalance Factor (λ)',
@@ -293,7 +316,8 @@ const translations: Record<Language, Record<string, string>> = {
 
     // MPI Communication
     'mpi.title': 'MPI Traffic & Communication Visualizer',
-    'mpi.subtitle': 'Direct visual comparison of network contention and concurrency between blocking MPI_Send and non-blocking MPI_Isend.',
+    'mpi.subtitle':
+      'Direct visual comparison of network contention and concurrency between blocking MPI_Send and non-blocking MPI_Isend.',
     'mpi.mechanism': 'MPI Mechanism:',
     'mpi.blocking': 'METACACHE (Blocking MPI_Send)',
     'mpi.nonblocking': 'MPI_ISEND (Non-Blocking)',
@@ -311,7 +335,8 @@ const translations: Record<Language, Record<string, string>> = {
 
     // Triangular Matrix
     'matrix.title': 'Interactive Triangular Matrix Explorer',
-    'matrix.subtitle': 'Visualization of upper half-matrix calculation (j > i) and geometric assignment across MPI ranks.',
+    'matrix.subtitle':
+      'Visualization of upper half-matrix calculation (j > i) and geometric assignment across MPI ranks.',
     'matrix.dimension': 'Matrix Dimension (N)',
     'matrix.strategy': 'Assignment Algorithm',
     'matrix.cyclicDesc': 'Algorithm 1 (i % P)',
@@ -325,11 +350,13 @@ const translations: Record<Language, Record<string, string>> = {
     'matrix.speciesB': 'Species j:',
     'matrix.estimatedDist': 'Estimated Distance:',
     'matrix.illustrativeDist': 'Distance (illustrative value):',
-    'matrix.illustrativeDistHint': 'Example value derived from the cell position, not computed from the sequences. The real values are in the Correctness module.',
+    'matrix.illustrativeDistHint':
+      'Example value derived from the cell position, not computed from the sequences. The real values are in the Correctness module.',
 
     // Scalability
     'scall.title': 'Performance Evaluation & Scalability Curves',
-    'scall.subtitle': 'Real experimental benchmarks on the FinisTerrae III supercomputer (CESGA, Intel Xeon Platinum 8352Y, 64 cores/node).',
+    'scall.subtitle':
+      'Real experimental benchmarks on the FinisTerrae III supercomputer (CESGA, Intel Xeon Platinum 8352Y, 64 cores/node).',
     'scall.phase3Tab': 'Phase 3 Speedup',
     'scall.phase4Tab': 'Phase 4 Speedup (metacache vs isend)',
     'scall.totalTimeTab': 'Total Execution Time',
@@ -341,7 +368,8 @@ const translations: Record<Language, Record<string, string>> = {
 
     // Correctness
     'num.title': 'Numerical Invariance Verification (IEEE-754)',
-    'num.subtitle': 'Mathematical guarantee of reproducibility: the parallel distance matrix is 100% bitwise identical to the sequential reference.',
+    'num.subtitle':
+      'Mathematical guarantee of reproducibility: the parallel distance matrix is 100% bitwise identical to the sequential reference.',
     'num.exactMatch': '100% Exact Match / 0.0% Error',
     'num.maxDelta': 'Maximum Error (Δ)',
     'num.verifiedPairs': 'Verified Pairs',

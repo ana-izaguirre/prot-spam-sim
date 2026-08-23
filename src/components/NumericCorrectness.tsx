@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { PHYLIP_SAMPLE_DATA } from '../data/speciesData';
 import type { PhylipPairComparison } from '../data/speciesData';
 import { useAppLanguageTheme } from '../context/LanguageThemeContext';
-import { CheckCircle, ShieldCheck, Cpu, Search, Sparkles, Hash } from 'lucide-react';
+import { CheckCircle, ShieldCheck, Search, Sparkles, Hash } from 'lucide-react';
 
 export const NumericCorrectness: React.FC = () => {
   const { lang, t } = useAppLanguageTheme();
@@ -12,7 +12,7 @@ export const NumericCorrectness: React.FC = () => {
   const filteredData = PHYLIP_SAMPLE_DATA.filter(
     (item) =>
       item.spA.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.spB.toLowerCase().includes(searchTerm.toLowerCase())
+      item.spB.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   // IEEE 754 Float-to-hex converter for deep numeric validation
@@ -51,13 +51,19 @@ export const NumericCorrectness: React.FC = () => {
 
         <div className="flex items-center gap-4 bg-slate-950 px-4 py-2.5 rounded-xl border border-slate-800 font-mono text-xs shrink-0">
           <div className="text-center">
-            <div className="text-[10px] text-slate-500 uppercase font-semibold">{t('num.maxDelta')}</div>
+            <div className="text-[10px] text-slate-500 uppercase font-semibold">
+              {t('num.maxDelta')}
+            </div>
             <div className="text-sm font-bold text-emerald-400">0.000000000000</div>
           </div>
           <div className="w-px h-6 bg-slate-800" />
           <div className="text-center">
-            <div className="text-[10px] text-slate-500 uppercase font-semibold">{t('num.verifiedPairs')}</div>
-            <div className="text-sm font-bold text-blue-400">{PHYLIP_SAMPLE_DATA.length} / {PHYLIP_SAMPLE_DATA.length}</div>
+            <div className="text-[10px] text-slate-500 uppercase font-semibold">
+              {t('num.verifiedPairs')}
+            </div>
+            <div className="text-sm font-bold text-blue-400">
+              {PHYLIP_SAMPLE_DATA.length} / {PHYLIP_SAMPLE_DATA.length}
+            </div>
           </div>
         </div>
       </div>
@@ -95,26 +101,21 @@ export const NumericCorrectness: React.FC = () => {
               </thead>
               <tbody>
                 {filteredData.map((row, idx) => {
-                  const isSelected =
-                    selectedPair.spA === row.spA && selectedPair.spB === row.spB;
+                  const isSelected = selectedPair.spA === row.spA && selectedPair.spB === row.spB;
 
                   return (
                     <tr
                       key={idx}
                       onClick={() => setSelectedPair(row)}
                       className={`border-b border-slate-800/80 cursor-pointer transition-colors ${
-                        isSelected
-                          ? 'bg-blue-500/10 border-blue-500/40'
-                          : 'hover:bg-slate-800/40'
+                        isSelected ? 'bg-blue-500/10 border-blue-500/40' : 'hover:bg-slate-800/40'
                       }`}
                     >
                       <td className="p-2.5 text-left font-sans text-xs">
                         <div className="font-semibold text-slate-200">{row.spA}</div>
                         <div className="text-[11px] text-slate-400">&times; {row.spB}</div>
                       </td>
-                      <td className="p-2.5 text-slate-300">
-                        {row.seqValue.toFixed(10)}
-                      </td>
+                      <td className="p-2.5 text-slate-300">{row.seqValue.toFixed(10)}</td>
                       <td className="p-2.5 text-blue-400 font-semibold">
                         {row.mpiValue.toFixed(10)}
                       </td>
@@ -144,7 +145,9 @@ export const NumericCorrectness: React.FC = () => {
             <div className="flex justify-between items-center border-b border-slate-800 pb-3">
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-50 flex items-center gap-1.5">
                 <Hash className="w-4 h-4 text-emerald-400" />
-                {lang === 'es' ? 'Inspector IEEE-754 (Double 64-bit)' : 'IEEE-754 Double 64-bit Inspector'}
+                {lang === 'es'
+                  ? 'Inspector IEEE-754 (Double 64-bit)'
+                  : 'IEEE-754 Double 64-bit Inspector'}
               </span>
               <span className="text-[10px] text-emerald-400 font-mono font-bold bg-emerald-500/20 border border-emerald-500/40 px-2 py-0.5 rounded">
                 BITWISE IDENTICAL
@@ -153,24 +156,34 @@ export const NumericCorrectness: React.FC = () => {
 
             <div className="space-y-2.5 text-xs">
               <div>
-                <div className="text-slate-500 text-[10px] uppercase font-semibold">{lang === 'es' ? 'Par Evaluado' : 'Evaluated Pair'}</div>
+                <div className="text-slate-500 text-[10px] uppercase font-semibold">
+                  {lang === 'es' ? 'Par Evaluado' : 'Evaluated Pair'}
+                </div>
                 <div className="font-bold text-slate-50">
-                  {selectedPair.spA} <span className="text-blue-400">&harr;</span> {selectedPair.spB}
+                  {selectedPair.spA} <span className="text-blue-400">&harr;</span>{' '}
+                  {selectedPair.spB}
                 </div>
                 <div className="text-[11px] text-slate-400 font-mono mt-0.5">
-                  {lang === 'es' ? 'Matches Aprobados' : 'Approved Matches'} k = {selectedPair.matchesK} &middot; D = 1 / ({selectedPair.matchesK} + 1)
+                  {lang === 'es' ? 'Matches Aprobados' : 'Approved Matches'} k ={' '}
+                  {selectedPair.matchesK} &middot; D = 1 / ({selectedPair.matchesK} + 1)
                 </div>
               </div>
 
               {/* Hex View Comparison */}
               <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 font-mono space-y-2 text-[11px]">
                 <div className="flex justify-between">
-                  <span className="text-slate-500">{lang === 'es' ? 'Hex Secuencial:' : 'Hex Sequential:'}</span>
-                  <span className="text-blue-400 font-bold">{toHexFloat64(selectedPair.seqValue)}</span>
+                  <span className="text-slate-500">
+                    {lang === 'es' ? 'Hex Secuencial:' : 'Hex Sequential:'}
+                  </span>
+                  <span className="text-blue-400 font-bold">
+                    {toHexFloat64(selectedPair.seqValue)}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">Hex MPI (R{selectedPair.rankComputed}):</span>
-                  <span className="text-emerald-400 font-bold">{toHexFloat64(selectedPair.mpiValue)}</span>
+                  <span className="text-emerald-400 font-bold">
+                    {toHexFloat64(selectedPair.mpiValue)}
+                  </span>
                 </div>
                 <div className="flex justify-between border-t border-slate-800/80 pt-1.5 text-[10px]">
                   <span className="text-slate-500">Bitwise XOR Diff:</span>
@@ -184,7 +197,9 @@ export const NumericCorrectness: React.FC = () => {
           <div className="bg-slate-900/30 border border-slate-800 border-l-4 border-l-emerald-500 p-4 rounded-xl text-xs space-y-2 text-slate-300 leading-relaxed">
             <div className="font-semibold text-emerald-400 flex items-center gap-1.5">
               <Sparkles className="w-4 h-4 text-emerald-400" />
-              {lang === 'es' ? '¿Por qué no existe error de reasociación en coma flotante?' : 'Why is there zero floating-point reassociation error?'}
+              {lang === 'es'
+                ? '¿Por qué no existe error de reasociación en coma flotante?'
+                : 'Why is there zero floating-point reassociation error?'}
             </div>
             <p className="text-[11px] text-slate-400">
               {lang === 'es'
@@ -200,9 +215,28 @@ export const NumericCorrectness: React.FC = () => {
                 : 'In conventional parallel implementations where multiple threads accumulate partial sums arbitrarily, reassociation generates residual drift.'}
             </p>
             <p className="text-[11px] text-slate-400">
-              {lang === 'es'
-                ? <>En <strong>ProtSpam</strong>, la distancia <code className="text-blue-400 font-mono">D(i, j) = 1 / (k + 1)</code> de cada par es calculada <strong>íntegra e independientemente</strong> por un único rank MPI. La matriz final se construye inicializada con ceros exactos y reducida mediante <code className="text-emerald-400 font-mono">MPI_Reduce(MPI_SUM)</code> sobre bloques disjuntos, garantizando una coincidencia del <strong className="text-emerald-400">100.0000%</strong> con la versión secuencial.</>
-                : <>In <strong>ProtSpam</strong>, each pairwise distance <code className="text-blue-400 font-mono">D(i, j) = 1 / (k + 1)</code> is computed <strong>fully and independently</strong> by a single MPI rank. The final matrix is initialized with exact zeroes and merged via <code className="text-emerald-400 font-mono">MPI_Reduce(MPI_SUM)</code> over disjoint memory regions, ensuring <strong className="text-emerald-400">100.0000%</strong> bitwise identity with the sequential baseline.</>}
+              {lang === 'es' ? (
+                <>
+                  En <strong>ProtSpam</strong>, la distancia{' '}
+                  <code className="text-blue-400 font-mono">D(i, j) = 1 / (k + 1)</code> de cada par
+                  es calculada <strong>íntegra e independientemente</strong> por un único rank MPI.
+                  La matriz final se construye inicializada con ceros exactos y reducida mediante{' '}
+                  <code className="text-emerald-400 font-mono">MPI_Reduce(MPI_SUM)</code> sobre
+                  bloques disjuntos, garantizando una coincidencia del{' '}
+                  <strong className="text-emerald-400">100.0000%</strong> con la versión secuencial.
+                </>
+              ) : (
+                <>
+                  In <strong>ProtSpam</strong>, each pairwise distance{' '}
+                  <code className="text-blue-400 font-mono">D(i, j) = 1 / (k + 1)</code> is computed{' '}
+                  <strong>fully and independently</strong> by a single MPI rank. The final matrix is
+                  initialized with exact zeroes and merged via{' '}
+                  <code className="text-emerald-400 font-mono">MPI_Reduce(MPI_SUM)</code> over
+                  disjoint memory regions, ensuring{' '}
+                  <strong className="text-emerald-400">100.0000%</strong> bitwise identity with the
+                  sequential baseline.
+                </>
+              )}
             </p>
           </div>
         </div>

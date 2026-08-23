@@ -35,7 +35,7 @@ export function generateTFMPdf(lang: Language = 'es') {
       ? 'ProtSpam HPC Suite — Resumen Ejecutivo TFM'
       : "ProtSpam HPC Suite — Master's Thesis Executive Summary",
     15,
-    16
+    16,
   );
 
   doc.setFontSize(9);
@@ -46,7 +46,7 @@ export function generateTFMPdf(lang: Language = 'es') {
       ? 'Reconstrucción filogenética de secuencias de proteoma completo en paralelo (MPI)'
       : 'Parallel phylogenetic reconstruction of whole proteome sequences on distributed memory (MPI)',
     15,
-    22
+    22,
   );
 
   doc.setFontSize(8);
@@ -56,7 +56,7 @@ export function generateTFMPdf(lang: Language = 'es') {
       ? 'Máster Interuniversitario en Computación de Altas Prestaciones (MUI HPC) — UDC & CESGA'
       : "Interuniversity Master's in High Performance Computing (MUI HPC) — UDC & CESGA",
     15,
-    28
+    28,
   );
 
   // Metadata Box (Right side of header)
@@ -106,7 +106,7 @@ export function generateTFMPdf(lang: Language = 'es') {
   doc.setFontSize(11);
   doc.setTextColor(darkSlate[0], darkSlate[1], darkSlate[2]);
   doc.text(isEs ? '1. Resumen y Objetivos del Trabajo' : '1. Summary & Objectives', 15, y);
-  
+
   doc.setDrawColor(primaryEmerald[0], primaryEmerald[1], primaryEmerald[2]);
   doc.setLineWidth(0.5);
   doc.line(15, y + 2, 195, y + 2);
@@ -118,7 +118,7 @@ export function generateTFMPdf(lang: Language = 'es') {
 
   const summaryText = isEs
     ? 'El presente Trabajo de Fin de Máster aborda la paralelización en memoria distribuida (MPI) del software bioinformático Prot-SpaM (Spaced Words for Protein Alignment). Prot-SpaM permite estimar distancias filogenéticas entre proteomas completos sin requerir costosos alineamientos múltiples (MSA). En este trabajo se distribuyeron las fases críticas de indexación (Fase 3: spacedwords + std::sort) y comparación de media matriz (Fase 4: calc_matches + BLOSUM62 + Kimura), permitiendo procesar hasta 300 especies biológicas completas en el supercomputador FinisTerrae III.'
-    : 'This Master\'s Thesis presents the distributed memory (MPI) parallelization of the bioinformatics tool Prot-SpaM (Spaced Words for Protein Alignment). Prot-SpaM computes phylogenetic distances between whole proteome sequences without costly multiple sequence alignments. This project distributed both the pattern indexing phase (Phase 3: spacedwords + std::sort) and the upper triangular matrix comparison (Phase 4: calc_matches + BLOSUM62 + Kimura), scaling to 300 complete biological proteomes on the FinisTerrae III supercomputer.';
+    : "This Master's Thesis presents the distributed memory (MPI) parallelization of the bioinformatics tool Prot-SpaM (Spaced Words for Protein Alignment). Prot-SpaM computes phylogenetic distances between whole proteome sequences without costly multiple sequence alignments. This project distributed both the pattern indexing phase (Phase 3: spacedwords + std::sort) and the upper triangular matrix comparison (Phase 4: calc_matches + BLOSUM62 + Kimura), scaling to 300 complete biological proteomes on the FinisTerrae III supercomputer.";
 
   const splitSummary = doc.splitTextToSize(summaryText, 180);
   doc.text(splitSummary, 15, y);
@@ -128,7 +128,13 @@ export function generateTFMPdf(lang: Language = 'es') {
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(11);
   doc.setTextColor(darkSlate[0], darkSlate[1], darkSlate[2]);
-  doc.text(isEs ? '2. Resultados Experimentales en FinisTerrae III (300 Especies)' : '2. Experimental Benchmarks on FinisTerrae III (300 Species)', 15, y);
+  doc.text(
+    isEs
+      ? '2. Resultados Experimentales en FinisTerrae III (300 Especies)'
+      : '2. Experimental Benchmarks on FinisTerrae III (300 Species)',
+    15,
+    y,
+  );
   doc.line(15, y + 2, 195, y + 2);
   y += 7;
 
@@ -145,12 +151,48 @@ export function generateTFMPdf(lang: Language = 'es') {
   doc.text(isEs ? 'Speedup Global' : 'Overall Speedup', 170, y + 4.2);
 
   const benchmarkRows = [
-    { p: '1 Proceso (Secuencial Base)', hw: '1 Core (Single)', t4: '111,840 s (~31.1 h)', tot: '112,654 s', sp: '1.0x (Línea Base)' },
-    { p: '16 Procesos MPI', hw: '1/4 Nodo (1 Socket)', t4: '27,100 s', tot: '27,310 s', sp: '4.1x' },
-    { p: '32 Procesos MPI', hw: '1/2 Nodo (1 Socket)', t4: '14,200 s', tot: '14,350 s', sp: '7.8x' },
-    { p: '64 Procesos MPI', hw: '1 Nodo Completo (64c)', t4: '7,610 s', tot: '7,730 s', sp: '14.6x' },
-    { p: '128 Procesos MPI (metacache)', hw: '2 Nodos (128c)', t4: '7,702 s (Contención)', tot: '7,820 s', sp: '14.4x' },
-    { p: '128 Procesos MPI (isend) ★', hw: '2 Nodos (128c)', t4: '4,204 s (Óptimo)', tot: '4,310 s', sp: '26.8x ★' },
+    {
+      p: '1 Proceso (Secuencial Base)',
+      hw: '1 Core (Single)',
+      t4: '111,840 s (~31.1 h)',
+      tot: '112,654 s',
+      sp: '1.0x (Línea Base)',
+    },
+    {
+      p: '16 Procesos MPI',
+      hw: '1/4 Nodo (1 Socket)',
+      t4: '27,100 s',
+      tot: '27,310 s',
+      sp: '4.1x',
+    },
+    {
+      p: '32 Procesos MPI',
+      hw: '1/2 Nodo (1 Socket)',
+      t4: '14,200 s',
+      tot: '14,350 s',
+      sp: '7.8x',
+    },
+    {
+      p: '64 Procesos MPI',
+      hw: '1 Nodo Completo (64c)',
+      t4: '7,610 s',
+      tot: '7,730 s',
+      sp: '14.6x',
+    },
+    {
+      p: '128 Procesos MPI (metacache)',
+      hw: '2 Nodos (128c)',
+      t4: '7,702 s (Contención)',
+      tot: '7,820 s',
+      sp: '14.4x',
+    },
+    {
+      p: '128 Procesos MPI (isend) ★',
+      hw: '2 Nodos (128c)',
+      t4: '4,204 s (Óptimo)',
+      tot: '4,310 s',
+      sp: '26.8x ★',
+    },
   ];
 
   y += 6;
@@ -162,7 +204,11 @@ export function generateTFMPdf(lang: Language = 'es') {
     }
     doc.rect(15, y, 180, 5.5, 'F');
     doc.setFont('helvetica', row.p.includes('★') ? 'bold' : 'normal');
-    doc.setTextColor(row.p.includes('★') ? primaryEmerald[0] : textDark[0], row.p.includes('★') ? primaryEmerald[1] : textDark[1], row.p.includes('★') ? primaryEmerald[2] : textDark[2]);
+    doc.setTextColor(
+      row.p.includes('★') ? primaryEmerald[0] : textDark[0],
+      row.p.includes('★') ? primaryEmerald[1] : textDark[1],
+      row.p.includes('★') ? primaryEmerald[2] : textDark[2],
+    );
     doc.setFontSize(7.5);
     doc.text(row.p, 18, y + 3.8);
     doc.setTextColor(midSlate[0], midSlate[1], midSlate[2]);
@@ -170,7 +216,11 @@ export function generateTFMPdf(lang: Language = 'es') {
     doc.text(row.t4, 105, y + 3.8);
     doc.text(row.tot, 140, y + 3.8);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(row.p.includes('★') ? primaryEmerald[0] : textDark[0], row.p.includes('★') ? primaryEmerald[1] : textDark[1], row.p.includes('★') ? primaryEmerald[2] : textDark[2]);
+    doc.setTextColor(
+      row.p.includes('★') ? primaryEmerald[0] : textDark[0],
+      row.p.includes('★') ? primaryEmerald[1] : textDark[1],
+      row.p.includes('★') ? primaryEmerald[2] : textDark[2],
+    );
     doc.text(row.sp, 170, y + 3.8);
     y += 5.5;
   });
@@ -180,7 +230,11 @@ export function generateTFMPdf(lang: Language = 'es') {
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(11);
   doc.setTextColor(darkSlate[0], darkSlate[1], darkSlate[2]);
-  doc.text(isEs ? '3. Arquitectura y Ramas Git del Proyecto' : '3. Architecture & Git Branches', 15, y);
+  doc.text(
+    isEs ? '3. Arquitectura y Ramas Git del Proyecto' : '3. Architecture & Git Branches',
+    15,
+    y,
+  );
   doc.line(15, y + 2, 195, y + 2);
   y += 6;
 
@@ -218,7 +272,11 @@ export function generateTFMPdf(lang: Language = 'es') {
 
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(7.5);
-    doc.setTextColor(b.name.includes('RECOMENDADA') ? primaryEmerald[0] : darkSlate[0], b.name.includes('RECOMENDADA') ? primaryEmerald[1] : darkSlate[1], b.name.includes('RECOMENDADA') ? primaryEmerald[2] : darkSlate[2]);
+    doc.setTextColor(
+      b.name.includes('RECOMENDADA') ? primaryEmerald[0] : darkSlate[0],
+      b.name.includes('RECOMENDADA') ? primaryEmerald[1] : darkSlate[1],
+      b.name.includes('RECOMENDADA') ? primaryEmerald[2] : darkSlate[2],
+    );
     doc.text(b.name, 18, y + 4);
 
     doc.setFont('helvetica', 'normal');
@@ -239,9 +297,11 @@ export function generateTFMPdf(lang: Language = 'es') {
   doc.setFontSize(8.5);
   doc.setTextColor(4, 120, 87);
   doc.text(
-    isEs ? '✔ Verificación de Invarianza Numérica Exacta (IEEE-754)' : '✔ Exact Numerical Invariance Guarantee (IEEE-754)',
+    isEs
+      ? '✔ Verificación de Invarianza Numérica Exacta (IEEE-754)'
+      : '✔ Exact Numerical Invariance Guarantee (IEEE-754)',
     20,
-    y + 5
+    y + 5,
   );
 
   doc.setFont('helvetica', 'normal');
@@ -252,7 +312,7 @@ export function generateTFMPdf(lang: Language = 'es') {
       ? 'La matriz de distancias filogenómicas PHYLIP calculada con 128 procesos MPI es 100% idéntica bit a bit a la generada por el algoritmo secuencial (Error Delta = 0.000000000000). Reproducibilidad científica garantizada.'
       : 'The PHYLIP phylogenetic distance matrix computed across 128 MPI processes is 100% bitwise identical to the sequential baseline (Delta Error = 0.000000000000). Full scientific reproducibility guaranteed.',
     20,
-    y + 10
+    y + 10,
   );
 
   // Footer
@@ -264,7 +324,7 @@ export function generateTFMPdf(lang: Language = 'es') {
       ? 'Documento generado automáticamente por ProtSpam HPC Suite — Ana Izaguirre Matamoros (2026)'
       : 'Document generated automatically by ProtSpam HPC Suite — Ana Izaguirre Matamoros (2026)',
     15,
-    290
+    290,
   );
   doc.text(isEs ? 'Página 1 / 1' : 'Page 1 / 1', 180, 290);
 

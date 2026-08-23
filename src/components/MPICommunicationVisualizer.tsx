@@ -1,6 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAppLanguageTheme } from '../context/LanguageThemeContext';
-import { Play, Pause, RotateCcw, FastForward, CheckCircle2, Clock, Zap, ArrowRight, ShieldAlert } from 'lucide-react';
+import {
+  Play,
+  Pause,
+  RotateCcw,
+  FastForward,
+  CheckCircle2,
+  Clock,
+  Zap,
+  ArrowRight,
+  ShieldAlert,
+} from 'lucide-react';
 
 type Mode = 'metacache' | 'isend';
 
@@ -62,10 +72,50 @@ export const MPICommunicationVisualizer: React.FC = () => {
 
   // PendingSend buffer items for isend
   const pendingRequests = [
-    { id: 1, target: 'Rank 1', state: animStep >= 1 ? (animStep >= 10 ? t('mpi.stateCompleted') : t('mpi.stateActive')) : t('mpi.stateQueued'), bytes: '1.4 MB' },
-    { id: 2, target: 'Rank 2', state: animStep >= 2 ? (animStep >= 10 ? t('mpi.stateCompleted') : t('mpi.stateActive')) : t('mpi.stateQueued'), bytes: '1.4 MB' },
-    { id: 3, target: 'Rank 3', state: animStep >= 2 ? (animStep >= 10 ? t('mpi.stateCompleted') : t('mpi.stateActive')) : t('mpi.stateQueued'), bytes: '1.4 MB' },
-    { id: 4, target: 'Rank 4', state: animStep >= 3 ? (animStep >= 10 ? t('mpi.stateCompleted') : t('mpi.stateActive')) : t('mpi.stateQueued'), bytes: '1.4 MB' },
+    {
+      id: 1,
+      target: 'Rank 1',
+      state:
+        animStep >= 1
+          ? animStep >= 10
+            ? t('mpi.stateCompleted')
+            : t('mpi.stateActive')
+          : t('mpi.stateQueued'),
+      bytes: '1.4 MB',
+    },
+    {
+      id: 2,
+      target: 'Rank 2',
+      state:
+        animStep >= 2
+          ? animStep >= 10
+            ? t('mpi.stateCompleted')
+            : t('mpi.stateActive')
+          : t('mpi.stateQueued'),
+      bytes: '1.4 MB',
+    },
+    {
+      id: 3,
+      target: 'Rank 3',
+      state:
+        animStep >= 2
+          ? animStep >= 10
+            ? t('mpi.stateCompleted')
+            : t('mpi.stateActive')
+          : t('mpi.stateQueued'),
+      bytes: '1.4 MB',
+    },
+    {
+      id: 4,
+      target: 'Rank 4',
+      state:
+        animStep >= 3
+          ? animStep >= 10
+            ? t('mpi.stateCompleted')
+            : t('mpi.stateActive')
+          : t('mpi.stateQueued'),
+      bytes: '1.4 MB',
+    },
   ];
 
   return (
@@ -135,14 +185,18 @@ export const MPICommunicationVisualizer: React.FC = () => {
             <RotateCcw className="w-3.5 h-3.5" />
           </button>
           <div className="flex items-center gap-1 pl-2 border-l border-slate-800">
-            <span className="text-[10px] text-slate-500 uppercase font-mono mr-1">{t('mpi.speed')}</span>
+            <span className="text-[10px] text-slate-500 uppercase font-mono mr-1">
+              {t('mpi.speed')}
+            </span>
             {[0.5, 1, 2].map((s) => (
               <button
                 key={s}
                 type="button"
                 onClick={() => setSpeed(s)}
                 className={`px-2 py-1 text-xs font-mono rounded transition-colors ${
-                  speed === s ? 'bg-emerald-500/20 border border-emerald-500/50 text-emerald-400 font-bold' : 'text-slate-500 hover:text-slate-300'
+                  speed === s
+                    ? 'bg-emerald-500/20 border border-emerald-500/50 text-emerald-400 font-bold'
+                    : 'text-slate-500 hover:text-slate-300'
                 }`}
               >
                 {s}x
@@ -161,14 +215,29 @@ export const MPICommunicationVisualizer: React.FC = () => {
             <div className="flex items-center gap-2">
               <span
                 className={`px-2.5 py-1 rounded-md text-[11px] font-bold font-mono uppercase tracking-wider ${
-                  mode === 'metacache' ? 'bg-rose-500/15 text-rose-400 border border-rose-500/30' : 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
+                  mode === 'metacache'
+                    ? 'bg-rose-500/15 text-rose-400 border border-rose-500/30'
+                    : 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
                 }`}
               >
-                {lang === 'es' ? 'Paso' : 'Step'} {animStep}/{maxSteps}: {mode === 'metacache' ? (lang === 'es' ? 'SERIALIZACIÓN BLOQUEANTE' : 'BLOCKING SERIALIZATION') : (lang === 'es' ? 'RÁFAGA ASÍNCRONA + OVERLAP' : 'ASYNC BURST + OVERLAP')}
+                {lang === 'es' ? 'Paso' : 'Step'} {animStep}/{maxSteps}:{' '}
+                {mode === 'metacache'
+                  ? lang === 'es'
+                    ? 'SERIALIZACIÓN BLOQUEANTE'
+                    : 'BLOCKING SERIALIZATION'
+                  : lang === 'es'
+                    ? 'RÁFAGA ASÍNCRONA + OVERLAP'
+                    : 'ASYNC BURST + OVERLAP'}
               </span>
             </div>
             <div className="text-xs text-slate-400 font-mono">
-              {mode === 'metacache' ? (lang === 'es' ? 'Contención por Rendezvous MPI' : 'MPI Rendezvous Contention') : (lang === 'es' ? 'Solapamiento Cómputo/Comunicación' : 'Compute/Communication Overlap')}
+              {mode === 'metacache'
+                ? lang === 'es'
+                  ? 'Contención por Rendezvous MPI'
+                  : 'MPI Rendezvous Contention'
+                : lang === 'es'
+                  ? 'Solapamiento Cómputo/Comunicación'
+                  : 'Compute/Communication Overlap'}
             </div>
           </div>
 
@@ -183,16 +252,28 @@ export const MPICommunicationVisualizer: React.FC = () => {
               <div className="text-[10px] text-slate-400 mt-1 font-mono">
                 {mode === 'metacache'
                   ? animStep % 2 === 1
-                    ? (lang === 'es' ? '🛑 Bloqueado en MPI_Send' : '🛑 Blocked in MPI_Send')
-                    : (lang === 'es' ? 'Preparando bloque' : 'Preparing block')
+                    ? lang === 'es'
+                      ? '🛑 Bloqueado en MPI_Send'
+                      : '🛑 Blocked in MPI_Send'
+                    : lang === 'es'
+                      ? 'Preparando bloque'
+                      : 'Preparing block'
                   : animStep < 4
-                  ? (lang === 'es' ? '⚡ Disparando MPI_Isend' : '⚡ Bursting MPI_Isend')
-                  : (lang === 'es' ? '🚀 Cómputo BLOSUM62' : '🚀 BLOSUM62 Compute')}
+                    ? lang === 'es'
+                      ? '⚡ Disparando MPI_Isend'
+                      : '⚡ Bursting MPI_Isend'
+                    : lang === 'es'
+                      ? '🚀 Cómputo BLOSUM62'
+                      : '🚀 BLOSUM62 Compute'}
               </div>
 
               {/* Status Indicator */}
               <div className="mt-2.5 text-[10px] px-2 py-0.5 rounded font-mono font-semibold bg-slate-900 border border-slate-800 text-blue-400">
-                {mode === 'metacache' ? (lang === 'es' ? `Envío a Rank ${Math.min(Math.ceil((animStep + 1) / 2), 4)}` : `Send to Rank ${Math.min(Math.ceil((animStep + 1) / 2), 4)}`) : 'Non-blocking I/O'}
+                {mode === 'metacache'
+                  ? lang === 'es'
+                    ? `Envío a Rank ${Math.min(Math.ceil((animStep + 1) / 2), 4)}`
+                    : `Send to Rank ${Math.min(Math.ceil((animStep + 1) / 2), 4)}`
+                  : 'Non-blocking I/O'}
               </div>
             </div>
 
@@ -213,7 +294,9 @@ export const MPICommunicationVisualizer: React.FC = () => {
                         />
                       )}
                     </div>
-                    <ArrowRight className={`w-4 h-4 shrink-0 ${active ? (mode === 'metacache' ? 'text-rose-400' : 'text-emerald-400') : 'text-slate-700'}`} />
+                    <ArrowRight
+                      className={`w-4 h-4 shrink-0 ${active ? (mode === 'metacache' ? 'text-rose-400' : 'text-emerald-400') : 'text-slate-700'}`}
+                    />
                   </div>
                 );
               })}
@@ -233,12 +316,12 @@ export const MPICommunicationVisualizer: React.FC = () => {
                       computing
                         ? 'bg-emerald-500/10 border-emerald-500/40 text-slate-200'
                         : activeSend
-                        ? mode === 'metacache'
-                          ? 'bg-rose-500/15 border-rose-500/40 text-rose-300'
-                          : 'bg-blue-500/15 border-blue-500/40 text-blue-300'
-                        : idle
-                        ? 'bg-slate-950 border-slate-800 opacity-60 text-slate-500'
-                        : 'bg-slate-900 border-slate-800 text-slate-300'
+                          ? mode === 'metacache'
+                            ? 'bg-rose-500/15 border-rose-500/40 text-rose-300'
+                            : 'bg-blue-500/15 border-blue-500/40 text-blue-300'
+                          : idle
+                            ? 'bg-slate-950 border-slate-800 opacity-60 text-slate-500'
+                            : 'bg-slate-900 border-slate-800 text-slate-300'
                     }`}
                   >
                     <div className="flex items-center gap-2">
@@ -249,21 +332,34 @@ export const MPICommunicationVisualizer: React.FC = () => {
                     <div className="flex items-center gap-1.5">
                       {computing ? (
                         <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500 text-slate-950 flex items-center gap-1">
-                          <Zap className="w-3 h-3" /> {lang === 'es' ? 'Cómputo BLOSUM' : 'BLOSUM Compute'}
+                          <Zap className="w-3 h-3" />{' '}
+                          {lang === 'es' ? 'Cómputo BLOSUM' : 'BLOSUM Compute'}
                         </span>
                       ) : activeSend ? (
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
-                          mode === 'metacache' ? 'bg-rose-500 text-slate-50' : 'bg-blue-500 text-slate-950'
-                        }`}>
-                          {mode === 'metacache' ? (lang === 'es' ? '🛑 Recibiendo (Bloqueado)' : '🛑 Receiving (Blocked)') : (lang === 'es' ? '📥 Recibiendo Isend' : '📥 Receiving Isend')}
+                        <span
+                          className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
+                            mode === 'metacache'
+                              ? 'bg-rose-500 text-slate-50'
+                              : 'bg-blue-500 text-slate-950'
+                          }`}
+                        >
+                          {mode === 'metacache'
+                            ? lang === 'es'
+                              ? '🛑 Recibiendo (Bloqueado)'
+                              : '🛑 Receiving (Blocked)'
+                            : lang === 'es'
+                              ? '📥 Recibiendo Isend'
+                              : '📥 Receiving Isend'}
                         </span>
                       ) : isSynchronized ? (
                         <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center gap-1">
-                          <CheckCircle2 className="w-3 h-3" /> {lang === 'es' ? 'Listo (MPI_Waitall)' : 'Ready (MPI_Waitall)'}
+                          <CheckCircle2 className="w-3 h-3" />{' '}
+                          {lang === 'es' ? 'Listo (MPI_Waitall)' : 'Ready (MPI_Waitall)'}
                         </span>
                       ) : (
                         <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-slate-800 text-slate-500 flex items-center gap-1">
-                          <Clock className="w-3 h-3" /> {lang === 'es' ? 'Espera ociosa' : 'Idle Wait'}
+                          <Clock className="w-3 h-3" />{' '}
+                          {lang === 'es' ? 'Espera ociosa' : 'Idle Wait'}
                         </span>
                       )}
                     </div>
@@ -277,7 +373,15 @@ export const MPICommunicationVisualizer: React.FC = () => {
           <div className="bg-slate-950 border border-slate-800 rounded-xl p-3">
             <div className="flex justify-between text-[11px] text-slate-400 font-mono mb-1.5">
               <span>{t('mpi.trafficTimeline')}</span>
-              <span>{animStep >= 10 ? (lang === 'es' ? '✔ Sincronización Final (MPI_Waitall)' : '✔ Collective Sync (MPI_Waitall)') : (lang === 'es' ? 'En progreso...' : 'In progress...')}</span>
+              <span>
+                {animStep >= 10
+                  ? lang === 'es'
+                    ? '✔ Sincronización Final (MPI_Waitall)'
+                    : '✔ Collective Sync (MPI_Waitall)'
+                  : lang === 'es'
+                    ? 'En progreso...'
+                    : 'In progress...'}
+              </span>
             </div>
             <div className="grid grid-cols-12 gap-1 h-3 rounded-full overflow-hidden bg-slate-900 p-0.5">
               {Array.from({ length: 12 }).map((_, idx) => (
@@ -291,8 +395,8 @@ export const MPICommunicationVisualizer: React.FC = () => {
                           : 'bg-blue-500'
                         : 'bg-emerald-500'
                       : idx === animStep
-                      ? 'bg-amber-400 animate-pulse'
-                      : 'bg-slate-800'
+                        ? 'bg-amber-400 animate-pulse'
+                        : 'bg-slate-800'
                   }`}
                 />
               ))}
@@ -315,7 +419,13 @@ export const MPICommunicationVisualizer: React.FC = () => {
                 {t('mpi.queueTitle')}
               </span>
               <span className="font-mono text-[10px] text-slate-500">
-                {mode === 'isend' ? (lang === 'es' ? 'Buffer Activo' : 'Active Buffer') : (lang === 'es' ? 'No disponible' : 'N/A')}
+                {mode === 'isend'
+                  ? lang === 'es'
+                    ? 'Buffer Activo'
+                    : 'Active Buffer'
+                  : lang === 'es'
+                    ? 'No disponible'
+                    : 'N/A'}
               </span>
             </div>
 
@@ -337,8 +447,8 @@ export const MPICommunicationVisualizer: React.FC = () => {
                           req.state === t('mpi.stateCompleted')
                             ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
                             : req.state === t('mpi.stateActive')
-                            ? 'bg-blue-500/20 text-blue-400 border border-blue-500/40'
-                            : 'bg-slate-800 text-slate-500'
+                              ? 'bg-blue-500/20 text-blue-400 border border-blue-500/40'
+                              : 'bg-slate-800 text-slate-500'
                         }`}
                       >
                         {req.state}
@@ -347,17 +457,24 @@ export const MPICommunicationVisualizer: React.FC = () => {
                   </div>
                 ))}
                 <div className="text-[11px] text-slate-400 mt-2.5 bg-slate-950 p-2.5 rounded-xl border border-slate-800/80">
-                  📌 <strong className="text-slate-200">MPI_Waitall:</strong> {lang === 'es' ? 'Consolida todas las solicitudes pendientes en un único punto de sincronización, liberando el bus de datos y evitando bloqueos intermedios.' : 'Aggregates all pending requests into a single synchronization barrier, unblocking the data bus and avoiding step stalls.'}
+                  📌 <strong className="text-slate-200">MPI_Waitall:</strong>{' '}
+                  {lang === 'es'
+                    ? 'Consolida todas las solicitudes pendientes en un único punto de sincronización, liberando el bus de datos y evitando bloqueos intermedios.'
+                    : 'Aggregates all pending requests into a single synchronization barrier, unblocking the data bus and avoiding step stalls.'}
                 </div>
               </div>
             ) : (
               <div className="text-xs text-slate-400 p-4 bg-slate-950 rounded-xl border border-slate-800 flex flex-col items-center text-center space-y-2">
                 <ShieldAlert className="w-8 h-8 text-rose-500" />
                 <p className="text-rose-400 font-bold">
-                  {lang === 'es' ? 'metacache usa MPI_Send síncrono' : 'metacache uses synchronous MPI_Send'}
+                  {lang === 'es'
+                    ? 'metacache usa MPI_Send síncrono'
+                    : 'metacache uses synchronous MPI_Send'}
                 </p>
                 <p className="text-[11px] text-slate-400">
-                  {lang === 'es' ? 'No existe buffer PendingSend. Cada proceso emisor debe esperar obligatoriamente a que el receptor complete la lectura antes de continuar.' : 'No PendingSend buffer exists. Each sender must wait for the receiver handshake before proceeding.'}
+                  {lang === 'es'
+                    ? 'No existe buffer PendingSend. Cada proceso emisor debe esperar obligatoriamente a que el receptor complete la lectura antes de continuar.'
+                    : 'No PendingSend buffer exists. Each sender must wait for the receiver handshake before proceeding.'}
                 </p>
               </div>
             )}
@@ -370,22 +487,34 @@ export const MPICommunicationVisualizer: React.FC = () => {
             </h4>
             <div className="grid grid-cols-2 gap-2 pt-1 font-mono text-[11px]">
               <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
-                <div className="text-slate-500 text-[10px]">{lang === 'es' ? 'TIEMPO OCIOSO' : 'IDLE WAIT TIME'}</div>
-                <div className={`font-bold mt-0.5 ${mode === 'metacache' ? 'text-rose-400' : 'text-emerald-400'}`}>
+                <div className="text-slate-500 text-[10px]">
+                  {lang === 'es' ? 'TIEMPO OCIOSO' : 'IDLE WAIT TIME'}
+                </div>
+                <div
+                  className={`font-bold mt-0.5 ${mode === 'metacache' ? 'text-rose-400' : 'text-emerald-400'}`}
+                >
                   {mode === 'metacache' ? '~58.4% (High)' : '~8.2% (Minimal)'}
                 </div>
               </div>
               <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
-                <div className="text-slate-500 text-[10px]">{lang === 'es' ? 'SOLAPAMIENTO' : 'OVERLAP RATIO'}</div>
-                <div className={`font-bold mt-0.5 ${mode === 'metacache' ? 'text-rose-400' : 'text-emerald-400'}`}>
+                <div className="text-slate-500 text-[10px]">
+                  {lang === 'es' ? 'SOLAPAMIENTO' : 'OVERLAP RATIO'}
+                </div>
+                <div
+                  className={`font-bold mt-0.5 ${mode === 'metacache' ? 'text-rose-400' : 'text-emerald-400'}`}
+                >
                   {mode === 'metacache' ? '0% (None)' : '85% (Optimal)'}
                 </div>
               </div>
             </div>
             <p className="text-slate-400 text-[11px] leading-relaxed pt-1">
               {mode === 'metacache'
-                ? (lang === 'es' ? 'Con >64 procesos, el tiempo de bloqueo en MPI_Send supera al tiempo de cómputo, provocando la caída de aceleración observada en benchmarks HPC.' : 'With >64 processes, blocking time in MPI_Send dwarfs computation, triggering the speedup drop observed in HPC benchmarks.')
-                : (lang === 'es' ? 'isend permite que los cores sigan procesando extensiones BLOSUM mientras los buffers TCP/InfiniBand transmiten los datos en segundo plano.' : 'isend lets CPU cores compute BLOSUM matches concurrently while network controllers stream data in the background.')}
+                ? lang === 'es'
+                  ? 'Con >64 procesos, el tiempo de bloqueo en MPI_Send supera al tiempo de cómputo, provocando la caída de aceleración observada en benchmarks HPC.'
+                  : 'With >64 processes, blocking time in MPI_Send dwarfs computation, triggering the speedup drop observed in HPC benchmarks.'
+                : lang === 'es'
+                  ? 'isend permite que los cores sigan procesando extensiones BLOSUM mientras los buffers TCP/InfiniBand transmiten los datos en segundo plano.'
+                  : 'isend lets CPU cores compute BLOSUM matches concurrently while network controllers stream data in the background.'}
             </p>
           </div>
         </div>
