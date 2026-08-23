@@ -99,9 +99,12 @@ here so the migration diff stays reviewable.
   handler; a denied clipboard permission silently shows a false success toast.
 - [ ] **D004** — `generatePdf` localises its body but not its title line, which is
   hard-coded in Spanish.
-- [ ] **D005** — The triangular matrix inspector shows a positional placeholder value
+- [X] **D005** — The triangular matrix inspector shows a positional placeholder value
   (`0.125 + (i + j) × 0.015`) labelled "estimated distance"; it should be labelled as
   illustrative or derived from the sample PHYLIP data.
+  *Fixed in `fix/t011-illustrative-distance-label`: relabelled as an illustrative value,
+  with a note pointing at the Correctness module for the real ones. The cost proxy no
+  longer calls itself "BLOSUM62 complexity".*
 - [ ] **D006** — `BLOSUM62` in the step simulator is a 4×4 nucleotide-alphabet stand-in for
   a 20×20 amino-acid matrix. Acceptable didactically, but it should be named honestly in
   the UI.

@@ -419,17 +419,30 @@ export const TriangularMatrixExplorer: React.FC = () => {
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-500">{lang === 'es' ? 'Complejidad BLOSUM62:' : 'BLOSUM62 Complexity:'}</span>
+                    <span className="text-slate-500">{lang === 'es' ? 'Coste relativo estimado:' : 'Estimated relative cost:'}</span>
                     <span className="text-slate-200">
                       ~{(selectedPair.spA.maa * selectedPair.spB.maa).toFixed(1)} M-ops
                     </span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">{t('matrix.estimatedDist')}</span>
-                    <span className="text-emerald-400 font-bold">
-                      {selectedPair.isDiagonal ? '0.000000' : (0.125 + (selectedCell!.i + selectedCell!.j) * 0.015).toFixed(6)}
+                  <div className="flex justify-between items-start gap-2">
+                    <span className="text-slate-500">
+                      {t('matrix.illustrativeDist')}
+                    </span>
+                    <span
+                      className="text-emerald-400/80 font-bold"
+                      title={t('matrix.illustrativeDistHint')}
+                    >
+                      {selectedPair.isDiagonal
+                        ? '0.000000'
+                        : (0.125 + (selectedCell!.i + selectedCell!.j) * 0.015).toFixed(6)}
                     </span>
                   </div>
+                  {/* The value above is a positional placeholder, not a computed
+                      distance. Saying so is the difference between a teaching aid
+                      and a false claim. */}
+                  <p className="text-[10px] text-amber-400/80 leading-snug pt-1 border-t border-slate-800/80">
+                    {t('matrix.illustrativeDistHint')}
+                  </p>
                 </div>
               </div>
             ) : (
