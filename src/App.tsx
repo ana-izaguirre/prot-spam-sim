@@ -244,7 +244,7 @@ function AppContent() {
               <button
                 type="button"
                 onClick={() => setLang('es')}
-                className={`px-1.5 sm:px-2 py-1 rounded-md transition-colors text-[11px] ${
+                className={`px-3.5 py-2.5 sm:px-2 sm:py-1 rounded-md transition-colors text-[11px] ${
                   lang === 'es' ? 'bg-emerald-500 text-slate-950 font-bold' : 'text-slate-400 hover:text-slate-50'
                 }`}
               >
@@ -253,7 +253,7 @@ function AppContent() {
               <button
                 type="button"
                 onClick={() => setLang('en')}
-                className={`px-1.5 sm:px-2 py-1 rounded-md transition-colors text-[11px] ${
+                className={`px-3.5 py-2.5 sm:px-2 sm:py-1 rounded-md transition-colors text-[11px] ${
                   lang === 'en' ? 'bg-emerald-500 text-slate-950 font-bold' : 'text-slate-400 hover:text-slate-50'
                 }`}
               >
@@ -265,7 +265,7 @@ function AppContent() {
             <button
               type="button"
               onClick={toggleTheme}
-              className="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-slate-50 transition-colors"
+              className="p-2.5 sm:p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-slate-50 transition-colors"
               title={theme === 'dark' ? 'Cambiar a modo claro' : 'Switch to dark mode'}
             >
               {theme === 'dark' ? <Sun className="w-3.5 h-3.5 text-amber-400" /> : <Moon className="w-3.5 h-3.5 text-blue-400" />}
@@ -298,7 +298,7 @@ function AppContent() {
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className={`lg:hidden p-1.5 rounded-lg border transition-colors ${
+              className={`lg:hidden p-2.5 sm:p-2 rounded-lg border transition-colors ${
                 mobileMenuOpen
                   ? 'bg-emerald-500 text-slate-950 border-emerald-400'
                   : 'bg-slate-900 border-slate-800 text-slate-300 hover:text-slate-50'
@@ -306,7 +306,7 @@ function AppContent() {
               title="Toggle Menu"
               aria-label="Abrir menú"
             >
-              {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+              {mobileMenuOpen ? <X className="w-5 h-5 sm:w-4 sm:h-4" /> : <Menu className="w-5 h-5 sm:w-4 sm:h-4" />}
             </button>
           </div>
         </div>
