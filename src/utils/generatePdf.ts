@@ -30,7 +30,13 @@ export function generateTFMPdf(lang: Language = 'es') {
   doc.setTextColor(255, 255, 255);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(16);
-  doc.text('ProtSpam HPC Suite — Resumen Ejecutivo TFM', 15, 16);
+  doc.text(
+    isEs
+      ? 'ProtSpam HPC Suite — Resumen Ejecutivo TFM'
+      : "ProtSpam HPC Suite — Master's Thesis Executive Summary",
+    15,
+    16
+  );
 
   doc.setFontSize(9);
   doc.setFont('helvetica', 'normal');
@@ -46,7 +52,9 @@ export function generateTFMPdf(lang: Language = 'es') {
   doc.setFontSize(8);
   doc.setTextColor(203, 213, 225);
   doc.text(
-    'Máster Interuniversitario en Computación de Altas Prestaciones (MUI HPC) — UDC & CESGA',
+    isEs
+      ? 'Máster Interuniversitario en Computación de Altas Prestaciones (MUI HPC) — UDC & CESGA'
+      : "Interuniversity Master's in High Performance Computing (MUI HPC) — UDC & CESGA",
     15,
     28
   );
@@ -58,7 +66,7 @@ export function generateTFMPdf(lang: Language = 'es') {
   doc.setTextColor(255, 255, 255);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(8);
-  doc.text('Supercomputador:', 143, 16);
+  doc.text(isEs ? 'Supercomputador:' : 'Supercomputer:', 143, 16);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(148, 163, 184);
   doc.text('FinisTerrae III (CESGA)', 143, 21);
@@ -258,7 +266,7 @@ export function generateTFMPdf(lang: Language = 'es') {
     15,
     290
   );
-  doc.text('Página 1 / 1', 180, 290);
+  doc.text(isEs ? 'Página 1 / 1' : 'Page 1 / 1', 180, 290);
 
   // Save the PDF file directly to client
   doc.save('TFM_Ana_Izaguirre_ProtSpam_HPC.pdf');
