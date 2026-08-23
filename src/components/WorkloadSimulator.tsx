@@ -50,7 +50,7 @@ export interface ExecutionLogEntry {
 }
 
 export const WorkloadSimulator: React.FC = () => {
-  const { lang, t } = useAppLanguageTheme();
+  const { lang, t, theme } = useAppLanguageTheme();
 
   const [numProcesses, setNumProcesses] = useState<number>(8);
   const [datasetType, setDatasetType] = useState<'64' | '300'>('300');
@@ -73,6 +73,18 @@ export const WorkloadSimulator: React.FC = () => {
   const logContainerRef = useRef<HTMLDivElement | null>(null);
 
   const processOptions = [2, 4, 8, 16, 32, 64];
+
+  // Chart.js paints to a canvas and cannot inherit the CSS theme.
+  const isLight = theme === 'light';
+  const chartInk = {
+    axis: isLight ? '#475569' : '#64748b',
+    axisTitle: isLight ? '#334155' : '#94a3b8',
+    grid: isLight ? 'rgba(148, 163, 184, 0.35)' : 'rgba(51, 65, 85, 0.4)',
+    tooltipBg: isLight ? '#ffffff' : '#0f172a',
+    tooltipBorder: isLight ? '#cbd5e1' : '#334155',
+    tooltipTitle: isLight ? '#047857' : '#10b981',
+    tooltipBody: isLight ? '#1e293b' : '#e2e8f0',
+  };
 
   const speciesList = datasetType === '64' ? SPECIES_64_HOMOGENEOUS : SPECIES_300_UNBALANCED;
   const workloads: ProcessWorkload[] = calculateWorkload(speciesList, numProcesses, algoType);
@@ -479,6 +491,26 @@ export const WorkloadSimulator: React.FC = () => {
             : 'Nº Especies';
       }
 
+      // The instance is mutated rather than recreated, so a theme switch has to
+      // restyle it explicitly; otherwise the chart keeps the previous theme's ink.
+      const opts = chartInstanceRef.current.options;
+      const tooltip = opts.plugins?.tooltip;
+      if (tooltip) {
+        tooltip.backgroundColor = chartInk.tooltipBg;
+        tooltip.borderColor = chartInk.tooltipBorder;
+        tooltip.titleColor = chartInk.tooltipTitle;
+        tooltip.bodyColor = chartInk.tooltipBody;
+      }
+      for (const axis of ['x', 'y'] as const) {
+        const scale = opts.scales?.[axis] as
+          | { ticks?: { color?: string }; grid?: { color?: string }; title?: { color?: string } }
+          | undefined;
+        if (!scale) continue;
+        if (scale.ticks) scale.ticks.color = chartInk.axis;
+        if (scale.grid) scale.grid.color = chartInk.grid;
+        if (scale.title) scale.title.color = chartInk.axisTitle;
+      }
+
       chartInstanceRef.current.update();
       return;
     }
@@ -510,11 +542,11 @@ export const WorkloadSimulator: React.FC = () => {
             display: false,
           },
           tooltip: {
-            backgroundColor: '#0f172a',
-            borderColor: '#334155',
+            backgroundColor: chartInk.tooltipBg,
+            borderColor: chartInk.tooltipBorder,
             borderWidth: 1,
-            titleColor: '#10b981',
-            bodyColor: '#e2e8f0',
+            titleColor: chartInk.tooltipTitle,
+            bodyColor: chartInk.tooltipBody,
             padding: 10,
             callbacks: {
               label: (context) => {
@@ -537,17 +569,17 @@ export const WorkloadSimulator: React.FC = () => {
         },
         scales: {
           x: {
-            grid: { color: 'rgba(51, 65, 85, 0.4)' },
+            grid: { color: chartInk.grid },
             ticks: {
-              color: '#64748b',
+              color: chartInk.axis,
               font: { family: 'JetBrains Mono', size: numProcesses > 32 ? 9 : 11 },
               maxRotation: numProcesses > 16 ? 90 : 0,
             },
           },
           y: {
-            grid: { color: 'rgba(51, 65, 85, 0.4)' },
+            grid: { color: chartInk.grid },
             ticks: {
-              color: '#64748b',
+              color: chartInk.axis,
               font: { family: 'JetBrains Mono', size: 11 },
             },
             title: {
@@ -558,7 +590,7 @@ export const WorkloadSimulator: React.FC = () => {
                   : viewMetric === 'comparisons'
                   ? 'Comparaciones (j > i)'
                   : 'Nº Especies',
-              color: '#94a3b8',
+              color: chartInk.axisTitle,
               font: { size: 11 },
             },
           },
@@ -572,7 +604,7 @@ export const WorkloadSimulator: React.FC = () => {
         chartInstanceRef.current = null;
       }
     };
-  }, [numProcesses, datasetType, viewMetric, algoType, lang]);
+  }, [numProcesses, datasetType, viewMetric, algoType, lang, theme]);
 
   const handlePrevP = () => {
     const currIdx = processOptions.indexOf(numProcesses);
@@ -627,7 +659,7 @@ export const WorkloadSimulator: React.FC = () => {
 
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-sm font-bold text-white flex items-center gap-1.5">
+                <span className="text-sm font-bold text-slate-50 flex items-center gap-1.5">
                   <Sparkles className="w-4 h-4 text-emerald-400 shrink-0" />
                   {t('workload.demoMode')} (P = 2 &rarr; 64)
                 </span>
@@ -650,7 +682,7 @@ export const WorkloadSimulator: React.FC = () => {
                 type="button"
                 onClick={handlePrevP}
                 disabled={numProcesses === processOptions[0]}
-                className="p-2 rounded-lg text-slate-400 hover:text-white disabled:opacity-30 transition-colors"
+                className="p-2 rounded-lg text-slate-400 hover:text-slate-50 disabled:opacity-30 transition-colors"
                 title={lang === 'es' ? 'Paso Anterior' : 'Previous Step'}
               >
                 <ChevronLeft className="w-4 h-4" />
@@ -659,7 +691,7 @@ export const WorkloadSimulator: React.FC = () => {
                 type="button"
                 onClick={handleNextP}
                 disabled={numProcesses === processOptions[processOptions.length - 1]}
-                className="p-2 rounded-lg text-slate-400 hover:text-white disabled:opacity-30 transition-colors"
+                className="p-2 rounded-lg text-slate-400 hover:text-slate-50 disabled:opacity-30 transition-colors"
                 title={lang === 'es' ? 'Paso Siguiente' : 'Next Step'}
               >
                 <ChevronRight className="w-4 h-4" />
@@ -726,7 +758,7 @@ export const WorkloadSimulator: React.FC = () => {
             <div className="text-[10px] uppercase font-semibold text-slate-500">
               {lang === 'es' ? 'Diagnóstico de Balance' : 'Balance Diagnostic'}
             </div>
-            <div className="text-xs font-mono font-bold text-white mt-1">{stageInfo.status}</div>
+            <div className="text-xs font-mono font-bold text-slate-50 mt-1">{stageInfo.status}</div>
             <div className="text-[10px] text-slate-400 mt-1 flex items-center justify-between border-t border-slate-800/60 pt-1.5">
               <span>Ratio &lambda;:</span>
               <strong
@@ -756,7 +788,7 @@ export const WorkloadSimulator: React.FC = () => {
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <div className="flex items-center gap-2">
                 <Sliders className="w-4 h-4 text-emerald-400" />
-                <h3 className="text-xs font-bold uppercase tracking-wider text-white">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-50">
                   {t('workload.controlCockpit')}
                 </h3>
               </div>
@@ -919,21 +951,21 @@ export const WorkloadSimulator: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setNumProcesses(16)}
-                className="px-1.5 py-0.5 rounded bg-slate-950 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white transition-colors"
+                className="px-1.5 py-0.5 rounded bg-slate-950 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-slate-50 transition-colors"
               >
                 1-Sock(16)
               </button>
               <button
                 type="button"
                 onClick={() => setNumProcesses(32)}
-                className="px-1.5 py-0.5 rounded bg-slate-950 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white transition-colors"
+                className="px-1.5 py-0.5 rounded bg-slate-950 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-slate-50 transition-colors"
               >
                 2-Sock(32)
               </button>
               <button
                 type="button"
                 onClick={() => setNumProcesses(64)}
-                className="px-1.5 py-0.5 rounded bg-slate-950 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white transition-colors"
+                className="px-1.5 py-0.5 rounded bg-slate-950 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-slate-50 transition-colors"
               >
                 Node(64)
               </button>
@@ -948,7 +980,7 @@ export const WorkloadSimulator: React.FC = () => {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3 pb-3 border-b border-slate-800">
             <div className="flex items-center gap-2 flex-wrap">
               <BarChart3 className="w-4 h-4 text-emerald-400" />
-              <h3 className="text-xs font-bold uppercase tracking-wider text-white">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-50">
                 {t('workload.chartTitle')}
               </h3>
               {datasetType === '300' && viewMetric === 'maa' && (
@@ -1004,7 +1036,7 @@ export const WorkloadSimulator: React.FC = () => {
             <Cpu className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
             <span className="truncate">{t('workload.kpiImbalance')}</span>
           </div>
-          <div className="text-2xl font-bold font-mono text-white mt-1.5">
+          <div className="text-2xl font-bold font-mono text-slate-50 mt-1.5">
             {imbalanceFactor.toFixed(2)}x
           </div>
           <div className="text-[11px] text-slate-500 mt-1">
@@ -1049,7 +1081,7 @@ export const WorkloadSimulator: React.FC = () => {
             <TrendingUp className="w-3.5 h-3.5 text-blue-400 shrink-0" />
             <span className="truncate">{t('workload.kpiMaxMin')}</span>
           </div>
-          <div className="text-2xl font-bold font-mono text-white mt-1.5">
+          <div className="text-2xl font-bold font-mono text-slate-50 mt-1.5">
             {maxMaa.toFixed(1)} / {minMaa.toFixed(1)}{' '}
             <span className="text-xs font-normal text-slate-500">Maa</span>
           </div>
@@ -1065,7 +1097,7 @@ export const WorkloadSimulator: React.FC = () => {
             <Layers className="w-3.5 h-3.5 text-purple-400 shrink-0" />
             <span className="truncate">{t('workload.kpiPairs')}</span>
           </div>
-          <div className="text-2xl font-bold font-mono text-white mt-1.5">
+          <div className="text-2xl font-bold font-mono text-slate-50 mt-1.5">
             {totalComparisons.toLocaleString()}
           </div>
           <div className="text-[11px] text-slate-500 mt-1 truncate">
@@ -1095,7 +1127,7 @@ export const WorkloadSimulator: React.FC = () => {
 
               <div className="flex items-center gap-2 pl-2 border-l border-slate-800">
                 <Terminal className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span className="text-xs font-bold text-white font-mono uppercase tracking-wider">
+                <span className="text-xs font-bold text-slate-50 font-mono uppercase tracking-wider">
                   {t('workload.executionLog')}
                 </span>
               </div>
@@ -1128,7 +1160,7 @@ export const WorkloadSimulator: React.FC = () => {
                   onClick={() => setLogFilter('all')}
                   className={`px-2 py-1 rounded transition-colors ${
                     logFilter === 'all'
-                      ? 'bg-slate-800 text-white font-bold'
+                      ? 'bg-slate-800 text-slate-50 font-bold'
                       : 'text-slate-400 hover:text-slate-200'
                   }`}
                 >
@@ -1201,7 +1233,7 @@ export const WorkloadSimulator: React.FC = () => {
                 className={`p-1.5 bg-slate-950 border rounded-lg transition-colors flex items-center gap-1 text-[11px] font-mono ${
                   copyState === 'failed'
                     ? 'border-rose-500/50 text-rose-400'
-                    : 'border-slate-800 text-slate-300 hover:text-white'
+                    : 'border-slate-800 text-slate-300 hover:text-slate-50'
                 }`}
                 title={copyState === 'failed' ? t('workload.logCopyFailed') : t('workload.copyLog')}
               >

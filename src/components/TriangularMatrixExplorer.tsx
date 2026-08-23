@@ -199,7 +199,7 @@ export const TriangularMatrixExplorer: React.FC = () => {
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-2">
               <Grid className="w-4 h-4 text-purple-400" />
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-white">
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-50">
                 {lang === 'es' ? 'Media Matriz Triangular Superior (j > i)' : 'Upper Triangular Half-Matrix (j > i)'}
               </h3>
             </div>
@@ -273,7 +273,7 @@ export const TriangularMatrixExplorer: React.FC = () => {
                               key={j}
                               onClick={() => setSelectedCell({ i, j })}
                               className={`p-1.5 border border-slate-800 bg-slate-950 text-slate-600 text-[10px] cursor-pointer hover:border-purple-400 ${
-                                isSelected ? 'ring-2 ring-purple-400 font-bold text-white' : ''
+                                isSelected ? 'ring-2 ring-purple-400 font-bold text-slate-50' : ''
                               }`}
                             >
                               0.0
@@ -361,7 +361,7 @@ export const TriangularMatrixExplorer: React.FC = () => {
           {/* Pair Inspector Card */}
           <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5 space-y-3">
             <div className="flex justify-between items-center border-b border-slate-800 pb-3">
-              <span className="text-xs font-semibold uppercase tracking-wider text-white flex items-center gap-1.5">
+              <span className="text-xs font-semibold uppercase tracking-wider text-slate-50 flex items-center gap-1.5">
                 <Eye className="w-4 h-4 text-purple-400" />
                 {t('matrix.inspector')} ({selectedCell?.i}, {selectedCell?.j})
               </span>
@@ -387,7 +387,7 @@ export const TriangularMatrixExplorer: React.FC = () => {
                   <div className="text-slate-500 text-[10px] uppercase font-semibold">
                     {t('matrix.speciesA')} (i={selectedCell?.i})
                   </div>
-                  <div className="font-bold text-white text-sm mt-0.5 flex items-center justify-between">
+                  <div className="font-bold text-slate-50 text-sm mt-0.5 flex items-center justify-between">
                     <span>{selectedPair.spA.name}</span>
                     <span className="text-xs font-mono text-purple-400">{selectedPair.spA.maa} Maa</span>
                   </div>
@@ -401,7 +401,7 @@ export const TriangularMatrixExplorer: React.FC = () => {
                   <div className="text-slate-500 text-[10px] uppercase font-semibold">
                     {t('matrix.speciesB')} (j={selectedCell?.j})
                   </div>
-                  <div className="font-bold text-white text-sm mt-0.5 flex items-center justify-between">
+                  <div className="font-bold text-slate-50 text-sm mt-0.5 flex items-center justify-between">
                     <span>{selectedPair.spB.name}</span>
                     <span className="text-xs font-mono text-emerald-400">{selectedPair.spB.maa} Maa</span>
                   </div>

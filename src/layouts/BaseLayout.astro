@@ -78,8 +78,10 @@ const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : un
       })();
     </script>
   </head>
+  <!-- Token utilities, not arbitrary hex values: the light theme remaps the
+       slate ramp, and an arbitrary colour would not follow it. -->
   <body
-    class="bg-[#051424] text-[#d4e4fa] antialiased selection:bg-[#38bdf8]/30 selection:text-[#38bdf8]"
+    class="bg-slate-950 text-slate-100 antialiased selection:bg-sky-400/30 selection:text-sky-300"
   >
     <slot />
   </body>

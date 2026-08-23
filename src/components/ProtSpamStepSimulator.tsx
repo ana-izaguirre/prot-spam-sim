@@ -179,7 +179,7 @@ export const ProtSpamStepSimulator: React.FC = () => {
       // Fase 3.1: spacedwords()
       newSteps.push({
         phase: lang === 'es' ? 'Fase 3: spacedwords()' : 'Phase 3: spacedwords()',
-        badgeClass: 'bg-[#a855f7] text-white',
+        badgeClass: 'bg-[#a855f7] text-slate-50',
         activeFn: 'spacedwords',
         s1Pos: -1,
         s2Pos: -1,
@@ -215,7 +215,7 @@ export const ProtSpamStepSimulator: React.FC = () => {
 
           newSteps.push({
             phase: lang === 'es' ? 'Fase 3: spacedwords()' : 'Phase 3: spacedwords()',
-            badgeClass: 'bg-[#a855f7] text-white',
+            badgeClass: 'bg-[#a855f7] text-slate-50',
             activeFn: 'spacedwords',
             s1Pos: i,
             s2Pos: -1,
@@ -240,7 +240,7 @@ export const ProtSpamStepSimulator: React.FC = () => {
 
       newSteps.push({
         phase: lang === 'es' ? 'Fase 3: std::sort()' : 'Phase 3: std::sort()',
-        badgeClass: 'bg-[#3b82f6] text-white',
+        badgeClass: 'bg-[#3b82f6] text-slate-50',
         activeFn: 'sort',
         s1Pos: -1,
         s2Pos: -1,
@@ -388,7 +388,7 @@ export const ProtSpamStepSimulator: React.FC = () => {
 
             newSteps.push({
               phase: lang === 'es' ? 'Fase 4: calc_matches() (Miss)' : 'Phase 4: calc_matches() (Miss)',
-              badgeClass: 'bg-rose-500 text-white',
+              badgeClass: 'bg-rose-500 text-slate-50',
               activeFn: 'setwords',
               s1Pos: -1,
               s2Pos: j,
@@ -420,7 +420,7 @@ export const ProtSpamStepSimulator: React.FC = () => {
 
           newSteps.push({
             phase: lang === 'es' ? 'Fase 4: Extensión sin gaps' : 'Phase 4: Gap-free extension',
-            badgeClass: 'bg-[#a855f7] text-white',
+            badgeClass: 'bg-[#a855f7] text-slate-50',
             activeFn: 'none',
             s1Pos: match.s1Pos,
             s2Pos: match.s2Pos,
@@ -532,7 +532,7 @@ export const ProtSpamStepSimulator: React.FC = () => {
               <Binary className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-white tracking-wide">
+              <h2 className="text-base font-bold text-slate-50 tracking-wide">
                 {t('core.title')}
               </h2>
               <p className="text-xs text-slate-400">
@@ -588,7 +588,7 @@ export const ProtSpamStepSimulator: React.FC = () => {
             {currentStepData?.phase || 'Fase 3'}
           </span>
           <span className="text-xs text-slate-400 font-mono">
-            {t('core.step')} <strong className="text-white">{currentStep}</strong> {t('core.of')} {steps.length - 1}
+            {t('core.step')} <strong className="text-slate-50">{currentStep}</strong> {t('core.of')} {steps.length - 1}
           </span>
         </div>
 
@@ -617,7 +617,7 @@ export const ProtSpamStepSimulator: React.FC = () => {
             type="button"
             onClick={handleNext}
             disabled={currentStep >= steps.length - 1}
-            className="px-4 py-2 rounded-lg bg-slate-900 border border-slate-800 text-white font-bold text-xs disabled:opacity-30 hover:border-slate-600 flex items-center gap-1.5 transition-colors"
+            className="px-4 py-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-50 font-bold text-xs disabled:opacity-30 hover:border-slate-600 flex items-center gap-1.5 transition-colors"
           >
             <span>{t('core.nextStep')}</span>
             <ChevronRight className="w-4 h-4" />
@@ -733,7 +733,7 @@ export const ProtSpamStepSimulator: React.FC = () => {
         {/* Column 1: Sequence Exploration */}
         <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5 space-y-3">
           <div className="flex justify-between items-center border-b border-slate-800 pb-3">
-            <span className="text-xs font-semibold uppercase tracking-wider text-white">
+            <span className="text-xs font-semibold uppercase tracking-wider text-slate-50">
               {lang === 'es' ? 'Exploración de Secuencias' : 'Sequence Exploration'}
             </span>
             <span className="text-[10px] font-mono text-blue-400 font-bold">
@@ -763,7 +763,7 @@ export const ProtSpamStepSimulator: React.FC = () => {
                         : isWindow
                         ? currentStepData.matchedKey
                           ? 'bg-emerald-500 border-emerald-400 text-slate-950'
-                          : 'bg-blue-600 border-blue-500 text-white'
+                          : 'bg-blue-600 border-blue-500 text-slate-50'
                         : 'bg-slate-900 border-slate-800 text-slate-300'
                     }`}
                   >
@@ -797,7 +797,7 @@ export const ProtSpamStepSimulator: React.FC = () => {
                         : isWindow
                         ? currentStepData.matchedKey
                           ? 'bg-emerald-500 border-emerald-400 text-slate-950'
-                          : 'bg-blue-600 border-blue-500 text-white'
+                          : 'bg-blue-600 border-blue-500 text-slate-50'
                         : 'bg-slate-900 border-slate-800 text-slate-300'
                     }`}
                   >
@@ -829,7 +829,7 @@ export const ProtSpamStepSimulator: React.FC = () => {
 
         {/* Column 2: Memory & Stack */}
         <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5 space-y-3">
-          <div className="text-xs font-semibold uppercase tracking-wider text-white border-b border-slate-800 pb-3">
+          <div className="text-xs font-semibold uppercase tracking-wider text-slate-50 border-b border-slate-800 pb-3">
             {lang === 'es' ? 'Estructura de Memoria S1' : 'Memory Structure S1'}
           </div>
 
@@ -897,7 +897,7 @@ export const ProtSpamStepSimulator: React.FC = () => {
           </div>
 
           {/* Matches & Discards Stack */}
-          <div className="text-xs font-semibold uppercase tracking-wider text-white pt-3 border-t border-slate-800">
+          <div className="text-xs font-semibold uppercase tracking-wider text-slate-50 pt-3 border-t border-slate-800">
             {lang === 'es' ? 'Pila Acumulada (Matches)' : 'Accumulated Match Stack'}
           </div>
           <div className="max-h-[120px] overflow-y-auto space-y-2">
@@ -924,7 +924,7 @@ export const ProtSpamStepSimulator: React.FC = () => {
 
         {/* Column 3: Extension & Matrices */}
         <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5 space-y-3">
-          <div className="text-xs font-semibold uppercase tracking-wider text-white border-b border-slate-800 pb-3">
+          <div className="text-xs font-semibold uppercase tracking-wider text-slate-50 border-b border-slate-800 pb-3">
             {lang === 'es' ? 'Extensión & Distancia' : 'Extension & Distance'}
           </div>
 
@@ -955,7 +955,7 @@ export const ProtSpamStepSimulator: React.FC = () => {
                         key={k}
                         className={`p-1 rounded font-bold ${
                           k === currentStepData.alignmentData?.activeIndex
-                            ? 'border-2 border-emerald-400 bg-slate-800 text-white'
+                            ? 'border-2 border-emerald-400 bg-slate-800 text-slate-50'
                             : 'bg-slate-900 text-slate-300'
                         }`}
                       >

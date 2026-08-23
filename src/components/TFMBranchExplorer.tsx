@@ -270,7 +270,7 @@ export const TFMBranchExplorer: React.FC = () => {
               <GitBranch className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-white tracking-wide">
+              <h2 className="text-base font-bold text-slate-50 tracking-wide">
                 {t('tfm.title')}
               </h2>
               <p className="text-xs text-slate-400 mt-0.5">
@@ -327,7 +327,7 @@ export const TFMBranchExplorer: React.FC = () => {
               </div>
 
               <div>
-                <div className="font-mono text-xs font-bold text-white truncate max-w-[280px]">
+                <div className="font-mono text-xs font-bold text-slate-50 truncate max-w-[280px]">
                   {b.name}
                 </div>
                 <div className="text-[11px] text-slate-400 mt-1 line-clamp-2">
@@ -356,7 +356,7 @@ export const TFMBranchExplorer: React.FC = () => {
                 <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-400 font-bold">
                   {selectedBranch.phase}
                 </span>
-                <h3 className="text-base font-bold text-white mt-0.5">
+                <h3 className="text-base font-bold text-slate-50 mt-0.5">
                   {lang === 'es' ? selectedBranch.titleEs : selectedBranch.titleEn}
                 </h3>
               </div>
@@ -364,7 +364,7 @@ export const TFMBranchExplorer: React.FC = () => {
                 href={selectedBranch.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1.5 bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white px-3 py-1.5 rounded-lg text-xs font-mono font-medium transition-colors self-start sm:self-auto shrink-0"
+                className="flex items-center gap-1.5 bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-slate-50 px-3 py-1.5 rounded-lg text-xs font-mono font-medium transition-colors self-start sm:self-auto shrink-0"
               >
                 <GitBranch className="w-3.5 h-3.5 text-emerald-400" />
                 <span>{selectedBranch.name.replace('feat/', '')}</span>

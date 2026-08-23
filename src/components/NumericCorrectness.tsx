@@ -34,7 +34,7 @@ export const NumericCorrectness: React.FC = () => {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-base font-bold text-white tracking-wide">
+              <h3 className="text-base font-bold text-slate-50 tracking-wide">
                 {t('num.exactMatch')}
               </h3>
               <span className="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 text-[10px] font-mono font-bold">
@@ -67,7 +67,7 @@ export const NumericCorrectness: React.FC = () => {
         {/* Table Comparator (7 Cols) */}
         <div className="lg:col-span-7 bg-slate-900/50 border border-slate-800 rounded-2xl p-5 space-y-3">
           <div className="flex justify-between items-center gap-2">
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-white">
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-50">
               {t('num.matrixFragment')}
             </h4>
             <div className="relative">
@@ -142,7 +142,7 @@ export const NumericCorrectness: React.FC = () => {
           {/* Active Cell Bitwise Inspector */}
           <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5 space-y-3">
             <div className="flex justify-between items-center border-b border-slate-800 pb-3">
-              <span className="text-xs font-semibold uppercase tracking-wider text-white flex items-center gap-1.5">
+              <span className="text-xs font-semibold uppercase tracking-wider text-slate-50 flex items-center gap-1.5">
                 <Hash className="w-4 h-4 text-emerald-400" />
                 {lang === 'es' ? 'Inspector IEEE-754 (Double 64-bit)' : 'IEEE-754 Double 64-bit Inspector'}
               </span>
@@ -154,7 +154,7 @@ export const NumericCorrectness: React.FC = () => {
             <div className="space-y-2.5 text-xs">
               <div>
                 <div className="text-slate-500 text-[10px] uppercase font-semibold">{lang === 'es' ? 'Par Evaluado' : 'Evaluated Pair'}</div>
-                <div className="font-bold text-white">
+                <div className="font-bold text-slate-50">
                   {selectedPair.spA} <span className="text-blue-400">&harr;</span> {selectedPair.spB}
                 </div>
                 <div className="text-[11px] text-slate-400 font-mono mt-0.5">

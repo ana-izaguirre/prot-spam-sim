@@ -138,7 +138,7 @@ function AppContent() {
               &Pi;
             </div>
             <div className="flex flex-col">
-              <span className="font-bold text-xs sm:text-sm text-white tracking-tight whitespace-nowrap">
+              <span className="font-bold text-xs sm:text-sm text-slate-50 tracking-tight whitespace-nowrap">
                 {t('app.title')}
               </span>
               <span className="text-[9px] text-slate-400 font-mono hidden sm:inline leading-none">
@@ -161,7 +161,7 @@ function AppContent() {
                   className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all shrink-0 ${
                     isActive
                       ? 'bg-emerald-500 text-slate-950 shadow font-bold'
-                      : 'text-slate-400 hover:text-white hover:bg-slate-900 border border-transparent hover:border-slate-800'
+                      : 'text-slate-400 hover:text-slate-50 hover:bg-slate-900 border border-transparent hover:border-slate-800'
                   }`}
                 >
                   <Icon className="w-3.5 h-3.5 shrink-0" />
@@ -183,7 +183,7 @@ function AppContent() {
                     className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all shrink-0 ${
                       isActive
                         ? 'bg-emerald-500 text-slate-950 shadow font-bold'
-                        : 'text-slate-400 hover:text-white hover:bg-slate-900 border border-transparent hover:border-slate-800'
+                        : 'text-slate-400 hover:text-slate-50 hover:bg-slate-900 border border-transparent hover:border-slate-800'
                     }`}
                   >
                     <Icon className="w-3.5 h-3.5 shrink-0" />
@@ -201,7 +201,7 @@ function AppContent() {
                 className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
                   navigationItems.slice(4).some((it) => it.id === activeSection)
                     ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold'
-                    : 'text-slate-400 hover:text-white hover:bg-slate-900 border border-transparent hover:border-slate-800'
+                    : 'text-slate-400 hover:text-slate-50 hover:bg-slate-900 border border-transparent hover:border-slate-800'
                 }`}
               >
                 <span>{t('app.more')}</span>
@@ -224,7 +224,7 @@ function AppContent() {
                         className={`w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-xs font-medium text-left transition-colors ${
                           isActive
                             ? 'bg-emerald-500 text-slate-950 font-bold'
-                            : 'text-slate-300 hover:bg-slate-900 hover:text-white'
+                            : 'text-slate-300 hover:bg-slate-900 hover:text-slate-50'
                         }`}
                       >
                         <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-slate-950' : 'text-emerald-400'}`} />
@@ -245,7 +245,7 @@ function AppContent() {
                 type="button"
                 onClick={() => setLang('es')}
                 className={`px-1.5 sm:px-2 py-1 rounded-md transition-colors text-[11px] ${
-                  lang === 'es' ? 'bg-emerald-500 text-slate-950 font-bold' : 'text-slate-400 hover:text-white'
+                  lang === 'es' ? 'bg-emerald-500 text-slate-950 font-bold' : 'text-slate-400 hover:text-slate-50'
                 }`}
               >
                 ES
@@ -254,7 +254,7 @@ function AppContent() {
                 type="button"
                 onClick={() => setLang('en')}
                 className={`px-1.5 sm:px-2 py-1 rounded-md transition-colors text-[11px] ${
-                  lang === 'en' ? 'bg-emerald-500 text-slate-950 font-bold' : 'text-slate-400 hover:text-white'
+                  lang === 'en' ? 'bg-emerald-500 text-slate-950 font-bold' : 'text-slate-400 hover:text-slate-50'
                 }`}
               >
                 EN
@@ -265,7 +265,7 @@ function AppContent() {
             <button
               type="button"
               onClick={toggleTheme}
-              className="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white transition-colors"
+              className="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-slate-50 transition-colors"
               title={theme === 'dark' ? 'Cambiar a modo claro' : 'Switch to dark mode'}
             >
               {theme === 'dark' ? <Sun className="w-3.5 h-3.5 text-amber-400" /> : <Moon className="w-3.5 h-3.5 text-blue-400" />}
@@ -276,7 +276,7 @@ function AppContent() {
               href="https://github.com/ana-izaguirre/ProtSpaM"
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden sm:flex items-center gap-1 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors whitespace-nowrap shrink-0"
+              className="hidden sm:flex items-center gap-1 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-slate-50 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors whitespace-nowrap shrink-0"
               title="GitHub repository"
             >
               <Github className="w-3.5 h-3.5 text-slate-400" />
@@ -301,7 +301,7 @@ function AppContent() {
               className={`lg:hidden p-1.5 rounded-lg border transition-colors ${
                 mobileMenuOpen
                   ? 'bg-emerald-500 text-slate-950 border-emerald-400'
-                  : 'bg-slate-900 border-slate-800 text-slate-300 hover:text-white'
+                  : 'bg-slate-900 border-slate-800 text-slate-300 hover:text-slate-50'
               }`}
               title="Toggle Menu"
               aria-label="Abrir menú"
@@ -332,7 +332,7 @@ function AppContent() {
                     className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
                       isActive
                         ? 'bg-emerald-500 text-slate-950 font-bold shadow-sm'
-                        : 'bg-slate-900/60 text-slate-300 hover:text-white hover:bg-slate-900 border border-slate-800/80'
+                        : 'bg-slate-900/60 text-slate-300 hover:text-slate-50 hover:bg-slate-900 border border-slate-800/80'
                     }`}
                   >
                     <div className="flex items-center gap-2">
@@ -400,7 +400,7 @@ function AppContent() {
             <button
               type="button"
               onClick={handleDownloadTFMInfo}
-              className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 bg-slate-950 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors"
+              className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 bg-slate-950 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-slate-50 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors"
             >
               <Download className="w-3.5 h-3.5 text-emerald-400" />
               <span>{downloadSuccess ? t('app.downloaded') : t('app.downloadFicha')}</span>
@@ -440,7 +440,7 @@ function AppContent() {
                   <GraduationCap className="w-4 h-4" />
                 </div>
                 <div>
-                  <h2 className="text-base font-bold text-white tracking-wide">
+                  <h2 className="text-base font-bold text-slate-50 tracking-wide">
                     {lang === 'es' ? 'Memoria del TFM & Arquitectura HPC' : 'TFM Master\'s Thesis & HPC Architecture'}
                   </h2>
                   <p className="text-[11px] text-slate-400">
@@ -451,7 +451,7 @@ function AppContent() {
               <button
                 type="button"
                 onClick={() => setShowDocsModal(false)}
-                className="p-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-400 hover:text-white transition-colors"
+                className="p-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-400 hover:text-slate-50 transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -464,7 +464,7 @@ function AppContent() {
                   <div className="text-xs uppercase tracking-wider text-emerald-400 font-bold font-mono">
                     {lang === 'es' ? 'Trabajo de Fin de Máster' : 'Master\'s Thesis'}
                   </div>
-                  <h3 className="text-sm font-bold text-white mt-1 leading-snug">
+                  <h3 className="text-sm font-bold text-slate-50 mt-1 leading-snug">
                     {t('app.bannerTitle')}
                   </h3>
                 </div>
