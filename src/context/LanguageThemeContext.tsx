@@ -347,23 +347,63 @@ const translations: Record<Language, Record<string, string>> = {
 
 const LanguageThemeContext = createContext<LanguageThemeContextType | undefined>(undefined);
 
+export const LANG_STORAGE_KEY = 'protspam_lang';
+export const THEME_STORAGE_KEY = 'protspam_theme';
+
+export const DEFAULT_LANG: Language = 'es';
+export const DEFAULT_THEME: Theme = 'dark';
+
+/**
+ * localStorage throws in private-browsing modes and when site data is blocked,
+ * so every access degrades to the documented default instead of breaking the page.
+ */
+function readStored(key: string): string | null {
+  try {
+    return window.localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function writeStored(key: string, value: string): void {
+  try {
+    window.localStorage.setItem(key, value);
+  } catch {
+    /* preference simply does not persist */
+  }
+}
+
 export const LanguageThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [lang, setLang] = useState<Language>(() => {
-    const saved = localStorage.getItem('protspam_lang');
-    return (saved === 'en' || saved === 'es') ? saved : 'es';
-  });
-
-  const [theme, setTheme] = useState<Theme>(() => {
-    const saved = localStorage.getItem('protspam_theme');
-    return (saved === 'light' || saved === 'dark') ? saved : 'dark';
-  });
-
-  useEffect(() => {
-    localStorage.setItem('protspam_lang', lang);
-  }, [lang]);
+  // Astro prerenders this island in Node, where localStorage does not exist, and
+  // the first client render has to produce exactly the markup the server emitted.
+  // So state starts at the documented defaults and reconciles with storage after
+  // mount. The inline boot script in BaseLayout.astro has already applied the
+  // stored theme and language to <html> before first paint, so no flash is visible.
+  const [lang, setLang] = useState<Language>(DEFAULT_LANG);
+  const [theme, setTheme] = useState<Theme>(DEFAULT_THEME);
+  const [hydrated, setHydrated] = useState<boolean>(false);
 
   useEffect(() => {
-    localStorage.setItem('protspam_theme', theme);
+    const storedLang = readStored(LANG_STORAGE_KEY);
+    if (storedLang === 'en' || storedLang === 'es') setLang(storedLang);
+
+    const storedTheme = readStored(THEME_STORAGE_KEY);
+    if (storedTheme === 'light' || storedTheme === 'dark') setTheme(storedTheme);
+
+    setHydrated(true);
+  }, []);
+
+  // Persist and apply only once reconciliation has run; writing before the read
+  // would clobber the visitor's stored preference with the default.
+  useEffect(() => {
+    if (!hydrated) return;
+    writeStored(LANG_STORAGE_KEY, lang);
+    document.documentElement.lang = lang;
+  }, [lang, hydrated]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    writeStored(THEME_STORAGE_KEY, theme);
     if (theme === 'light') {
       document.documentElement.classList.add('light-theme');
       document.documentElement.classList.remove('dark');
@@ -371,7 +411,7 @@ export const LanguageThemeProvider: React.FC<{ children: React.ReactNode }> = ({
       document.documentElement.classList.remove('light-theme');
       document.documentElement.classList.add('dark');
     }
-  }, [theme]);
+  }, [theme, hydrated]);
 
   const toggleTheme = () => {
     setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));

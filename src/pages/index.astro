@@ -8,6 +8,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   description="Simulador de reparto de carga MPI, matrices triangulares y escalabilidad HPC para ProtSpam."
 >
   <!-- The active module, language and theme are shared client state, so the whole
-       suite hydrates as one island. See specs/.../plan.md, decision D3. -->
-  <AppShell client:only="react" />
+       suite hydrates as one island (specs/.../plan.md, decision D3). client:load
+       rather than client:only, so the shell is prerendered into the HTML and the
+       visitor sees the interface before React boots. -->
+  <AppShell client:load />
 </BaseLayout>
