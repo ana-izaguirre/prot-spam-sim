@@ -3,7 +3,14 @@
 **English** · [Español](./README.es.md)
 
 [![CI](https://github.com/ana-izaguirre/prot-spam-sim/actions/workflows/ci.yml/badge.svg)](https://github.com/ana-izaguirre/prot-spam-sim/actions/workflows/ci.yml)
+[![Smoke tests](https://img.shields.io/badge/smoke%20tests-Playwright-2EAD33?logo=playwright&logoColor=white)](./tests/smoke.spec.ts)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/1f070c7e-b6d8-4bf8-addb-f03bcb9cd28b/deploy-status)](https://app.netlify.com/projects/prot-spam/deploys)
+
+> The **CI** badge covers the whole pipeline — type-check, build and the Playwright smoke
+> suite — because the deploy job depends on the smoke job: if the smoke suite fails,
+> nothing is published. GitHub does not expose per-job badges, so the CI badge going green
+> is what tells you the smoke suite passed.
+
 
 An interactive simulator and architecture explorer for **Prot-SpaM**, an alignment-free
 phylogenetic reconstruction tool for whole-proteome sequences, parallelised for
