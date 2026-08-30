@@ -3,9 +3,9 @@ import { LanguageThemeProvider, useAppLanguageTheme } from './context/LanguageTh
 
 // The landing module is imported eagerly: it is what the visitor sees first and
 // what Astro prerenders into the HTML. Every other module is a separate chunk,
-// fetched the first time it is opened, so a reader who never leaves the base
-// algorithm never downloads Chart.js or the branch dossier.
-import { ProtSpamStepSimulator } from './components/ProtSpamStepSimulator';
+// fetched the first time it is opened, so a reader who never leaves the
+// walkthrough never downloads Chart.js or the branch dossier.
+import { PhaseWalkthrough } from './components/PhaseWalkthrough';
 
 import {
   Layers,
@@ -25,8 +25,14 @@ import {
   Moon,
   Menu,
   ChevronDown,
+  Footprints,
 } from 'lucide-react';
 
+const ProtSpamStepSimulator = lazy(() =>
+  import('./components/ProtSpamStepSimulator').then((m) => ({
+    default: m.ProtSpamStepSimulator,
+  })),
+);
 const TFMBranchExplorer = lazy(() =>
   import('./components/TFMBranchExplorer').then((m) => ({ default: m.TFMBranchExplorer })),
 );
@@ -51,7 +57,14 @@ const NumericCorrectness = lazy(() =>
 );
 
 type SectionId =
-  'core_sim' | 'tfm_branches' | 'workload' | 'mpi_comm' | 'matrix' | 'scalability' | 'correctness';
+  | 'how_it_works'
+  | 'core_sim'
+  | 'tfm_branches'
+  | 'workload'
+  | 'mpi_comm'
+  | 'matrix'
+  | 'scalability'
+  | 'correctness';
 
 /**
  * Placeholder shown while a module chunk is in flight. It mirrors the shared
@@ -72,8 +85,10 @@ function ModuleSkeleton() {
 }
 
 function AppContent() {
-  // Default to 'core_sim' so the user directly experiences the base Prot-SpaM simulator!
-  const [activeSection, setActiveSection] = useState<SectionId>('core_sim');
+  // Default to 'how_it_works': the first question anyone asks of this suite is
+  // what each MPI version actually does, and that module answers it before any
+  // measured curve is shown.
+  const [activeSection, setActiveSection] = useState<SectionId>('how_it_works');
   const [showDocsModal, setShowDocsModal] = useState<boolean>(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
   const [moreNavOpen, setMoreNavOpen] = useState<boolean>(false);
@@ -97,6 +112,7 @@ function AppContent() {
     label: string;
     icon: React.FC<{ className?: string }>;
   }> = [
+    { id: 'how_it_works', label: t('app.howItWorks'), icon: Footprints },
     { id: 'core_sim', label: t('app.coreSim'), icon: Binary },
     { id: 'tfm_branches', label: t('app.tfmBranches'), icon: GitBranch },
     { id: 'workload', label: t('app.workload'), icon: Layers },
@@ -490,6 +506,7 @@ function AppContent() {
         {/* Dynamic Section Renderer — every module but the landing one is a
             separately fetched chunk, so the frame below stands in while it loads. */}
         <Suspense fallback={<ModuleSkeleton />}>
+          {activeSection === 'how_it_works' && <PhaseWalkthrough />}
           {activeSection === 'core_sim' && <ProtSpamStepSimulator />}
           {activeSection === 'tfm_branches' && <TFMBranchExplorer />}
           {activeSection === 'workload' && <WorkloadSimulator />}
@@ -622,13 +639,13 @@ function AppContent() {
               <div className="bg-slate-950 p-4 rounded-xl border border-slate-800">
                 <h4 className="font-bold text-blue-400 uppercase text-[11px] mb-1.5">
                   {lang === 'es'
-                    ? '1. Algoritmo 1: Partición Cíclica de la Media Matriz'
-                    : '1. Algorithm 1: Cyclic Partitioning of Half Matrix'}
+                    ? '1. Reparto estático por bloques de la media matriz'
+                    : '1. Static block partition of the half matrix'}
                 </h4>
                 <p className="text-slate-400">
                   {lang === 'es'
-                    ? 'La matriz de distancias es simétrica y solo se calcula la mitad superior j > i con N(N - 1) / 2 pares. El Algoritmo 1 asigna la fila i al rank i mod P, compensando las filas pesadas (ej. fila 0 con N-1 comparaciones) con filas ligeras (fila N-2 con 1 comparación).'
-                    : 'The distance matrix is symmetric; only the upper triangle j > i is computed with N(N - 1) / 2 pairs. Algorithm 1 assigns row i to rank i mod P, balancing heavy rows (e.g. row 0 with N-1 comparisons) with light rows (row N-2 with 1 comparison).'}
+                    ? 'La matriz de distancias es simétrica y solo se calcula la mitad superior j > i con N(N - 1) / 2 pares. El reparto implementado es estático por bloques contiguos: el par (i, j) lo calcula el propietario de i, así que los primeros ranks acumulan casi todo (fila 0 con N-1 comparaciones, fila N-2 con 1). Ese desbalance no se corrige: se caracteriza y se mide, y es el resultado central del trabajo. El reparto cíclico o dinámico queda propuesto como trabajo futuro.'
+                    : 'The distance matrix is symmetric; only the upper triangle j > i is computed with N(N - 1) / 2 pairs. The implemented partition is static and contiguous-block: the pair (i, j) is computed by the owner of i, so the first ranks accumulate almost everything (row 0 with N-1 comparisons, row N-2 with 1). That imbalance is not corrected: it is characterised and measured, and it is the central result of the work. A cyclic or dynamic partition is proposed as future work.'}
                 </p>
               </div>
 
@@ -640,8 +657,8 @@ function AppContent() {
                 </h4>
                 <p className="text-slate-400">
                   {lang === 'es'
-                    ? 'metacache emplea MPI_Send bloqueante que sufre contención a partir de 64 procesos. isend dispara ráfagas no bloqueantes con MPI_Isend en colas PendingSend y sincroniza una sola vez con MPI_Waitall, logrando un 45% más de rendimiento en 128 procesos.'
-                    : 'metacache relies on blocking MPI_Send which encounters network contention beyond 64 processes. isend fires non-blocking MPI_Isend bursts using PendingSend queues and synchronizes via MPI_Waitall, yielding up to 45% higher throughput at 128 processes.'}
+                    ? 'metacache emplea MPI_Send bloqueante: el propietario envía destino a destino y, con el protocolo rendezvous, no retorna hasta que cada receptor publica su Recv. isend lanza toda la tanda con MPI_Isend sobre colas PendingSend y sincroniza una sola vez con MPI_Waitall, de modo que el coste pasa de suma a máximo: hasta un 45% más rápida en 128 procesos. A cambio pierde el control de flujo implícito, y falla de forma reproducible con 256 procesos sobre 300 especies.'
+                    : 'metacache relies on blocking MPI_Send: the owner sends destination by destination and, under the rendezvous protocol, does not return until each receiver posts its Recv. isend fires the whole batch with MPI_Isend over PendingSend queues and synchronises once with MPI_Waitall, turning the cost from a sum into a maximum: up to 45% faster at 128 processes. In exchange it loses the implicit flow control, and fails reproducibly with 256 processes on 300 species.'}
                 </p>
               </div>
 

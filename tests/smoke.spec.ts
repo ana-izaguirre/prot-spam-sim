@@ -6,6 +6,7 @@ import { expect, test, type Page } from '@playwright/test';
  * check that its lazily-loaded chunk resolves.
  */
 const MODULES = [
+  'Cómo Funciona',
   'Algoritmo Base',
   'Ramas TFM',
   'Reparto Carga',
@@ -68,7 +69,7 @@ test('language and theme switch and survive a reload', async ({ page }) => {
   await page.goto('./');
 
   await page.locator('header button', { hasText: /^EN$/ }).first().click();
-  await expect(page.locator('header nav button:visible').first()).toContainText('Base Algorithm');
+  await expect(page.locator('header nav button:visible').first()).toContainText('How It Works');
 
   await page.locator('header button[title]').first().click();
   await expect(page.locator('html')).toHaveClass(/light-theme/);
@@ -79,9 +80,35 @@ test('language and theme switch and survive a reload', async ({ page }) => {
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
 });
 
+test('the walkthrough is the landing module and steps through a variant', async ({ page }) => {
+  await page.setViewportSize({ width: 1800, height: 1000 });
+  await page.goto('./');
+
+  const counter = page
+    .locator('main')
+    .getByText(/Paso\s+\d+\s+de\s+\d+/)
+    .first();
+  await expect(counter).toContainText('Paso 0');
+
+  await page.locator('main').getByRole('button', { name: 'Siguiente' }).first().click();
+  await expect(counter).toContainText('Paso 1');
+
+  // Switching variant restarts the walkthrough at step 0 with its own length.
+  await page.locator('main').getByRole('tab', { name: /isend/ }).first().click();
+  await expect(counter).toContainText('Paso 0');
+});
+
 test('the base simulator advances a step', async ({ page }) => {
   await page.setViewportSize({ width: 1800, height: 1000 });
   await page.goto('./');
+
+  // The landing module is the walkthrough now, so the base simulator has to be
+  // opened first.
+  await page
+    .locator('header nav button:visible')
+    .filter({ hasText: 'Algoritmo Base' })
+    .first()
+    .click();
 
   const counter = page
     .locator('main')

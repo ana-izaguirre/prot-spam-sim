@@ -10,7 +10,9 @@ export const TriangularMatrixExplorer: React.FC = () => {
   const [numProcesses, setNumProcesses] = useState<number>(4);
   const [hoveredRank, setHoveredRank] = useState<number | null>(null);
   const [selectedCell, setSelectedCell] = useState<{ i: number; j: number } | null>({ i: 0, j: 1 });
-  const [partitionMethod, setPartitionMethod] = useState<'cyclic' | 'block'>('cyclic');
+  // Contiguous blocks are what the thesis implements; the cyclic partition is
+  // proposed future work, so the explorer opens on the implemented one.
+  const [partitionMethod, setPartitionMethod] = useState<'cyclic' | 'block'>('block');
 
   // Subsample species for visual display
   const speciesSubset: Species[] = SPECIES_300_UNBALANCED.slice(0, matrixSize);
@@ -135,9 +137,9 @@ export const TriangularMatrixExplorer: React.FC = () => {
                   : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700'
               }`}
             >
-              <span>{lang === 'es' ? 'Algoritmo 1' : 'Algorithm 1'}</span>
+              <span>{lang === 'es' ? 'Cíclico' : 'Cyclic'}</span>
               <span className="text-[10px] font-normal opacity-80">
-                {lang === 'es' ? '(Cíclico)' : '(Cyclic)'}
+                {lang === 'es' ? '(trabajo futuro)' : '(future work)'}
               </span>
             </button>
             <button
@@ -151,7 +153,7 @@ export const TriangularMatrixExplorer: React.FC = () => {
             >
               <span>{lang === 'es' ? 'Por Bloques' : 'By Blocks'}</span>
               <span className="text-[10px] font-normal opacity-80">
-                {lang === 'es' ? '(Ingenuo)' : '(Naive)'}
+                {lang === 'es' ? '(implementado)' : '(implemented)'}
               </span>
             </button>
           </div>

@@ -86,6 +86,36 @@ simulator for the C++ tool.
 The scalability tables are the one place where the numbers are _real_: they are the
 thesis' measured results and must never be recomputed client-side (Constitution I).
 
+### A.4 The phase walkthrough — what it does and does not model
+
+The walkthrough module (`src/components/PhaseWalkthrough.tsx`,
+`src/data/phaseWalkthrough.ts`) is a different kind of artefact from the rest of the
+suite, so its fidelity contract is stated separately.
+
+**What is real.** Every step is a call the corresponding branch actually makes, in the
+order it makes it, transcribed from the branch source. The partition (`species_range`),
+the `owners[]` vector, the `i < j` pair assignment, the remote-need matrix
+(`rank_needs_remote_species`) and the per-rank pair and amino-acid loads are _computed_
+in `phaseWalkthrough.ts` with the same formulas as the C++ — not typed in by hand — so
+they stay consistent if the scenario changes.
+
+**What is a simplification.**
+
+| Walkthrough                                                          | Real Prot-SpaM                                   |
+| -------------------------------------------------------------------- | ------------------------------------------------ |
+| 6 species, 3 ranks, 2 patterns                                       | Up to 300 species, 256 ranks, 5 patterns         |
+| Steps are program events, not time; no duration is modelled anywhere | Wall-clock measured per phase with `std::chrono` |
+| Pair cost proxy is `maa(i) + maa(j)`, labelled as structural load    | `calc_matches` over the two sorted word lists    |
+| Pattern loop is shown twice and then summarised                      | `m` full turns of the pipeline                   |
+
+The species order is chosen deliberately so the two sources of imbalance do **not**
+coincide — rank 0 receives more pairs while rank 1 receives more amino acids — which
+reproduces the thesis' 55-species instrumentation (process 8 computes for twice as long
+as process 0 despite owning fewer pairs) at a size that fits on one screen.
+
+**Constitution I applies here too**: the module states no seconds. Where a measured
+figure is quoted in a note, it is quoted as a thesis result and attributed as such.
+
 ---
 
 ## Part B — Migration decisions

@@ -217,10 +217,10 @@ performance highlights and branch directory, generated entirely in the browser.
 
 **Shell & navigation**
 
-- **FR-001**: The system MUST present exactly seven modules — base algorithm, TFM
-  branches, workload, MPI communication, triangular matrix, scalability, numerical
-  correctness — and render exactly one at a time.
-- **FR-002**: The system MUST open on the base-algorithm module.
+- **FR-001**: The system MUST present exactly eight modules — phase walkthrough, base
+  algorithm, TFM branches, workload, MPI communication, triangular matrix, scalability,
+  numerical correctness — and render exactly one at a time.
+- **FR-002**: The system MUST open on the phase-walkthrough module.
 - **FR-003**: Navigation MUST adapt to viewport width: full inline bar on the widest
   screens, a "More" overflow menu on large screens, and a drawer below that.
 - **FR-004**: The overflow menu MUST close when the user clicks outside it.
@@ -345,7 +345,7 @@ performance highlights and branch directory, generated entirely in the browser.
 - **SC-001**: A reader with no MPI background can explain, after one pass through the
   base-algorithm module, what a spaced word is and how a distance is produced from
   pattern matches.
-- **SC-002**: Every one of the seven modules is reachable and fully operable at 360 px,
+- **SC-002**: Every one of the eight modules is reachable and fully operable at 360 px,
   768 px, 1280 px and 1920 px viewport widths, with no horizontal page scroll.
 - **SC-003**: Switching language leaves no visible untranslated string in any module.
 - **SC-004**: Language and theme survive a full page reload.

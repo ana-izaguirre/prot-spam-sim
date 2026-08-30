@@ -17,6 +17,7 @@ const translations: Record<Language, Record<string, string>> = {
     // Top Bar & Brand
     'app.title': 'ProtSpam HPC Suite',
     'app.subtitle': 'Simulador Filogenético Distribuido',
+    'app.howItWorks': 'Cómo Funciona',
     'app.coreSim': 'Algoritmo Base',
     'app.tfmBranches': 'Ramas TFM',
     'app.workload': 'Reparto Carga',
@@ -38,6 +39,60 @@ const translations: Record<Language, Record<string, string>> = {
       'TFM: Reconstrucción filogenética de secuencias de proteoma completo sobre memoria distribuida',
     'app.sectionsTitle': 'Secciones y Módulos',
 
+    // Phase Walkthrough — cómo funciona cada variante, paso a paso
+    'walk.title': 'Cómo funciona cada versión, paso a paso',
+    'walk.subtitle':
+      'Una ejecución completa de cada rama —seq, fase 3a, fase 3b, metacache e isend— parada por parada: qué llamada se ejecuta, qué hace cada proceso en ese momento, qué mensajes viajan y por qué el diseño es así.',
+    'walk.honesty':
+      'Esto es el mecanismo, no el rendimiento. Cada paso es una llamada real de la rama, en el orden en que el programa la ejecuta; no hay tiempos simulados en ningún punto. Los tiempos son medidas del TFM en FinisTerrae III y están en el módulo de Escalabilidad. El escenario es un caso miniatura para que una ejecución entera quepa en pantalla; el reparto, los propietarios, los pares y la matriz de necesidad se calculan aquí con las mismas fórmulas que el C++.',
+    'walk.variant': 'Versión',
+    'walk.changes': 'Qué cambia respecto a la anterior',
+    'walk.prev': 'Anterior',
+    'walk.next': 'Siguiente',
+    'walk.play': 'Reproducir',
+    'walk.pause': 'Pausar',
+    'walk.reset': 'Reiniciar',
+    'walk.speed': 'Vel',
+    'walk.step': 'Paso',
+    'walk.of': 'de',
+    'walk.process': 'proceso',
+    'walk.processes': 'procesos',
+    'walk.singleProcess': 'proceso único',
+    'walk.ranks': 'Qué hace cada proceso',
+    'walk.messages': 'Mensajes en este paso',
+    'walk.noMessages': 'Ningún mensaje: en este paso no hay comunicación.',
+    'walk.legendSerial':
+      'Numerados porque ocurren en serie: cada MPI_Send bloqueante debe retornar antes de que empiece el siguiente.',
+    'walk.legendBurst':
+      'Sin numerar porque progresan a la vez: los MPI_Isend de una tanda se publican sin esperar entre ellos y se espera una sola vez, al final.',
+    'walk.call': 'Llamada',
+    'walk.pairsDone': 'pares resueltos',
+    'walk.timerNone': 'sin cronómetro',
+    'walk.timerPhase3': 'cronómetro: Fase 3',
+    'walk.timerPhase4': 'cronómetro: Fase 4',
+    'walk.noteWhy': 'Por qué',
+    'walk.noteFlag': 'Límite reconocido',
+    'walk.noteData': 'Dato del TFM',
+    'walk.summary': 'Resumen de la versión',
+    'walk.scenario': 'El escenario, con todos sus números',
+    'walk.scenarioNote':
+      'Seis especies, tres procesos y dos patrones. Las especies están ordenadas a propósito para que las dos fuentes de desbalance NO coincidan: rank 0 recibe más pares y rank 1 recibe más aminoácidos. Es la instrumentación de 55 especies del TFM —donde el proceso 8, con 75 pares, calcula más del doble que el proceso 0, que tiene 107— reducida a un tamaño que cabe en pantalla.',
+    'walk.speciesTable': 'Especies y propietario',
+    'walk.colSpecies': 'Especie',
+    'walk.colOwner': 'Propietario',
+    'walk.pairsGrid': 'Quién calcula cada par',
+    'walk.pairs': 'pares',
+    'walk.gridLegend':
+      'Solo el triángulo superior (j > i): la comparación es simétrica. El número de cada celda es el rank que la calcula, y es siempre el propietario de i.',
+    'walk.planTable': 'Reparto resultante por proceso',
+    'walk.colOwns': 'Especies',
+    'walk.colPairs': 'Pares',
+    'walk.colOwnMaa': 'Maa propios',
+    'walk.colPairMaa': 'Carga de pares',
+    'walk.colNeeds': 'Necesita recibir',
+    'walk.planNote':
+      '«Carga de pares» suma, para cada par asignado, los aminoácidos de las dos especies: calc_matches recorre las dos listas ordenadas de palabras, así que su coste crece con |palabras(i)| + |palabras(j)|. Es un indicador de carga relativa estructural, no un tiempo. Y muestra el resultado central del TFM: rank 1 tiene 5 pares frente a los 9 de rank 0, y aun así más trabajo.',
+
     // Modal TFM
     'modal.title': 'Ficha Técnica del Trabajo de Fin de Máster (TFM)',
     'modal.thesisTitle': 'Título del Trabajo:',
@@ -48,7 +103,7 @@ const translations: Record<Language, Record<string, string>> = {
     'modal.summaryP1':
       'Este trabajo aborda la paralelización en memoria distribuida con MPI del algoritmo Prot-SpaM (Spaced Words for Protein Alignment), eliminando la necesidad de alineamientos múltiples tradicionales.',
     'modal.summaryP2':
-      'Se implementó una estrategia híbrida distribuyendo tanto la indexación de palabras espaciadas (Fase 3) como el cálculo de la media matriz triangular (Fase 4), alcanzando un speedup de 26.8x en 128 núcleos del FinisTerrae III y reduciendo el tiempo de >31 horas a 70 minutos para 300 especies de proteoma completo.',
+      'Se paralelizan tanto la indexación de palabras espaciadas (Fase 3) como el cálculo de la media matriz triangular (Fase 4). Con 300 especies, la mejor configuración completada (isend, 128 procesos sobre 4 nodos del FinisTerrae III) resuelve en 4204 s lo que la referencia secuencial tarda 112 500 s: más de 31 horas frente a poco más de una. Ese factor de 26,8x es un factor temporal entre dos binarios distintos, no una aceleración paralela; la aceleración paralela medida sobre la propia versión MPI es 6,88x con 64 procesos en el conjunto de 64 especies.',
     'modal.downloadPdfBtn': 'Descargar Ficha en PDF',
     'modal.close': 'Cerrar',
 
@@ -103,8 +158,8 @@ const translations: Record<Language, Record<string, string>> = {
     'workload.dataset': 'Conjunto de Entrada',
     'workload.metric': 'Visualizar Métrica',
     'workload.partition': 'Estrategia de Partición',
-    'workload.cyclic': 'Algoritmo 1 (Cíclico)',
-    'workload.block': 'Por Bloques (Ingenuo)',
+    'workload.cyclic': 'Cíclico (trabajo futuro)',
+    'workload.block': 'Bloques contiguos (implementado)',
     'workload.homoBottle': 'Cuello de Botella: Homo sapiens',
     'workload.demoMode': 'Modo Demo Automático',
     'workload.demoRunning': 'Demo en Curso (Escalado P)',
@@ -154,8 +209,8 @@ const translations: Record<Language, Record<string, string>> = {
       'Visualización del cálculo de media matriz superior (j > i) y reparto geométrico entre rangos MPI.',
     'matrix.dimension': 'Dimensión Matriz (N)',
     'matrix.strategy': 'Algoritmo de Asignación',
-    'matrix.cyclicDesc': 'Algoritmo 1 (i % P)',
-    'matrix.blockDesc': 'Bloques Contiguos (i / B)',
+    'matrix.cyclicDesc': 'Cíclico i % P (trabajo futuro)',
+    'matrix.blockDesc': 'Bloques contiguos (implementado)',
     'matrix.inspector': 'Inspector de Celda Seleccionada',
     'matrix.diagonal': 'Diagonal Principal (Distancia = 0.0000)',
     'matrix.lowerTriangle': 'Mitad Inferior (Omitida por Simetría)',
@@ -202,6 +257,7 @@ const translations: Record<Language, Record<string, string>> = {
     // Top Bar & Brand
     'app.title': 'ProtSpam HPC Suite',
     'app.subtitle': 'Distributed Phylogenetic Simulator',
+    'app.howItWorks': 'How It Works',
     'app.coreSim': 'Base Algorithm',
     'app.tfmBranches': 'TFM Branches',
     'app.workload': 'Workload',
@@ -223,6 +279,60 @@ const translations: Record<Language, Record<string, string>> = {
       "Master's Thesis: Parallel phylogenetic reconstruction of whole proteome sequences on distributed memory systems",
     'app.sectionsTitle': 'Sections & Modules',
 
+    // Phase Walkthrough — how each variant works, step by step
+    'walk.title': 'How each version works, step by step',
+    'walk.subtitle':
+      'One complete execution of every branch — seq, phase 3a, phase 3b, metacache and isend — stop by stop: which call runs, what each process is doing at that moment, which messages travel, and why the design is what it is.',
+    'walk.honesty':
+      'This is the mechanism, not the performance. Every step is a real call from the branch, in the order the program makes it; no timing is simulated anywhere. The seconds are thesis measurements on FinisTerrae III and live in the Scalability module. The scenario is a miniature so a whole execution fits on one screen; the partition, the owners, the pairs and the need matrix are computed here with the same formulas as the C++.',
+    'walk.variant': 'Version',
+    'walk.changes': 'What changes from the previous one',
+    'walk.prev': 'Previous',
+    'walk.next': 'Next',
+    'walk.play': 'Play',
+    'walk.pause': 'Pause',
+    'walk.reset': 'Reset',
+    'walk.speed': 'Speed',
+    'walk.step': 'Step',
+    'walk.of': 'of',
+    'walk.process': 'process',
+    'walk.processes': 'processes',
+    'walk.singleProcess': 'single process',
+    'walk.ranks': 'What each process is doing',
+    'walk.messages': 'Messages on this step',
+    'walk.noMessages': 'No messages: there is no communication on this step.',
+    'walk.legendSerial':
+      'Numbered because they happen in series: each blocking MPI_Send must return before the next one starts.',
+    'walk.legendBurst':
+      'Unnumbered because they progress together: the MPI_Isends of a batch are posted without waiting in between, and there is a single wait at the end.',
+    'walk.call': 'Call',
+    'walk.pairsDone': 'pairs resolved',
+    'walk.timerNone': 'no timer',
+    'walk.timerPhase3': 'timer: Phase 3',
+    'walk.timerPhase4': 'timer: Phase 4',
+    'walk.noteWhy': 'Why',
+    'walk.noteFlag': 'Acknowledged limit',
+    'walk.noteData': 'Thesis figure',
+    'walk.summary': 'Version summary',
+    'walk.scenario': 'The scenario, with all its numbers',
+    'walk.scenarioNote':
+      'Six species, three processes and two patterns. The species are ordered on purpose so the two sources of imbalance do NOT coincide: rank 0 receives more pairs while rank 1 receives more amino acids. It is the thesis’ 55-species instrumentation — where process 8, with 75 pairs, computes for more than twice as long as process 0, which has 107 — shrunk to a size that fits on screen.',
+    'walk.speciesTable': 'Species and owner',
+    'walk.colSpecies': 'Species',
+    'walk.colOwner': 'Owner',
+    'walk.pairsGrid': 'Who computes each pair',
+    'walk.pairs': 'pairs',
+    'walk.gridLegend':
+      'Only the upper triangle (j > i): the comparison is symmetric. The number in each cell is the rank that computes it, and it is always the owner of i.',
+    'walk.planTable': 'Resulting per-process partition',
+    'walk.colOwns': 'Species',
+    'walk.colPairs': 'Pairs',
+    'walk.colOwnMaa': 'Own Maa',
+    'walk.colPairMaa': 'Pair load',
+    'walk.colNeeds': 'Must receive',
+    'walk.planNote':
+      '"Pair load" adds up, for every assigned pair, the amino acids of both species: calc_matches walks both sorted word lists, so its cost grows with |words(i)| + |words(j)|. It is an indicator of relative structural load, not a time. And it shows the thesis’ central result: rank 1 has 5 pairs against rank 0’s 9, and still more work.',
+
     // Modal TFM
     'modal.title': "Master's Thesis (TFM) Executive Factsheet",
     'modal.thesisTitle': 'Thesis Title:',
@@ -233,7 +343,7 @@ const translations: Record<Language, Record<string, string>> = {
     'modal.summaryP1':
       'This thesis addresses the distributed-memory parallelization using MPI of the Prot-SpaM (Spaced Words for Protein Alignment) algorithm, eliminating the need for expensive traditional multiple sequence alignments.',
     'modal.summaryP2':
-      'A hybrid strategy was designed and deployed across FinisTerrae III compute nodes, distributing both spaced words indexing (Phase 3) and upper triangular half-matrix distance estimation (Phase 4). It achieved a 26.8x speedup on 128 cores, slashing computation time from >31 sequential hours to 70 minutes for 300 whole proteome species.',
+      'Both spaced-word indexing (Phase 3) and the upper-triangular half-matrix computation (Phase 4) are parallelised. On 300 species, the best completed configuration (isend, 128 processes across 4 FinisTerrae III nodes) resolves in 4204 s what the sequential reference takes 112 500 s: over 31 hours against a little more than one. That 26.8x is a temporal factor between two different binaries, not a parallel speedup; the parallel speedup measured against the MPI version itself is 6.88x with 64 processes on the 64-species set.',
     'modal.downloadPdfBtn': 'Download PDF Factsheet',
     'modal.close': 'Close',
 
@@ -288,8 +398,8 @@ const translations: Record<Language, Record<string, string>> = {
     'workload.dataset': 'Input Dataset',
     'workload.metric': 'View Metric',
     'workload.partition': 'Partitioning Strategy',
-    'workload.cyclic': 'Algorithm 1 (Cyclic)',
-    'workload.block': 'Block Distribution (Naive)',
+    'workload.cyclic': 'Cyclic (future work)',
+    'workload.block': 'Contiguous blocks (implemented)',
     'workload.homoBottle': 'Bottleneck: Homo sapiens',
     'workload.demoMode': 'Automated Demo Mode',
     'workload.demoRunning': 'Demo Running (Scaling P)',
@@ -339,8 +449,8 @@ const translations: Record<Language, Record<string, string>> = {
       'Visualization of upper half-matrix calculation (j > i) and geometric assignment across MPI ranks.',
     'matrix.dimension': 'Matrix Dimension (N)',
     'matrix.strategy': 'Assignment Algorithm',
-    'matrix.cyclicDesc': 'Algorithm 1 (i % P)',
-    'matrix.blockDesc': 'Contiguous Blocks (i / B)',
+    'matrix.cyclicDesc': 'Cyclic i % P (future work)',
+    'matrix.blockDesc': 'Contiguous blocks (implemented)',
     'matrix.inspector': 'Selected Cell Inspector',
     'matrix.diagonal': 'Main Diagonal (Distance = 0.0000)',
     'matrix.lowerTriangle': 'Lower Half (Omitted by Symmetry)',

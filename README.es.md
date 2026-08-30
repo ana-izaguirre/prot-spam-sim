@@ -70,9 +70,10 @@ entregó a la siguiente, y sigue siendo el contrato al que se somete el código.
 
 | Módulo                | Qué hace visible                                                                                            |
 | --------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **Cómo funciona**     | Una ejecución completa de cada versión —`seq`, fase 3a, fase 3b, `metacache`, `isend`— llamada a llamada    |
 | **Algoritmo base**    | Extracción de palabras espaciadas, indexación y extensión acotada por X-drop, narradas paso a paso          |
 | **Ramas TFM**         | Las seis ramas de desarrollo en C++, su fase y su aceleración medida                                        |
-| **Reparto de carga**  | Carga por rank con partición cíclica frente a por bloques: de dónde sale realmente el desbalance            |
+| **Reparto de carga**  | Carga por rank con el reparto por bloques implementado frente al cíclico propuesto                          |
 | **Tráfico MPI**       | `MPI_Send` bloqueante serializándose frente a `MPI_Isend` no bloqueante solapando                           |
 | **Matriz triangular** | Qué rank posee cada par y por qué media matriz no se calcula nunca                                          |
 | **Escalabilidad**     | Curvas medidas en FinisTerrae III, de 1 a 256 procesos, incluida la inversión de `metacache` a partir de 64 |
@@ -81,6 +82,12 @@ entregó a la siguiente, y sigue siendo el contrato al que se somete el código.
 Todo es cliente y determinista: sin backend, sin llamadas a API en ejecución, sin
 aleatoriedad. Los números de escalabilidad están transcritos del TFM y nunca se recalculan
 en el navegador.
+
+**Cómo funciona** es el módulo de entrada y el primero que conviene abrir: recorre una
+ejecución entera de cada rama, llamada a llamada, mostrando qué hace cada proceso, qué
+mensajes viajan y por qué el diseño es así. No modela ningún tiempo — el reparto, los
+propietarios, la asignación de pares y la matriz de necesidad remota se calculan con las
+mismas fórmulas que el C++, y los segundos se quedan en el módulo de escalabilidad.
 
 > **Es una herramienta didáctica, no la herramienta C++.** Las simplificaciones
 > deliberadas —una tabla de sustitución 4×4 en lugar de BLOSUM62, una línea temporal MPI
@@ -104,7 +111,7 @@ src/
 ├── layouts/BaseLayout.astro          head, fuentes, SEO, arranque de tema/idioma
 ├── islands/AppShell.tsx              punto de entrada de hidratación
 ├── App.tsx                           shell, navegación, conmutación lazy de módulos
-├── components/                       los siete módulos
+├── components/                       los ocho módulos
 ├── context/                          diccionario i18n + tema (seguro en prerenderizado)
 ├── data/speciesData.ts               conjuntos, particionador, series medidas
 └── utils/generatePdf.ts              PDF en el navegador (importado dinámicamente)
