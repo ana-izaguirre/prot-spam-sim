@@ -53,9 +53,10 @@ export const WorkloadSimulator: React.FC = () => {
   const [numProcesses, setNumProcesses] = useState<number>(8);
   const [datasetType, setDatasetType] = useState<'64' | '300'>('300');
   const [viewMetric, setViewMetric] = useState<'maa' | 'species' | 'comparisons'>('maa');
-  const [algoType, setAlgoType] = useState<'algoritmo1_cyclic' | 'naive_block'>(
-    'algoritmo1_cyclic',
-  );
+  // The thesis implements a static contiguous-block partition; the cyclic
+  // partition of the triangular loop is proposed future work. The module opens
+  // on the implemented one so the default view matches the measured results.
+  const [algoType, setAlgoType] = useState<'algoritmo1_cyclic' | 'naive_block'>('naive_block');
 
   // Automated Demo Mode state
   const [isDemoActive, setIsDemoActive] = useState<boolean>(false);
@@ -154,8 +155,8 @@ export const WorkloadSimulator: React.FC = () => {
       phase: 'PART',
       message:
         lang === 'es'
-          ? `Aplicando estrategia: ${algoType === 'algoritmo1_cyclic' ? 'Algoritmo 1 (Cíclico i % P)' : 'Partición por Bloques (i / B)'}...`
-          : `Applying strategy: ${algoType === 'algoritmo1_cyclic' ? 'Algorithm 1 (Cyclic i % P)' : 'Block Distribution (i / B)'}...`,
+          ? `Aplicando estrategia: ${algoType === 'algoritmo1_cyclic' ? 'Cíclico i % P (trabajo futuro)' : 'Bloques contiguos i / B (implementado)'}...`
+          : `Applying strategy: ${algoType === 'algoritmo1_cyclic' ? 'Cyclic i % P (future work)' : 'Contiguous blocks i / B (implemented)'}...`,
       detail:
         lang === 'es'
           ? 'Mapeando filas de la mitad superior triangular (j > i).'
@@ -1116,7 +1117,7 @@ export const WorkloadSimulator: React.FC = () => {
       </div>
 
       {/* ========================================================================= */}
-      {/* BENTO CARDS 8 & 9: Real-Time Execution Log & Algorithm 1 Principle Card   */}
+      {/* BENTO CARDS 8 & 9: Real-Time Execution Log & load-imbalance principle card */}
       {/* ========================================================================= */}
       <div className="flex flex-col lg:grid lg:grid-cols-12 gap-4 lg:gap-5 items-stretch">
         {/* ----------------------------------------------------------------------- */}
@@ -1390,8 +1391,8 @@ export const WorkloadSimulator: React.FC = () => {
               <Info className="w-4 h-4 shrink-0" />
               <span>
                 {lang === 'es'
-                  ? 'Principio del Algoritmo 1 en ProtSpam'
-                  : 'Algorithm 1 Principle in ProtSpam'}
+                  ? 'Las dos fuentes de desbalance del TFM'
+                  : 'The thesis’ two sources of imbalance'}
               </span>
             </div>
 
@@ -1404,9 +1405,10 @@ export const WorkloadSimulator: React.FC = () => {
                   </code>
                   ), la fila 0 requiere <span className="font-mono text-emerald-300">N - 1</span>{' '}
                   comparaciones mientras la fila N-2 solo requiere{' '}
-                  <span className="font-mono text-emerald-300">1</span>. Una partición por bloques
-                  contiguos colapsaría el balance (Rank 0 asumiría hasta el 50% de las
-                  comparaciones).
+                  <span className="font-mono text-emerald-300">1</span>. El TFM implementa un
+                  reparto estático por bloques contiguos, así que los primeros ranks acumulan casi
+                  todo: el más cargado hace el doble del trabajo medio, y eso acota la eficiencia de
+                  la Fase 4 en torno al 50 % incluso con proteomas idénticos.
                 </>
               ) : (
                 <>
@@ -1416,9 +1418,10 @@ export const WorkloadSimulator: React.FC = () => {
                   </code>
                   ), row 0 requires <span className="font-mono text-emerald-300">N - 1</span>{' '}
                   pairwise comparisons while row N-2 requires only{' '}
-                  <span className="font-mono text-emerald-300">1</span>. Contiguous block
-                  partitioning collapses load balance (Rank 0 would handle up to 50% of the
-                  workload).
+                  <span className="font-mono text-emerald-300">1</span>. The thesis implements a
+                  static contiguous-block partition, so the first ranks accumulate almost
+                  everything: the busiest one does twice the average work, which bounds Phase 4
+                  efficiency at around 50 % even with identical proteomes.
                 </>
               )}
             </p>
@@ -1426,31 +1429,35 @@ export const WorkloadSimulator: React.FC = () => {
             <p className="text-slate-300 leading-relaxed text-[11px]">
               {lang === 'es' ? (
                 <>
-                  El <strong>Algoritmo 1</strong> distribuye las filas cíclicamente (
-                  <code className="text-emerald-400 bg-slate-950 px-1.5 py-0.5 rounded font-mono">
-                    Rank = i mod P
-                  </code>
-                  ). Sin embargo, en el conjunto de 300 especies, la disparidad biológica del
-                  proteoma humano (<strong className="text-orange-400">69.58 Maa</strong> frente a
-                  ~1.5 Maa de bacterias) impone una barrera de espera en{' '}
+                  A esa se suma una segunda fuente, independiente: el reparto cuenta especies, no
+                  aminoácidos. En el conjunto de 300, el proteoma humano (
+                  <strong className="text-orange-400">69.58 Maa</strong> frente a ~1.5 Maa de
+                  bacterias) ata un proceso entero mientras los demás esperan en{' '}
                   <code className="text-purple-400 bg-slate-950 px-1.5 py-0.5 rounded font-mono">
                     MPI_Reduce
                   </code>
-                  .
+                  . El reparto cíclico (
+                  <code className="text-emerald-400 bg-slate-950 px-1.5 py-0.5 rounded font-mono">
+                    Rank = i mod P
+                  </code>
+                  ) ataca la primera fuente y un reparto sensible al tamaño ataca la segunda: son
+                  las dos líneas de trabajo futuro que el TFM propone.
                 </>
               ) : (
                 <>
-                  <strong>Algorithm 1</strong> distributes rows cyclically (
-                  <code className="text-emerald-400 bg-slate-950 px-1.5 py-0.5 rounded font-mono">
-                    Rank = i mod P
-                  </code>
-                  ). However, in the 300 species dataset, the biological asymmetry of the human
-                  proteome (<strong className="text-orange-400">69.58 Maa</strong> vs ~1.5 Maa in
-                  bacteria) imposes an inevitable barrier wait at{' '}
+                  A second, independent source sits on top: the partition counts species, not amino
+                  acids. In the 300-species set, the human proteome (
+                  <strong className="text-orange-400">69.58 Maa</strong> vs ~1.5 Maa in bacteria)
+                  ties up a whole process while the rest wait at{' '}
                   <code className="text-purple-400 bg-slate-950 px-1.5 py-0.5 rounded font-mono">
                     MPI_Reduce
                   </code>
-                  .
+                  . A cyclic partition (
+                  <code className="text-emerald-400 bg-slate-950 px-1.5 py-0.5 rounded font-mono">
+                    Rank = i mod P
+                  </code>
+                  ) attacks the first source and a size-aware partition attacks the second: these
+                  are the two lines of future work the thesis proposes.
                 </>
               )}
             </p>

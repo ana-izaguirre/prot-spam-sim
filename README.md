@@ -52,9 +52,15 @@ and it surfaced six real defects nobody had noticed, including a simulation para
 did nothing and a scoring table claiming to be BLOSUM62 when it was not.
 
 **4 — Claude Code: the engineering pass.** Working from the specification: migration from
-Vite to Astro (**initial payload 958.9 kB → 270.6 kB**), the six defects fixed one pull
-request at a time, a Playwright smoke suite, and a CI/CD pipeline that type-checks, builds,
-tests in a real browser and only then deploys.
+Vite to Astro (**initial payload 958.9 kB → 270.6 kB of JavaScript**), the six defects fixed
+one pull request at a time, a Playwright smoke suite, and a CI/CD pipeline that type-checks,
+builds, tests in a real browser and only then deploys.
+
+> That 270.6 kB is what the migration achieved at the time, counting JavaScript only.
+> Measured today over the whole landing request — every same-origin file the browser
+> fetches to render `/`, HTML and CSS included, Google Fonts excluded — the figure is
+> **450.4 kB raw / 125.6 kB gzipped**. Reproduce it with
+> `npm run build && npm run preview`, then read the network panel on `/`.
 
 The specification is not documentation written after the fact — it is the artefact each
 stage handed to the next, and it is still the contract the code is held to. It lives in
@@ -65,19 +71,27 @@ stage handed to the next, and it is still the contract the code is held to. It l
 
 ## What the simulator shows
 
-| Module                | What it makes visible                                                                         |
-| --------------------- | --------------------------------------------------------------------------------------------- |
-| **Base algorithm**    | Spaced-word extraction, indexing, and X-drop bounded extension, narrated one step at a time   |
-| **TFM branches**      | The six C++ development branches, their phase and their measured speedup                      |
-| **Workload**          | Per-rank load under cyclic vs block partitioning — where load imbalance actually comes from   |
-| **MPI traffic**       | Blocking `MPI_Send` serialising against non-blocking `MPI_Isend` overlapping                  |
-| **Triangular matrix** | Which rank owns which pair, and why half the matrix is never computed                         |
-| **Scalability**       | Measured FinisTerrae III curves, 1 to 256 processes — including `metacache` inverting past 64 |
-| **Correctness**       | Sequential vs parallel PHYLIP values, compared at the level of raw IEEE-754 bits              |
+| Module                | What it makes visible                                                                          |
+| --------------------- | ---------------------------------------------------------------------------------------------- |
+| **How it works**      | One execution of each variant — `seq`, phase 3a, phase 3b, `metacache`, `isend` — call by call |
+| **Base algorithm**    | Spaced-word extraction, indexing, and X-drop bounded extension, narrated one step at a time    |
+| **TFM branches**      | The six C++ development branches, their phase and their measured speedup                       |
+| **Workload**          | Per-rank load under the implemented block partition vs the proposed cyclic one                 |
+| **MPI traffic**       | Blocking `MPI_Send` serialising against non-blocking `MPI_Isend` overlapping                   |
+| **Triangular matrix** | Which rank owns which pair, and why half the matrix is never computed                          |
+| **Scalability**       | The thesis' three measured experiments (cuadros 6.2, 6.3, 6.4), each with its own baseline     |
+| **Correctness**       | Sequential vs parallel PHYLIP values, compared at the level of raw IEEE-754 bits               |
 
 Everything is client-side and deterministic: no backend, no runtime API calls, no
-randomness. The measured scalability numbers are transcribed from the thesis and never
-recomputed in the browser.
+randomness. The scalability numbers are transcribed point by point from the thesis' numbered
+tables and never recomputed in the browser; where the thesis did not measure a
+configuration, the module shows no point rather than an interpolated one.
+
+**How it works** is the landing module and the one to open first: it walks a whole
+execution of each branch, one call at a time, showing what every rank is doing, which
+messages travel and why the design is what it is. It models no timing at all — the
+partition, the owners, the pair assignment and the remote-need matrix are computed with
+the same formulas as the C++, and the seconds stay in the scalability module.
 
 > **It is a teaching instrument, not the C++ tool.** The deliberate simplifications — a
 > 4×4 substitution table standing in for BLOSUM62, a scripted MPI timeline, synthetic
@@ -100,7 +114,7 @@ src/
 ├── layouts/BaseLayout.astro          head, fonts, SEO, pre-paint theme/lang boot
 ├── islands/AppShell.tsx              hydration entry point
 ├── App.tsx                           shell, navigation, lazy module switch
-├── components/                       the seven modules
+├── components/                       the eight modules
 ├── context/                          i18n dictionary + theme (prerender-safe)
 ├── data/speciesData.ts               datasets, partitioner, measured series
 └── utils/generatePdf.ts              in-browser PDF (dynamically imported)

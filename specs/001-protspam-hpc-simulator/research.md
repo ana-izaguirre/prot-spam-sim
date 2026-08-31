@@ -86,6 +86,56 @@ simulator for the C++ tool.
 The scalability tables are the one place where the numbers are _real_: they are the
 thesis' measured results and must never be recomputed client-side (Constitution I).
 
+**Correction (this branch).** That claim did not hold until now. The series shipped in
+`SCALABILITY_DATA` had the right _shape_ — Phase 3 scaling, Phase 4 saturating, metacache
+inverting — but not the thesis' values, and not its scale: the 300-species balanced set
+appeared with a 700 s sequential run and 3.96 s at 256 processes, against the thesis' 112 500 s
+and 4204 s at 128. They were plausible-looking synthetic numbers presented as measurements.
+
+They are replaced by `THESIS_TABLES`, transcribed point by point from cuadros 3.1, 4.1, 5.1,
+6.1, 6.2, 6.3, 6.4 and 6.5, with the source table named on each field. Three consequences
+follow from transcribing rather than modelling, and the module now respects all three:
+
+- The three experiments have **different process ranges and different baselines** (Phase 3
+  reading: np 1…32 on 10/20/30 species; the 64-species controlled case: np 1…64 with a real
+  np = 1 MPI baseline; the 300-species case: np 32…256 with no baseline of its own). They can
+  no longer share an axis, so they are three separate tabs.
+- A configuration the thesis did not measure is `null`, not interpolated. `isend` at 256
+  processes draws no point, because it does not complete there.
+- Only the 64-species table may be called a parallel speedup. The 26.8× on the 300-species
+  set is a temporal factor between two different binaries, and is labelled as such wherever
+  it appears.
+
+### A.4 The phase walkthrough — what it does and does not model
+
+The walkthrough module (`src/components/PhaseWalkthrough.tsx`,
+`src/data/phaseWalkthrough.ts`) is a different kind of artefact from the rest of the
+suite, so its fidelity contract is stated separately.
+
+**What is real.** Every step is a call the corresponding branch actually makes, in the
+order it makes it, transcribed from the branch source. The partition (`species_range`),
+the `owners[]` vector, the `i < j` pair assignment, the remote-need matrix
+(`rank_needs_remote_species`) and the per-rank pair and amino-acid loads are _computed_
+in `phaseWalkthrough.ts` with the same formulas as the C++ — not typed in by hand — so
+they stay consistent if the scenario changes.
+
+**What is a simplification.**
+
+| Walkthrough                                                          | Real Prot-SpaM                                   |
+| -------------------------------------------------------------------- | ------------------------------------------------ |
+| 6 species, 3 ranks, 2 patterns                                       | Up to 300 species, 256 ranks, 5 patterns         |
+| Steps are program events, not time; no duration is modelled anywhere | Wall-clock measured per phase with `std::chrono` |
+| Pair cost proxy is `maa(i) + maa(j)`, labelled as structural load    | `calc_matches` over the two sorted word lists    |
+| Pattern loop is shown twice and then summarised                      | `m` full turns of the pipeline                   |
+
+The species order is chosen deliberately so the two sources of imbalance do **not**
+coincide — rank 0 receives more pairs while rank 1 receives more amino acids — which
+reproduces the thesis' 55-species instrumentation (process 8 computes for twice as long
+as process 0 despite owning fewer pairs) at a size that fits on one screen.
+
+**Constitution I applies here too**: the module states no seconds. Where a measured
+figure is quoted in a note, it is quoted as a thesis result and attributed as such.
+
 ---
 
 ## Part B — Migration decisions

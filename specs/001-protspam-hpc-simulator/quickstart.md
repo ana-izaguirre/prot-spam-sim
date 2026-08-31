@@ -46,11 +46,11 @@ criteria in `spec.md` and are the release gate.
 
 ### V1 — Shell and navigation (FR-001 … FR-006)
 
-1. Load the site. The **base algorithm** module is active.
-2. Visit all seven modules; exactly one renders at a time.
-3. Narrow the window to ~1280 px: the last three modules move into a **More** dropdown.
+1. Load the site. The **how it works** module is active.
+2. Visit all eight modules; exactly one renders at a time.
+3. Narrow the window to ~1280 px: the last four modules move into a **More** dropdown.
    Click outside it — it closes.
-4. Narrow to ~500 px: navigation becomes a hamburger drawer listing all seven modules.
+4. Narrow to ~500 px: navigation becomes a hamburger drawer listing all eight modules.
 5. Open the documentation modal; it lists all six Git branches with working links.
 
 ### V2 — Language and theme (FR-007 … FR-010, SC-003, SC-004)

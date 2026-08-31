@@ -55,9 +55,15 @@ que nadie había visto, incluido un parámetro de la simulación que no hacía n
 de puntuación que decía ser BLOSUM62 sin serlo.
 
 **4 — Claude Code: la ingeniería.** Trabajando desde la especificación: migración de Vite a
-Astro (**payload inicial 958,9 kB → 270,6 kB**), los seis defectos arreglados de uno en uno
-en su propio pull request, una suite de humo con Playwright, y una tubería CI/CD que
-comprueba tipos, construye, prueba en un navegador real y solo entonces despliega.
+Astro (**payload inicial 958,9 kB → 270,6 kB de JavaScript**), los seis defectos arreglados de
+uno en uno en su propio pull request, una suite de humo con Playwright, y una tubería CI/CD
+que comprueba tipos, construye, prueba en un navegador real y solo entonces despliega.
+
+> Esos 270,6 kB son lo que consiguió la migración en su momento, contando solo JavaScript.
+> Medido hoy sobre la petición completa de la portada —todos los ficheros del propio origen
+> que el navegador descarga para renderizar `/`, HTML y CSS incluidos, Google Fonts excluido—
+> la cifra es de **450,4 kB en bruto / 125,6 kB comprimidos**. Se reproduce con
+> `npm run build && npm run preview` y leyendo el panel de red en `/`.
 
 La especificación no es documentación escrita a posteriori: es el artefacto que cada etapa
 entregó a la siguiente, y sigue siendo el contrato al que se somete el código. Está en
@@ -68,19 +74,27 @@ entregó a la siguiente, y sigue siendo el contrato al que se somete el código.
 
 ## Qué muestra el simulador
 
-| Módulo                | Qué hace visible                                                                                            |
-| --------------------- | ----------------------------------------------------------------------------------------------------------- |
-| **Algoritmo base**    | Extracción de palabras espaciadas, indexación y extensión acotada por X-drop, narradas paso a paso          |
-| **Ramas TFM**         | Las seis ramas de desarrollo en C++, su fase y su aceleración medida                                        |
-| **Reparto de carga**  | Carga por rank con partición cíclica frente a por bloques: de dónde sale realmente el desbalance            |
-| **Tráfico MPI**       | `MPI_Send` bloqueante serializándose frente a `MPI_Isend` no bloqueante solapando                           |
-| **Matriz triangular** | Qué rank posee cada par y por qué media matriz no se calcula nunca                                          |
-| **Escalabilidad**     | Curvas medidas en FinisTerrae III, de 1 a 256 procesos, incluida la inversión de `metacache` a partir de 64 |
-| **Invarianza**        | Valores PHYLIP secuenciales frente a paralelos, comparados a nivel de bits IEEE-754                         |
+| Módulo                | Qué hace visible                                                                                         |
+| --------------------- | -------------------------------------------------------------------------------------------------------- |
+| **Cómo funciona**     | Una ejecución completa de cada versión —`seq`, fase 3a, fase 3b, `metacache`, `isend`— llamada a llamada |
+| **Algoritmo base**    | Extracción de palabras espaciadas, indexación y extensión acotada por X-drop, narradas paso a paso       |
+| **Ramas TFM**         | Las seis ramas de desarrollo en C++, su fase y su aceleración medida                                     |
+| **Reparto de carga**  | Carga por rank con el reparto por bloques implementado frente al cíclico propuesto                       |
+| **Tráfico MPI**       | `MPI_Send` bloqueante serializándose frente a `MPI_Isend` no bloqueante solapando                        |
+| **Matriz triangular** | Qué rank posee cada par y por qué media matriz no se calcula nunca                                       |
+| **Escalabilidad**     | Los tres experimentos medidos del TFM (cuadros 6.2, 6.3 y 6.4), cada uno con su propia base              |
+| **Invarianza**        | Valores PHYLIP secuenciales frente a paralelos, comparados a nivel de bits IEEE-754                      |
 
 Todo es cliente y determinista: sin backend, sin llamadas a API en ejecución, sin
-aleatoriedad. Los números de escalabilidad están transcritos del TFM y nunca se recalculan
-en el navegador.
+aleatoriedad. Los números de escalabilidad están transcritos punto a punto de los cuadros
+numerados del TFM y nunca se recalculan en el navegador; donde el TFM no midió una
+configuración, el módulo no dibuja un punto interpolado: no dibuja nada.
+
+**Cómo funciona** es el módulo de entrada y el primero que conviene abrir: recorre una
+ejecución entera de cada rama, llamada a llamada, mostrando qué hace cada proceso, qué
+mensajes viajan y por qué el diseño es así. No modela ningún tiempo — el reparto, los
+propietarios, la asignación de pares y la matriz de necesidad remota se calculan con las
+mismas fórmulas que el C++, y los segundos se quedan en el módulo de escalabilidad.
 
 > **Es una herramienta didáctica, no la herramienta C++.** Las simplificaciones
 > deliberadas —una tabla de sustitución 4×4 en lugar de BLOSUM62, una línea temporal MPI
@@ -104,7 +118,7 @@ src/
 ├── layouts/BaseLayout.astro          head, fuentes, SEO, arranque de tema/idioma
 ├── islands/AppShell.tsx              punto de entrada de hidratación
 ├── App.tsx                           shell, navegación, conmutación lazy de módulos
-├── components/                       los siete módulos
+├── components/                       los ocho módulos
 ├── context/                          diccionario i18n + tema (seguro en prerenderizado)
 ├── data/speciesData.ts               conjuntos, particionador, series medidas
 └── utils/generatePdf.ts              PDF en el navegador (importado dinámicamente)
