@@ -224,17 +224,53 @@ const translations: Record<Language, Record<string, string>> = {
       'Valor de ejemplo derivado de la posición de la celda, no calculado a partir de las secuencias. Los valores reales están en el módulo de Invarianza.',
 
     // Scalability
-    'scall.title': 'Evaluación de Rendimiento & Curvas de Escalabilidad',
+    'scall.title': 'Resultados medidos en FinisTerrae III',
     'scall.subtitle':
-      'Resultados experimentales en el supercomputador FinisTerrae III (CESGA, Intel Xeon Platinum 8352Y, 64 cores/nodo).',
-    'scall.phase3Tab': 'Aceleración Fase 3',
-    'scall.phase4Tab': 'Aceleración Fase 4 (metacache vs isend)',
-    'scall.totalTimeTab': 'Tiempo Total de Ejecución',
-    'scall.dataset300': '300 Especies (Heterogéneo)',
-    'scall.dataset64': '64 Especies (Homogéneo)',
-    'scall.idealSpeedup': 'Aceleración Ideal (Sp = P)',
-    'scall.realSpeedup': 'Aceleración Real',
-    'scall.timeUnit': 'Segundos (Escala Logarítmica)',
+      'Los tres experimentos del capítulo 6 del TFM, cada uno con su propio conjunto, su propio rango de procesos y su propia base. Se presentan por separado porque medidas tomadas en condiciones distintas no se comparan entre sí.',
+    'scall.phase3Tab': 'Fase 3 · lectura A vs B',
+    'scall.set64Tab': 'Fase 4 · 64 especies (caso controlado)',
+    'scall.set300Tab': 'Fase 4 · 300 especies (multinodo)',
+    'scall.provenance':
+      'Cada punto está transcrito de un cuadro numerado del TFM (cuadros 6.2, 6.3 y 6.4). No se interpola, no se extrapola y no se recalcula nada en el navegador: donde el TFM no midió, no hay punto. Entorno: CESGA FinisTerrae III, Intel Xeon Platinum 8352Y a 2,20 GHz, gcc 11.4.0, OpenMPI 5.0.9, SLURM.',
+    'scall.meanOf': 'media de',
+    'scall.reps': 'repeticiones',
+    'scall.transcribed': 'transcrito del TFM, sin recalcular',
+    'scall.seqRef': 'Referencia secuencial (binario distinto, solo para dimensionar el problema):',
+    'scall.daggerNote':
+      'los tiempos de isend proceden de una tanda posterior con mayor reserva de memoria; son descriptivos y no se comparan cuantitativamente con la tanda inicial.',
+    'scall.captionPhase3':
+      'Tiempo de la Fase 3 en un único nodo. La columna np = 1 no compara estrategias: ambas ejecutan la misma ruta de cómputo y proceden de tandas independientes. Excluyéndola, A gana en 10 y 30 especies y B gana en 20, siempre por márgenes menores.',
+    'scall.captionSet64':
+      'Aceleración con base np = 1 de la propia versión MPI, mismo nodo, misma reserva de memoria y mismo trabajo de SLURM para las tres variantes. Es la única comparativa del TFM que puede llamarse aceleración paralela en sentido estricto.',
+    'scall.captionSet300':
+      'Tiempo total con 32 procesos por nodo, de uno a ocho nodos. No hay ejecución MPI con un proceso sobre este conjunto —no se hizo, por presupuesto de cómputo— así que aquí no hay base propia y el análisis parte de np = 32.',
+    'scall.i31': 'El dato contradice la intuición',
+    'scall.i31body':
+      'La teoría favorece a B: reparte el coste de lectura y elimina la comunicación inicial. El dato favorece a A en el conjunto de 30 especies, el mayor evaluado, entre un 6,8 % y un 11,1 % a partir de np = 4.',
+    'scall.i32': 'Hipótesis, no causa demostrada',
+    'scall.i32body':
+      'La explicación razonable es la contención del sistema de ficheros compartido cuando muchos procesos leen a la vez. Pero el temporizador mide el intervalo completo de la fase y no permite atribuir la diferencia a una sola operación.',
+    'scall.i33': 'La saturación depende del conjunto',
+    'scall.i33body':
+      'Con 10 especies el tiempo deja de bajar a partir de 16 procesos (24,9 s en np = 16 y en np = 32), una aceleración máxima de 4,45×. Con 30 especies todavía mejora en np = 32, con 5,2× y sin saturar.',
+    'scall.i641': 'isend se despega a partir de np = 8',
+    'scall.i641body':
+      'En np = 2 la diferencia frente a metacache es inferior al 0,1 % y en np = 4 es del 0,6 %: dentro de la variabilidad. La ventaja máxima es del 26,7 % en np = 32 y se mantiene en el 20,9 % en np = 64, con 6,88× frente a 5,42×.',
+    'scall.i642': 'La eficiencia del 11 % era lo esperado',
+    'scall.i642body':
+      'No es una anomalía. La cota triangular limita la Fase 4 en torno al 50 % aunque los proteomas fueran idénticos, y la dispersión de tamaños limita este conjunto al 34 % con una especie por proceso. Sobre esas dos cotas se suman comunicación, sincronización y el resto de fases.',
+    'scall.i643': 'isend_opt: resultado negativo, reportado',
+    'scall.i643body':
+      'Es un 19,5 % más lenta en el caso secuencial (3755,3 s frente a 3141,4 s) porque su precálculo solo afecta a la ruta de np = 1. A partir de np = 2 sus tiempos son indistinguibles de los de isend, como cabe esperar de una modificación que la ruta paralela nunca ejecuta.',
+    'scall.i3001': 'De 31 horas a poco más de una',
+    'scall.i3001body':
+      'La mejor configuración completada —isend con 128 procesos sobre 4 nodos— resuelve el conjunto balanceado en 4204 s frente a los 112 500 s de la referencia secuencial. Ese factor de 26,8× es un factor temporal entre binarios distintos, no una aceleración paralela.',
+    'scall.i3002': 'metacache no es monótona',
+    'scall.i3002body':
+      'Su tiempo sube de 6582 s a 7702 s entre 32 y 128 procesos y baja a 4331 s con 256. El salto coincide con el régimen en que la mayoría de procesos recibe una o dos especies. El TFM lo reporta como observación y no atribuye la mejora a un único factor.',
+    'scall.i3003': 'isend no completa a 256 procesos',
+    'scall.i3003body':
+      'Error interno de MPI en una recepción, durante la comunicación de las palabras espaciadas. Reproducible en ejecuciones independientes y en los dos conjuntos de 300. metacache completa esa misma configuración, así que el fallo está en el mecanismo de envío no bloqueante.',
 
     // Correctness
     'num.title': 'Verificación de Invarianza Numérica (IEEE-754)',
@@ -464,17 +500,53 @@ const translations: Record<Language, Record<string, string>> = {
       'Example value derived from the cell position, not computed from the sequences. The real values are in the Correctness module.',
 
     // Scalability
-    'scall.title': 'Performance Evaluation & Scalability Curves',
+    'scall.title': 'Measured results on FinisTerrae III',
     'scall.subtitle':
-      'Real experimental benchmarks on the FinisTerrae III supercomputer (CESGA, Intel Xeon Platinum 8352Y, 64 cores/node).',
-    'scall.phase3Tab': 'Phase 3 Speedup',
-    'scall.phase4Tab': 'Phase 4 Speedup (metacache vs isend)',
-    'scall.totalTimeTab': 'Total Execution Time',
-    'scall.dataset300': '300 Species (Heterogeneous)',
-    'scall.dataset64': '64 Species (Homogeneous)',
-    'scall.idealSpeedup': 'Ideal Linear Speedup (Sp = P)',
-    'scall.realSpeedup': 'Real Speedup',
-    'scall.timeUnit': 'Seconds (Logarithmic Scale)',
+      'The three experiments of chapter 6 of the thesis, each with its own dataset, its own process range and its own baseline. They are shown separately because measurements taken under different conditions are never compared with each other.',
+    'scall.phase3Tab': 'Phase 3 · reading A vs B',
+    'scall.set64Tab': 'Phase 4 · 64 species (controlled case)',
+    'scall.set300Tab': 'Phase 4 · 300 species (multi-node)',
+    'scall.provenance':
+      'Every point is transcribed from a numbered table of the thesis (cuadros 6.2, 6.3 and 6.4). Nothing is interpolated, extrapolated or recomputed in the browser: where the thesis did not measure, there is no point. Environment: CESGA FinisTerrae III, Intel Xeon Platinum 8352Y at 2.20 GHz, gcc 11.4.0, OpenMPI 5.0.9, SLURM.',
+    'scall.meanOf': 'mean of',
+    'scall.reps': 'repetitions',
+    'scall.transcribed': 'transcribed from the thesis, never recomputed',
+    'scall.seqRef': 'Sequential reference (a different binary, used only to size the problem):',
+    'scall.daggerNote':
+      'the isend times come from a later batch with a larger memory reservation; they are descriptive and are not compared quantitatively with the initial batch.',
+    'scall.captionPhase3':
+      'Phase 3 time on a single node. The np = 1 column is not a comparison between strategies: both run the same computation path and come from independent batches. Excluding it, A wins on 10 and 30 species and B wins on 20, always by smaller margins.',
+    'scall.captionSet64':
+      'Speedup against an np = 1 baseline of the MPI version itself, same node, same memory reservation and same SLURM job for all three variants. It is the only comparison in the thesis that can strictly be called a parallel speedup.',
+    'scall.captionSet300':
+      'Total time with 32 processes per node, from one to eight nodes. There is no single-process MPI run on this dataset — it was not done, for compute budget reasons — so there is no baseline of its own here and the analysis starts from np = 32.',
+    'scall.i31': 'The data contradicts the intuition',
+    'scall.i31body':
+      'Theory favours B: it spreads the read cost and removes the initial communication. The data favours A on the 30-species set, the largest evaluated, by between 6.8 % and 11.1 % from np = 4 onwards.',
+    'scall.i32': 'A hypothesis, not a demonstrated cause',
+    'scall.i32body':
+      'The reasonable explanation is contention on the shared file system when many processes read at once. But the timer measures the whole phase interval and cannot attribute the difference to a single operation.',
+    'scall.i33': 'Saturation depends on the dataset',
+    'scall.i33body':
+      'With 10 species the time stops falling past 16 processes (24.9 s at both np = 16 and np = 32), a maximum speedup of 4.45×. With 30 species it still improves at np = 32, reaching 5.2× without saturating.',
+    'scall.i641': 'isend pulls ahead from np = 8',
+    'scall.i641body':
+      'At np = 2 the difference against metacache is below 0.1 % and at np = 4 it is 0.6 %: within the variability. The maximum advantage is 26.7 % at np = 32 and it holds at 20.9 % at np = 64, with 6.88× against 5.42×.',
+    'scall.i642': '11 % efficiency was the expected result',
+    'scall.i642body':
+      'It is not an anomaly. The triangular bound limits Phase 4 to around 50 % even with identical proteomes, and size dispersion limits this dataset to 34 % with one species per process. On top of those two bounds come communication, synchronisation and the remaining phases.',
+    'scall.i643': 'isend_opt: a negative result, reported',
+    'scall.i643body':
+      'It is 19.5 % slower in the sequential case (3755.3 s against 3141.4 s) because its precomputation only affects the np = 1 path. From np = 2 its times are indistinguishable from isend, as expected of a change the parallel path never executes.',
+    'scall.i3001': 'From 31 hours to a little over one',
+    'scall.i3001body':
+      'The best completed configuration — isend with 128 processes on 4 nodes — resolves the balanced set in 4204 s against the sequential reference’s 112 500 s. That 26.8× is a temporal factor between different binaries, not a parallel speedup.',
+    'scall.i3002': 'metacache is not monotonic',
+    'scall.i3002body':
+      'Its time rises from 6582 s to 7702 s between 32 and 128 processes and falls to 4331 s at 256. The jump coincides with the regime where most processes receive one or two species. The thesis reports it as an observation and does not attribute the improvement to a single factor.',
+    'scall.i3003': 'isend does not complete at 256 processes',
+    'scall.i3003body':
+      'An internal MPI error on a receive, during the communication of the spaced words. Reproducible across independent runs and on both 300-species sets. metacache completes that same configuration, so the failure lies in the non-blocking send mechanism.',
 
     // Correctness
     'num.title': 'Numerical Invariance Verification (IEEE-754)',

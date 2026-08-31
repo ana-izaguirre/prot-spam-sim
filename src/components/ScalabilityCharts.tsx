@@ -10,9 +10,9 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-import { SCALABILITY_DATA } from '../data/speciesData';
+import { THESIS_TABLES } from '../data/speciesData';
 import { useAppLanguageTheme } from '../context/LanguageThemeContext';
-import { TrendingUp, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { TrendingUp, AlertTriangle, CheckCircle2, Info } from 'lucide-react';
 
 Chart.register(
   LineController,
@@ -25,13 +25,32 @@ Chart.register(
   Legend,
 );
 
-type ActiveTab = 'phase3_speedup' | 'phase4_speedup' | 'total_time';
-type DatasetChoice = 'unbalanced' | 'balanced';
+/**
+ * The measured results, plotted exactly as the thesis tabulates them.
+ *
+ * The three tabs are three *different experiments*, not three views of one
+ * curve, and they are kept apart on purpose: the thesis' own rule is that
+ * measurements taken under different conditions are never put on the same axis.
+ *
+ *  - Phase 3 reading (cuadro 6.2): 10/20/30 species, one node, np 1…32.
+ *  - Controlled case (cuadro 6.3): 64 species, one node, np 1…64 — the only
+ *    experiment with an np = 1 baseline of the MPI version itself, and so the
+ *    only one whose numbers are a parallel speedup.
+ *  - Main case (cuadro 6.4): 300 species, 32 processes per node, np 32…256,
+ *    where isend does not complete at 256.
+ *
+ * Nothing is interpolated. A point the thesis did not measure is absent.
+ */
+
+type ActiveTab = 'phase3' | 'set64' | 'set300';
+type ReadingSet = '10' | '20' | '30';
+type DatasetChoice = 'balanced' | 'unbalanced';
 
 export const ScalabilityCharts: React.FC = () => {
   const { lang, t, theme } = useAppLanguageTheme();
-  const [activeTab, setActiveTab] = useState<ActiveTab>('phase4_speedup');
-  const [datasetChoice, setDatasetChoice] = useState<DatasetChoice>('unbalanced');
+  const [activeTab, setActiveTab] = useState<ActiveTab>('set64');
+  const [readingSet, setReadingSet] = useState<ReadingSet>('30');
+  const [datasetChoice, setDatasetChoice] = useState<DatasetChoice>('balanced');
   const chartCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const chartInstanceRef = useRef<Chart | null>(null);
 
@@ -48,125 +67,69 @@ export const ScalabilityCharts: React.FC = () => {
     tooltipBody: isLight ? '#1e293b' : '#e2e8f0',
   };
 
-  const processes = SCALABILITY_DATA.processes;
-  const currentData = SCALABILITY_DATA[datasetChoice];
+  const es = lang === 'es';
+  const t62 = THESIS_TABLES.phase3Reading;
+  const t63 = THESIS_TABLES.phase4Set64;
+  const t64 = THESIS_TABLES.set300;
+  const set300 = t64[datasetChoice];
 
   useEffect(() => {
     if (!chartCanvasRef.current) return;
-
-    if (chartInstanceRef.current) {
-      chartInstanceRef.current.destroy();
-    }
+    if (chartInstanceRef.current) chartInstanceRef.current.destroy();
 
     const ctx = chartCanvasRef.current.getContext('2d');
     if (!ctx) return;
 
-    const labels = processes.map((p) => `${p} P`);
+    const line = (label: string, data: Array<number | null>, color: string, dashed = false) => ({
+      label,
+      data,
+      borderColor: color,
+      backgroundColor: color,
+      borderWidth: dashed ? 1.5 : 2.5,
+      borderDash: dashed ? [6, 6] : undefined,
+      pointRadius: dashed ? 3 : 5,
+      pointHoverRadius: dashed ? 4 : 7,
+      tension: 0.2,
+      spanGaps: false,
+    });
 
-    let datasets: any[];
+    let labels: string[];
+    let datasets: ReturnType<typeof line>[];
     let yAxisTitle: string;
 
-    if (activeTab === 'phase3_speedup') {
-      yAxisTitle =
-        lang === 'es' ? 'Aceleración Fase 3 (Sp = T1 / Tp)' : 'Phase 3 Speedup (Sp = T1 / Tp)';
+    if (activeTab === 'phase3') {
+      labels = t62.processes.map((p) => `${p} P`);
+      const set = t62.sets[readingSet];
+      yAxisTitle = es ? 'Tiempo de la Fase 3 (s)' : 'Phase 3 time (s)';
       datasets = [
-        {
-          label:
-            lang === 'es' ? 'Aceleración Ideal (Lineal Sp = P)' : 'Ideal Speedup (Linear Sp = P)',
-          data: currentData.phase3.speedup_ideal,
-          borderColor: '#87929a',
-          borderDash: [6, 6],
-          borderWidth: 1.5,
-          pointRadius: 3,
-          pointBackgroundColor: '#87929a',
-          tension: 0.1,
-        },
-        {
-          label: lang === 'es' ? 'Fase 3: Spaced Words Real' : 'Phase 3: Real Spaced Words',
-          data: currentData.phase3.speedup_real,
-          borderColor: '#38bdf8',
-          backgroundColor: '#38bdf8',
-          borderWidth: 2.5,
-          pointRadius: 5,
-          pointHoverRadius: 7,
-          tension: 0.2,
-        },
+        line(es ? 'Opción A · centralizada' : 'Option A · centralised', [...set.A], '#10b981'),
+        line(es ? 'Opción B · distribuida' : 'Option B · distributed', [...set.B], '#38bdf8'),
       ];
-    } else if (activeTab === 'phase4_speedup') {
-      yAxisTitle =
-        lang === 'es' ? 'Aceleración Fase 4 (Sp = T1 / Tp)' : 'Phase 4 Speedup (Sp = T1 / Tp)';
+    } else if (activeTab === 'set64') {
+      labels = t63.processes.map((p) => `${p} P`);
+      yAxisTitle = es ? 'Aceleración (base np = 1)' : 'Speedup (np = 1 baseline)';
       datasets = [
-        {
-          label: lang === 'es' ? 'Aceleración Ideal (Sp = P)' : 'Ideal Speedup (Sp = P)',
-          data: [1, 2, 4, 8, 16, 32, 64, 128, 256],
-          borderColor: '#64748b',
-          borderDash: [6, 6],
-          borderWidth: 1.5,
-          pointRadius: 3,
-          pointBackgroundColor: '#64748b',
-        },
-        {
-          label: lang === 'es' ? 'Fase 4: isend (No Bloqueante)' : 'Phase 4: isend (Non-Blocking)',
-          data: currentData.phase4_isend.speedup,
-          borderColor: '#10b981',
-          backgroundColor: '#10b981',
-          borderWidth: 2.5,
-          pointRadius: 5,
-          pointHoverRadius: 7,
-          tension: 0.2,
-        },
-        {
-          label: lang === 'es' ? 'Fase 4: metacache (Bloqueante)' : 'Phase 4: metacache (Blocking)',
-          data: currentData.phase4_metacache.speedup,
-          borderColor: '#f43f5e',
-          backgroundColor: '#f43f5e',
-          borderWidth: 2.5,
-          pointRadius: 5,
-          pointHoverRadius: 7,
-          tension: 0.2,
-        },
+        line(es ? 'Ideal (Sp = P)' : 'Ideal (Sp = P)', [...t63.processes], '#64748b', true),
+        line('isend', [...t63.speedup.isend], '#10b981'),
+        line('metacache', [...t63.speedup.metacache], '#f43f5e'),
       ];
     } else {
-      yAxisTitle =
-        lang === 'es' ? 'Tiempo de Ejecución Total (Segundos)' : 'Total Execution Time (Seconds)';
+      labels = t64.processes.map((p, i) => `${p} P · ${t64.nodes[i]}n`);
+      yAxisTitle = es ? 'Tiempo total (s)' : 'Total time (s)';
       datasets = [
-        {
-          label: lang === 'es' ? 'Tiempo Total con isend' : 'Total Time with isend',
-          data: currentData.total_isend.time_sec,
-          borderColor: '#10b981',
-          backgroundColor: '#10b981',
-          borderWidth: 2.5,
-          pointRadius: 5,
-          pointHoverRadius: 7,
-          tension: 0.2,
-        },
-        {
-          label: lang === 'es' ? 'Tiempo Total con metacache' : 'Total Time with metacache',
-          data: currentData.total_metacache.time_sec,
-          borderColor: '#f43f5e',
-          backgroundColor: '#f43f5e',
-          borderWidth: 2.5,
-          pointRadius: 5,
-          pointHoverRadius: 7,
-          tension: 0.2,
-        },
+        line('isend', [...set300.isend], '#10b981'),
+        line('metacache', [...set300.metacache], '#f43f5e'),
       ];
     }
 
     chartInstanceRef.current = new Chart(ctx, {
       type: 'line',
-      data: {
-        labels,
-        datasets,
-      },
+      data: { labels, datasets },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         animation: { duration: 450 },
-        interaction: {
-          mode: 'index',
-          intersect: false,
-        },
+        interaction: { mode: 'index', intersect: false },
         plugins: {
           legend: {
             display: true,
@@ -187,24 +150,29 @@ export const ScalabilityCharts: React.FC = () => {
             bodyColor: chartInk.tooltipBody,
             padding: 10,
             callbacks: {
-              afterBody: (tooltipItems) => {
-                const pIdx = tooltipItems[0].dataIndex;
-                const p = processes[pIdx];
-
-                if (p === 128 && activeTab === 'phase4_speedup') {
-                  return lang === 'es'
-                    ? '\n⚠️ Colapso metacache (128P): Contención en MPI_Send serializado.'
-                    : '\n⚠️ metacache stall (128P): Contention in serialized MPI_Send.';
+              // Annotations state only what the thesis states. Where it declines
+              // to attribute a cause, so does the tooltip.
+              afterBody: (items) => {
+                const i = items[0].dataIndex;
+                if (activeTab === 'set300' && t64.processes[i] === 256) {
+                  return es
+                    ? '\nisend no completa: MPI_ERR_INTERN en una recepción, reproducible en los dos conjuntos.'
+                    : '\nisend does not complete: MPI_ERR_INTERN on a receive, reproducible on both sets.';
                 }
-                if (p === 256 && activeTab === 'phase4_speedup') {
-                  return lang === 'es'
-                    ? '\n🚀 Límite isend (256P): Saturación de ancho de banda y latencia de red.'
-                    : '\n🚀 isend scaling threshold (256P): Network bandwidth and latency boundary.';
+                if (activeTab === 'set300' && t64.processes[i] === 128) {
+                  return es
+                    ? '\nmetacache es no monótona entre 32 y 128 P. El TFM lo reporta sin atribuirlo a un único factor.'
+                    : '\nmetacache is non-monotonic between 32 and 128 P. The thesis reports it without attributing a single cause.';
                 }
-                if (p === 128 && activeTab === 'total_time') {
-                  return lang === 'es'
-                    ? '\n⚠️ En 128P metacache tarda 32s vs 10.3s de isend (3.1x más rápido).'
-                    : '\n⚠️ At 128P metacache takes 32s vs 10.3s for isend (3.1x faster).';
+                if (activeTab === 'set64' && t63.processes[i] === 64) {
+                  return es
+                    ? '\nEficiencia de isend: 11 %. Coherente con las dos cotas estructurales, no una anomalía.'
+                    : '\nisend efficiency: 11 %. Consistent with the two structural bounds, not an anomaly.';
+                }
+                if (activeTab === 'phase3' && t62.processes[i] === 1) {
+                  return es
+                    ? '\nnp = 1 no compara estrategias: ambas ejecutan la misma ruta y proceden de tandas independientes.'
+                    : '\nnp = 1 is not a comparison: both run the same path and come from independent batches.';
                 }
                 return '';
               },
@@ -214,17 +182,11 @@ export const ScalabilityCharts: React.FC = () => {
         scales: {
           x: {
             grid: { color: 'rgba(51, 65, 85, 0.4)' },
-            ticks: {
-              color: chartInk.axis,
-              font: { family: 'JetBrains Mono', size: 11 },
-            },
+            ticks: { color: chartInk.axis, font: { family: 'JetBrains Mono', size: 11 } },
           },
           y: {
             grid: { color: 'rgba(51, 65, 85, 0.4)' },
-            ticks: {
-              color: chartInk.axis,
-              font: { family: 'JetBrains Mono', size: 11 },
-            },
+            ticks: { color: chartInk.axis, font: { family: 'JetBrains Mono', size: 11 } },
             title: {
               display: true,
               text: yAxisTitle,
@@ -237,232 +199,384 @@ export const ScalabilityCharts: React.FC = () => {
     });
 
     return () => {
-      if (chartInstanceRef.current) {
-        chartInstanceRef.current.destroy();
-      }
+      if (chartInstanceRef.current) chartInstanceRef.current.destroy();
     };
-  }, [activeTab, datasetChoice, currentData, processes, lang, theme]);
+  }, [
+    activeTab,
+    readingSet,
+    datasetChoice,
+    es,
+    theme,
+    chartInk.axis,
+    chartInk.axisTitle,
+    chartInk.legend,
+    chartInk.tooltipBg,
+    chartInk.tooltipBody,
+    chartInk.tooltipBorder,
+    chartInk.tooltipTitle,
+    set300,
+    t62,
+    t63,
+    t64,
+  ]);
+
+  const TAB_META: Record<ActiveTab, { label: string; source: string; tone: string }> = {
+    phase3: {
+      label: t('scall.phase3Tab'),
+      source: 'Cuadro 6.2',
+      tone: 'bg-blue-500 text-slate-950',
+    },
+    set64: {
+      label: t('scall.set64Tab'),
+      source: 'Cuadro 6.3',
+      tone: 'bg-emerald-500 text-slate-950',
+    },
+    set300: {
+      label: t('scall.set300Tab'),
+      source: 'Cuadro 6.4',
+      tone: 'bg-purple-500 text-slate-50',
+    },
+  };
 
   return (
     <div className="space-y-4">
-      {/* Control Header & Tabs */}
-      <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-4 sm:p-5 flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-4">
-        {/* Metric Tabs */}
-        <div className="flex bg-slate-950/80 p-1 rounded-xl border border-slate-800/90 flex-wrap sm:flex-nowrap gap-1">
-          <button
-            type="button"
-            onClick={() => setActiveTab('phase3_speedup')}
-            className={`flex-1 py-2 px-3 text-xs font-bold rounded-lg transition-colors text-center ${
-              activeTab === 'phase3_speedup'
-                ? 'bg-blue-500 text-slate-950 shadow'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            {t('scall.phase3Tab')}
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('phase4_speedup')}
-            className={`flex-1 py-2 px-3 text-xs font-bold rounded-lg transition-colors text-center ${
-              activeTab === 'phase4_speedup'
-                ? 'bg-emerald-500 text-slate-950 shadow'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            {t('scall.phase4Tab')}
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('total_time')}
-            className={`flex-1 py-2 px-3 text-xs font-bold rounded-lg transition-colors text-center ${
-              activeTab === 'total_time'
-                ? 'bg-purple-500 text-slate-50 shadow'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            {t('scall.totalTimeTab')}
-          </button>
+      {/* Header, tabs and per-tab selector */}
+      <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-4 sm:p-5 space-y-3">
+        <div>
+          <h2 className="text-base sm:text-lg font-bold text-slate-50">{t('scall.title')}</h2>
+          <p className="text-xs text-slate-400 mt-1 max-w-4xl leading-relaxed">
+            {t('scall.subtitle')}
+          </p>
         </div>
 
-        {/* Dataset Toggle */}
-        <div className="flex items-center gap-2">
-          <div className="flex bg-slate-950/80 p-1 rounded-xl border border-slate-800/90 w-full sm:w-auto">
-            <button
-              type="button"
-              onClick={() => setDatasetChoice('unbalanced')}
-              className={`flex-1 sm:flex-none px-3 py-2 text-xs font-bold rounded-lg transition-colors ${
-                datasetChoice === 'unbalanced'
-                  ? 'bg-orange-600/20 text-orange-400 border border-orange-500/50 shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              {lang === 'es' ? '300 Desbalanceado (H. sapiens)' : '300 Heterogeneous (H. sapiens)'}
-            </button>
-            <button
-              type="button"
-              onClick={() => setDatasetChoice('balanced')}
-              className={`flex-1 sm:flex-none px-3 py-2 text-xs font-bold rounded-lg transition-colors ${
-                datasetChoice === 'balanced'
-                  ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/50 shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              {lang === 'es' ? '300 Balanceado' : '300 Balanced'}
-            </button>
+        <div className="flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-3">
+          <div className="flex bg-slate-950/80 p-1 rounded-xl border border-slate-800/90 flex-wrap sm:flex-nowrap gap-1">
+            {(Object.keys(TAB_META) as ActiveTab[]).map((tab) => (
+              <button
+                key={tab}
+                type="button"
+                onClick={() => setActiveTab(tab)}
+                className={`flex-1 py-2 px-3 text-xs font-bold rounded-lg transition-colors text-center ${
+                  activeTab === tab
+                    ? `${TAB_META[tab].tone} shadow`
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                {TAB_META[tab].label}
+              </button>
+            ))}
           </div>
+
+          {activeTab === 'phase3' && (
+            <div className="flex bg-slate-950/80 p-1 rounded-xl border border-slate-800/90">
+              {(['10', '20', '30'] as ReadingSet[]).map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => setReadingSet(s)}
+                  className={`flex-1 sm:flex-none px-3 py-2 text-xs font-bold rounded-lg transition-colors ${
+                    readingSet === s
+                      ? 'bg-blue-600/20 text-blue-400 border border-blue-500/50 shadow-sm'
+                      : 'text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  {s} {es ? 'especies' : 'species'}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {activeTab === 'set300' && (
+            <div className="flex bg-slate-950/80 p-1 rounded-xl border border-slate-800/90">
+              <button
+                type="button"
+                onClick={() => setDatasetChoice('balanced')}
+                className={`flex-1 sm:flex-none px-3 py-2 text-xs font-bold rounded-lg transition-colors ${
+                  datasetChoice === 'balanced'
+                    ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/50 shadow-sm'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                {es ? '300 balanceado · ratio 14,6' : '300 balanced · ratio 14.6'}
+              </button>
+              <button
+                type="button"
+                onClick={() => setDatasetChoice('unbalanced')}
+                className={`flex-1 sm:flex-none px-3 py-2 text-xs font-bold rounded-lg transition-colors ${
+                  datasetChoice === 'unbalanced'
+                    ? 'bg-orange-600/20 text-orange-400 border border-orange-500/50 shadow-sm'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                {es ? '300 desbalanceado · ratio 205,4' : '300 unbalanced · ratio 205.4'}
+              </button>
+            </div>
+          )}
+        </div>
+
+        <div className="flex items-start gap-2.5 bg-slate-950 border border-slate-800 rounded-xl p-3">
+          <Info className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+          <p className="text-[11px] text-slate-400 leading-relaxed">{t('scall.provenance')}</p>
         </div>
       </div>
 
-      {/* Main Chart Container */}
+      {/* Chart */}
       <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5">
-        <div className="flex justify-between items-center mb-3">
+        <div className="flex flex-wrap justify-between items-center gap-2 mb-3">
           <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-50">
-            {lang === 'es'
-              ? 'Curvas de Escalabilidad Fuerte (Strong Scaling, N=300 Especies)'
-              : 'Strong Scaling Curves (N=300 Species)'}
+            {activeTab === 'phase3'
+              ? es
+                ? `Fase 3 · lectura centralizada frente a distribuida · ${readingSet} especies`
+                : `Phase 3 · centralised vs distributed reading · ${readingSet} species`
+              : activeTab === 'set64'
+                ? es
+                  ? 'Fase 4 · caso controlado de 64 especies en un nodo'
+                  : 'Phase 4 · controlled 64-species case on one node'
+                : es
+                  ? 'Fase 4 · 300 especies, 32 procesos por nodo'
+                  : 'Phase 4 · 300 species, 32 processes per node'}
           </h3>
-          <span className="text-xs text-slate-400 font-mono">
-            {datasetChoice === 'unbalanced'
-              ? lang === 'es'
-                ? 'Con heterogeneidad en tamaño de proteomas'
-                : 'With real heterogeneous proteome distribution'
-              : lang === 'es'
-                ? 'Proteomas sintéticos uniformes'
-                : 'Uniform synthetic proteomes'}
+          <span className="text-[11px] text-slate-500 font-mono">
+            {TAB_META[activeTab].source} · {t('scall.meanOf')} {activeTab === 'phase3' ? 5 : 3}{' '}
+            {t('scall.reps')}
           </span>
         </div>
 
-        {/* Chart Canvas */}
         <div className="h-[320px] w-full">
           <canvas ref={chartCanvasRef} />
         </div>
+
+        <p className="text-[11px] text-slate-500 leading-relaxed mt-3 max-w-4xl">
+          {activeTab === 'phase3'
+            ? t('scall.captionPhase3')
+            : activeTab === 'set64'
+              ? t('scall.captionSet64')
+              : t('scall.captionSet300')}
+        </p>
       </div>
 
-      {/* HPC Critical Insights Cards (Annotated Points) */}
+      {/* What the thesis concludes from this experiment */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Point 1: 128 Cores Metacache Collapse */}
-        <div className="bg-slate-900/50 border border-slate-800 border-l-4 border-l-rose-500 p-4 rounded-2xl space-y-1.5 text-xs">
-          <div className="font-bold text-rose-400 flex items-center gap-1.5">
-            <AlertTriangle className="w-3.5 h-3.5" />
-            {lang === 'es'
-              ? 'Caída en 128 Procesos (metacache)'
-              : 'Drop at 128 Processes (metacache)'}
-          </div>
-          <p className="text-[11px] text-slate-400 leading-relaxed">
-            {lang === 'es'
-              ? 'A 128 ranks, el Speedup de metacache cae drásticamente de 21.2x a 18.5x (y a 11.2x en 256P). La serialización de MPI_Send y los bloqueos síncronos hacen que los procesos pasen más tiempo esperando que computando.'
-              : 'At 128 ranks, metacache speedup drops sharply from 21.2x to 18.5x (and 11.2x at 256P). MPI_Send serialization causes cores to spend more time waiting than computing.'}
-          </p>
-        </div>
-
-        {/* Point 2: 256 Cores isend Scaling Limit */}
-        <div className="bg-slate-900/50 border border-slate-800 border-l-4 border-l-emerald-500 p-4 rounded-2xl space-y-1.5 text-xs">
-          <div className="font-bold text-emerald-400 flex items-center gap-1.5">
-            <TrendingUp className="w-3.5 h-3.5" />
-            {lang === 'es'
-              ? 'Límite en 256 Procesos (isend)'
-              : 'Threshold at 256 Processes (isend)'}
-          </div>
-          <p className="text-[11px] text-slate-400 leading-relaxed">
-            {lang === 'es'
-              ? 'isend alcanza un Speedup de 122.4x en 256 procesos (tiempo reducido a 7.74s). El límite de escalabilidad aquí se debe a la sobrecarga de red y la fracción secuencial de E/S según la Ley de Amdahl.'
-              : "isend achieves 122.4x Speedup at 256 processes (time down to 7.74s). The scaling ceiling stems from network latency and Amdahl's sequential disk I/O."}
-          </p>
-        </div>
-
-        {/* Point 3: Phase 3 Near-Ideal */}
-        <div className="bg-slate-900/50 border border-slate-800 border-l-4 border-l-blue-500 p-4 rounded-2xl space-y-1.5 text-xs">
-          <div className="font-bold text-blue-400 flex items-center gap-1.5">
-            <CheckCircle2 className="w-3.5 h-3.5" />
-            {lang === 'es'
-              ? 'Fase 3: Alta Eficiencia Paralela'
-              : 'Phase 3: High Parallel Efficiency'}
-          </div>
-          <p className="text-[11px] text-slate-400 leading-relaxed">
-            {lang === 'es'
-              ? 'La indexación de palabras espaciadas (spacedwords + std::sort) es inherentemente independiente entre secuencias, logrando una eficiencia del >90% hasta 64 cores sin contención.'
-              : 'Spaced words indexing (spacedwords + std::sort) is embarrassingly parallel across sequences, sustaining >90% parallel efficiency up to 64 cores.'}
-          </p>
-        </div>
+        {activeTab === 'phase3' && (
+          <>
+            <InsightCard tone="blue" icon={CheckCircle2} title={t('scall.i31')}>
+              {t('scall.i31body')}
+            </InsightCard>
+            <InsightCard tone="amber" icon={AlertTriangle} title={t('scall.i32')}>
+              {t('scall.i32body')}
+            </InsightCard>
+            <InsightCard tone="emerald" icon={TrendingUp} title={t('scall.i33')}>
+              {t('scall.i33body')}
+            </InsightCard>
+          </>
+        )}
+        {activeTab === 'set64' && (
+          <>
+            <InsightCard tone="emerald" icon={TrendingUp} title={t('scall.i641')}>
+              {t('scall.i641body')}
+            </InsightCard>
+            <InsightCard tone="amber" icon={AlertTriangle} title={t('scall.i642')}>
+              {t('scall.i642body')}
+            </InsightCard>
+            <InsightCard tone="blue" icon={Info} title={t('scall.i643')}>
+              {t('scall.i643body')}
+            </InsightCard>
+          </>
+        )}
+        {activeTab === 'set300' && (
+          <>
+            <InsightCard tone="emerald" icon={TrendingUp} title={t('scall.i3001')}>
+              {t('scall.i3001body')}
+            </InsightCard>
+            <InsightCard tone="amber" icon={AlertTriangle} title={t('scall.i3002')}>
+              {t('scall.i3002body')}
+            </InsightCard>
+            <InsightCard tone="rose" icon={AlertTriangle} title={t('scall.i3003')}>
+              {t('scall.i3003body')}
+            </InsightCard>
+          </>
+        )}
       </div>
 
-      {/* Scalability Detailed Data Table */}
-      <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5">
-        <div className="text-xs font-semibold uppercase tracking-wider text-slate-50 mb-3 flex items-center justify-between">
-          <span>
-            {lang === 'es'
-              ? 'Tabla Comparativa de Eficiencia Paralela (N=300 Especies)'
-              : 'Parallel Efficiency Benchmark Table (N=300 Species)'}
+      {/* The table itself */}
+      <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5 space-y-3">
+        <div className="text-xs font-semibold uppercase tracking-wider text-slate-50 flex flex-wrap items-center justify-between gap-2">
+          <span>{TAB_META[activeTab].source}</span>
+          <span className="text-[11px] text-slate-500 font-normal font-mono">
+            {t('scall.transcribed')}
           </span>
-          <span className="text-[11px] text-slate-500 font-normal font-mono">Ep = Sp / P</span>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse font-mono text-xs text-center">
-            <thead>
-              <tr className="bg-slate-950 text-slate-400 text-[10px] uppercase border border-slate-800">
-                <th className="p-2.5 text-left">
-                  {lang === 'es' ? 'Procesos (P)' : 'Processes (P)'}
-                </th>
-                <th className="p-2.5">{lang === 'es' ? 'T. Fase 3 (s)' : 'Phase 3 Time (s)'}</th>
-                <th className="p-2.5 text-rose-400">
-                  {lang === 'es' ? 'T. Metacache (s)' : 'Metacache Time (s)'}
-                </th>
-                <th className="p-2.5 text-emerald-400">
-                  {lang === 'es' ? 'T. Isend (s)' : 'Isend Time (s)'}
-                </th>
-                <th className="p-2.5">
-                  {lang === 'es' ? 'Speedup Isend (Sp)' : 'Isend Speedup (Sp)'}
-                </th>
-                <th className="p-2.5">
-                  {lang === 'es' ? 'Eficiencia Isend (Ep)' : 'Isend Efficiency (Ep)'}
-                </th>
-                <th className="p-2.5 text-orange-400">
-                  {lang === 'es' ? 'Ganancia Isend/Meta' : 'Isend/Meta Gain'}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {processes.map((p, idx) => {
-                const tP3 = currentData.phase3.time_sec[idx];
-                const tMeta = currentData.total_metacache.time_sec[idx];
-                const tIsend = currentData.total_isend.time_sec[idx];
-                const spIsend = (currentData.total_isend.time_sec[0] / tIsend).toFixed(2);
-                const epIsend = ((parseFloat(spIsend) / p) * 100).toFixed(1);
-                const gain = (tMeta / tIsend).toFixed(2);
 
-                return (
-                  <tr
-                    key={p}
-                    className="border-b border-slate-800/80 hover:bg-slate-800/40 transition-colors"
-                  >
-                    <td className="p-2.5 text-left font-bold text-blue-400">{p} P</td>
-                    <td className="p-2.5 text-slate-200">{tP3.toFixed(2)}s</td>
-                    <td className="p-2.5 text-rose-400">{tMeta.toFixed(2)}s</td>
-                    <td className="p-2.5 text-emerald-400 font-semibold">{tIsend.toFixed(2)}s</td>
-                    <td className="p-2.5 text-slate-50 font-bold">{spIsend}x</td>
-                    <td className="p-2.5 text-slate-200">
+        <div className="overflow-x-auto">
+          {activeTab === 'phase3' && (
+            <table className="w-full border-collapse font-mono text-xs text-center min-w-[420px]">
+              <thead>
+                <tr className="bg-slate-950 text-slate-400 text-[10px] uppercase border border-slate-800">
+                  <th className="p-2.5 text-left">np</th>
+                  <th className="p-2.5 text-emerald-400">A (s)</th>
+                  <th className="p-2.5 text-sky-400">B (s)</th>
+                  <th className="p-2.5">{es ? 'Diferencia' : 'Difference'}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {t62.processes.map((p, i) => {
+                  const a = t62.sets[readingSet].A[i];
+                  const b = t62.sets[readingSet].B[i];
+                  const pct = ((b - a) / a) * 100;
+                  return (
+                    <tr key={p} className="border-b border-slate-800/80 hover:bg-slate-800/40">
+                      <td className="p-2.5 text-left font-bold text-blue-400">{p}</td>
+                      <td className="p-2.5 text-slate-200">{a.toFixed(1)}</td>
+                      <td className="p-2.5 text-slate-200">{b.toFixed(1)}</td>
+                      <td className="p-2.5">
+                        {i === 0 ? (
+                          <span className="text-slate-500">
+                            {es ? 'no comparable' : 'not comparable'}
+                          </span>
+                        ) : (
+                          <span className={pct > 0 ? 'text-emerald-400' : 'text-sky-400'}>
+                            {pct > 0 ? `A −${pct.toFixed(1)} %` : `B −${(-pct).toFixed(1)} %`}
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
+
+          {activeTab === 'set64' && (
+            <table className="w-full border-collapse font-mono text-xs text-center min-w-[620px]">
+              <thead>
+                <tr className="bg-slate-950 text-slate-400 text-[10px] uppercase border border-slate-800">
+                  <th className="p-2.5 text-left">np</th>
+                  <th className="p-2.5 text-rose-400">metacache (s)</th>
+                  <th className="p-2.5 text-emerald-400">isend (s)</th>
+                  <th className="p-2.5 text-slate-400">isend_opt (s)</th>
+                  <th className="p-2.5">Sp metacache</th>
+                  <th className="p-2.5">Sp isend</th>
+                  <th className="p-2.5">Ep isend</th>
+                </tr>
+              </thead>
+              <tbody>
+                {t63.processes.map((p, i) => (
+                  <tr key={p} className="border-b border-slate-800/80 hover:bg-slate-800/40">
+                    <td className="p-2.5 text-left font-bold text-blue-400">{p}</td>
+                    <td className="p-2.5 text-slate-200">{t63.time.metacache[i].toFixed(1)}</td>
+                    <td className="p-2.5 text-emerald-400 font-semibold">
+                      {t63.time.isend[i].toFixed(1)}
+                    </td>
+                    <td className="p-2.5 text-slate-400">{t63.time.isend_opt[i].toFixed(1)}</td>
+                    <td className="p-2.5 text-slate-200">{t63.speedup.metacache[i].toFixed(2)}×</td>
+                    <td className="p-2.5 text-slate-50 font-bold">
+                      {t63.speedup.isend[i].toFixed(2)}×
+                    </td>
+                    <td className="p-2.5">
                       <span
                         className={`px-2 py-0.5 rounded text-[10px] ${
-                          parseFloat(epIsend) >= 70
+                          t63.efficiencyIsend[i] >= 0.7
                             ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
-                            : parseFloat(epIsend) >= 40
+                            : t63.efficiencyIsend[i] >= 0.4
                               ? 'bg-orange-500/20 text-orange-400 border border-orange-500/40'
                               : 'bg-rose-500/20 text-rose-400 border border-rose-500/40'
                         }`}
                       >
-                        {epIsend}%
+                        {(t63.efficiencyIsend[i] * 100).toFixed(0)} %
                       </span>
                     </td>
-                    <td className="p-2.5 text-orange-400 font-bold">
-                      {gain}x {lang === 'es' ? 'más rápido' : 'faster'}
-                    </td>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                ))}
+              </tbody>
+            </table>
+          )}
+
+          {activeTab === 'set300' && (
+            <table className="w-full border-collapse font-mono text-xs text-center min-w-[520px]">
+              <thead>
+                <tr className="bg-slate-950 text-slate-400 text-[10px] uppercase border border-slate-800">
+                  <th className="p-2.5 text-left">np ({es ? 'nodos' : 'nodes'})</th>
+                  <th className="p-2.5 text-rose-400">metacache (s)</th>
+                  <th className="p-2.5 text-emerald-400">isend (s)</th>
+                  <th className="p-2.5">{es ? 'Ventaja de isend' : 'isend advantage'}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {t64.processes.map((p, i) => {
+                  const meta = set300.metacache[i];
+                  const isend = set300.isend[i];
+                  return (
+                    <tr key={p} className="border-b border-slate-800/80 hover:bg-slate-800/40">
+                      <td className="p-2.5 text-left font-bold text-blue-400">
+                        {p} ({t64.nodes[i]})
+                      </td>
+                      <td className="p-2.5 text-slate-200">{meta}</td>
+                      <td className="p-2.5 text-emerald-400 font-semibold">
+                        {isend === null ? (
+                          <span className="text-rose-400" title="MPI_ERR_INTERN">
+                            —
+                          </span>
+                        ) : (
+                          isend
+                        )}
+                      </td>
+                      <td className="p-2.5 text-orange-400 font-bold">
+                        {isend === null ? (
+                          <span className="text-slate-500 font-normal">
+                            {es ? 'no completa' : 'does not complete'}
+                          </span>
+                        ) : (
+                          `${(((meta - isend) / meta) * 100).toFixed(0)} %`
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
         </div>
+
+        {activeTab === 'set300' && (
+          <p className="text-[11px] text-slate-500 leading-relaxed max-w-4xl">
+            {t('scall.seqRef')}{' '}
+            {t64.sequentialRef[datasetChoice].toLocaleString(es ? 'es-ES' : 'en-GB')} s
+            {datasetChoice === 'unbalanced' ? ` · ${t('scall.daggerNote')}` : ''}
+          </p>
+        )}
       </div>
     </div>
   );
 };
+
+const TONE = {
+  blue: 'border-l-blue-500 text-blue-400',
+  emerald: 'border-l-emerald-500 text-emerald-400',
+  amber: 'border-l-amber-500 text-amber-400',
+  rose: 'border-l-rose-500 text-rose-400',
+} as const;
+
+function InsightCard({
+  tone,
+  icon: Icon,
+  title,
+  children,
+}: {
+  tone: keyof typeof TONE;
+  icon: React.FC<{ className?: string }>;
+  title: string;
+  children: React.ReactNode;
+}) {
+  const [border, text] = TONE[tone].split(' ');
+  return (
+    <div
+      className={`bg-slate-900/50 border border-slate-800 border-l-4 ${border} p-4 rounded-2xl space-y-1.5 text-xs`}
+    >
+      <div className={`font-bold flex items-center gap-1.5 ${text}`}>
+        <Icon className="w-3.5 h-3.5" />
+        {title}
+      </div>
+      <p className="text-[11px] text-slate-400 leading-relaxed">{children}</p>
+    </div>
+  );
+}

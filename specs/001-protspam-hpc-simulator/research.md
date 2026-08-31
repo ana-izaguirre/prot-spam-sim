@@ -86,6 +86,26 @@ simulator for the C++ tool.
 The scalability tables are the one place where the numbers are _real_: they are the
 thesis' measured results and must never be recomputed client-side (Constitution I).
 
+**Correction (this branch).** That claim did not hold until now. The series shipped in
+`SCALABILITY_DATA` had the right _shape_ — Phase 3 scaling, Phase 4 saturating, metacache
+inverting — but not the thesis' values, and not its scale: the 300-species balanced set
+appeared with a 700 s sequential run and 3.96 s at 256 processes, against the thesis' 112 500 s
+and 4204 s at 128. They were plausible-looking synthetic numbers presented as measurements.
+
+They are replaced by `THESIS_TABLES`, transcribed point by point from cuadros 3.1, 4.1, 5.1,
+6.1, 6.2, 6.3, 6.4 and 6.5, with the source table named on each field. Three consequences
+follow from transcribing rather than modelling, and the module now respects all three:
+
+- The three experiments have **different process ranges and different baselines** (Phase 3
+  reading: np 1…32 on 10/20/30 species; the 64-species controlled case: np 1…64 with a real
+  np = 1 MPI baseline; the 300-species case: np 32…256 with no baseline of its own). They can
+  no longer share an axis, so they are three separate tabs.
+- A configuration the thesis did not measure is `null`, not interpolated. `isend` at 256
+  processes draws no point, because it does not complete there.
+- Only the 64-species table may be called a parallel speedup. The 26.8× on the 300-species
+  set is a temporal factor between two different binaries, and is labelled as such wherever
+  it appears.
+
 ### A.4 The phase walkthrough — what it does and does not model
 
 The walkthrough module (`src/components/PhaseWalkthrough.tsx`,
